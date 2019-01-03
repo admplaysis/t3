@@ -1,0 +1,744 @@
+﻿@using PagedList
+@using PagedList.Mvc
+@model SGI.Models.ViewMedicoes
+@{
+    ViewBag.Title = "Medições";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@***** Funções *****@
+<collapse>
+    @functions
+{
+        //stringViewBag.anoAtual = "2016";
+        //stringViewBag.anoAnterior = "2015";
+        /// <summary>
+        /// Função para retornar se uma meta foi atingida ou não.
+        /// </summary>
+        /// <param name="valorMeta">Valor da meta</param>
+        /// <param name="valorAtingido">Valor medido</param>
+        /// <returns>Retorna true or false</returns>
+        public bool AtingiuMeta(decimal? valorMeta, decimal? valorAtingido, SGI.Models.T_Metas meta)
+        {
+            bool atingiu = false;
+            switch (meta.MET_TIPOCOMPARADOR)
+            {
+                case "0"://Igual
+                    if (valorAtingido == valorMeta)
+                        atingiu = true;
+                    break;
+
+                
+                case "1"://Maior ou igual
+                    if (valorAtingido >= valorMeta)
+                        atingiu = true;
+                    break;
+
+                case "2"://Menor ou igual
+                    if (valorAtingido <= valorMeta)
+                        atingiu = true;
+                    break;
+            }
+
+            return atingiu;
+        }
+
+        /// <summary>
+        /// Metódo que retorna o formato utilizado nas medições
+        /// </summary>
+        /// <param name="tipo"></param>
+        /// <returns></returns>
+        public string GetFormatoValor(int tipo)
+        {
+            string formato = "{0:N2}";
+            switch (tipo)
+            {
+                case (int)SGI.Enums.TipoAlvo.Valor:
+                    formato = "{0:N2}";
+                    break;
+                case (int)SGI.Enums.TipoAlvo.Percentual:
+                    formato = "{0:P0}";
+                    break;
+                case (int)SGI.Enums.TipoAlvo.Data:
+                    formato = "{0:dd/MM/yyyy}";
+                    break;
+                case (int)SGI.Enums.TipoAlvo.DiaUtil:
+                    formato = "{0:00}";
+                    break;
+            }
+            return formato;
+        }
+    }
+</collapse>
+
+@***** Função para exibir linhas na grid por valor *****@
+<collapse>
+    @helper PrintRowValor(SGI.Models.T_Indicadores indicador, string cor)
+{
+    //Metas Ano Anterior
+    decimal? valAlvoAnoAnt = 0;
+    if (Model.AnoAnterior.Count(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior) > 0)
+    {
+        valAlvoAnoAnt = Convert.ToDecimal(Model.AnoAnterior.FirstOrDefault(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).META);
+    }
+    decimal vlrMetaAnoAnt = valAlvoAnoAnt ?? 0;
+    decimal vlrMetaMesAnoAnt = Math.Round(vlrMetaAnoAnt / 12, 2);
+    //Metas Ano Atual
+    string valAlvoAnoAtu = "";
+    if (Model.Medicoes.Count(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO.Substring(0, 4) ==ViewBag.anoAtual) > 0)
+    {
+        valAlvoAnoAtu = Model.Medicoes.FirstOrDefault(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO.Substring(0, 4) ==ViewBag.anoAtual).T_Metas.MET_ALVO;
+    }
+    decimal vlrMetaAnoAtu = valAlvoAnoAtu != "" ? Decimal.Parse(valAlvoAnoAtu) : 0;
+    decimal vlrMetaMesAnoAtu = Math.Round(vlrMetaAnoAtu / 12, 2);
+
+
+    <tr class="label-primary" style="color: white !important;">
+        <td rowspan="4">@indicador.IND_DESCRICAO - @indicador.T_Negocio.NEG_DESCRICAO</td>
+        <td>Meta mês</td>
+        <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAnt)</td>
+        <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAtu)</td>
+        @for (int i = 0; i < 12; i++)
+        {
+            <td><a href="@Url.Action("PorMes", new { @id_meta = indicador.T_Metas.FirstOrDefault().MET_ID, @id_indicador = indicador.IND_ID, @periodo =ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0') })">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaMesAnoAtu)</a></td>
+        }
+    </tr>
+    <tr style="color: white !important;">
+        <td class="label-default">Real mês</td>
+        @** Real Mês ano anterior **@
+        @{decimal? realAnoAnt = 0;
+          if (Model.AnoAnterior.Count(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior) > 0)
+        {
+            realAnoAnt = Model.AnoAnterior.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).Sum(y => Convert.ToDecimal(y.Valor));
+        }
+        }
+        @if (AtingiuMeta(vlrMetaAnoAnt, realAnoAnt,indicador.T_Metas.FirstOrDefault()))
+        {
+            <td class="label-success">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAnt)</td>
+        }
+        else
+        {
+            <td class="label-danger"><a href="@Url.Action("PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAnterior })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAnt)<i class="fa fa-info-circle"></i></a></td>
+        }
+
+        @** Real Mês ano atual **@
+        @{var realAnoAtual = Model.Medicoes.Where(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO.Substring(0, 4) ==ViewBag.anoAtual).Sum(y => Convert.ToDecimal(y.T_VALORMEDIDO));}
+        @if (AtingiuMeta(vlrMetaAnoAtu, realAnoAtual,Model.Metas.FirstOrDefault()))
+        {
+            <td class="label-success">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAtual)</td>
+        }
+        else
+        {
+            <td class="label-danger"><a href="@Url.Action("PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAtual }))" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAtual)<i class="fa fa-info-circle"></i></a></td>
+        }
+
+        @** Preenche meses **@
+        @for (int i = 0; i < 12; i++)
+        {
+            decimal? vlrRealMes = 0;
+            if (Model.Medicoes.Count(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO ==ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')) > 0)
+            {
+                vlrRealMes = Convert.ToDecimal(Model.Medicoes.First(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO ==ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')).T_VALORMEDIDO);
+            }
+
+            if (AtingiuMeta(vlrMetaMesAnoAtu, vlrRealMes,Model.Metas.FirstOrDefault()))
+            {
+                <td class="label-success">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrRealMes)</td>
+            }
+            else
+            {
+                <td class="label-danger"><a href="@Url.Action("PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0') })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrRealMes) <i class="fa fa-info-circle"></i></a></td>
+            }
+        }
+    </tr>
+    <tr class="label-primary" style="color: white !important;">
+        <td>Meta Ac.</td>
+        @** Meta Acumulado ano anterior **@
+        <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAnt)</td>
+        <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAtu)</td>
+        @{decimal metAcu = 0;}
+        @for (int i = 0; i < 12; i++)
+        {
+            metAcu += vlrMetaMesAnoAtu;
+            <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), metAcu)</td>
+        }
+    </tr>
+    <tr style="color: white !important;">
+        <td class="label-default">Real Ac.</td>
+        @** Real Acumulado ano anterior **@
+        @{var realAcAnoAnt = Model.AnoAnterior.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).Sum(y => Convert.ToDecimal(y.Valor));}
+        @if (AtingiuMeta(vlrMetaAnoAnt, realAcAnoAnt))
+        {
+            <td class="label-success">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcAnoAnt)</td>
+        }
+        else
+        {
+            <td class="label-danger"><a href="@Url.Action("PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAnterior })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcAnoAnt) <i class="fa fa-info-circle"></i></a></td>
+        }
+
+        @** Real Acumulado ano atual **@
+        @{var realAcAnoAtual = Model.Medicoes.Where(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO.Substring(0, 4) ==ViewBag.anoAtual).Sum(y => Convert.ToDecimal(y.T_VALORMEDIDO));}
+        @if (AtingiuMeta(vlrMetaAnoAnt, realAcAnoAtual))
+        {
+            <td class="label-success">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcAnoAtual)</td>
+        }
+        else
+        {
+            <td class="label-danger"><a href="@Url.Action("PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAtual })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcAnoAtual) <i class="fa fa-info-circle"></i></a></td>
+        }
+
+        @{decimal realAcumulado = 0;}
+        @for (int i = 0; i < 12; i++)
+        {
+            if (Model.Medicoes.Count(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO ==ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')) > 0)
+            {
+                realAcumulado += Convert.ToDecimal(Model.Medicoes.First(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO ==ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')).T_VALORMEDIDO);
+            }
+
+            if (AtingiuMeta(vlrMetaMesAnoAtu * (i + 1), realAcumulado))
+            {
+                <td class="label-success">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcumulado)</td>
+            }
+            else
+            {
+                <td class="label-danger"><a href="@Url.Action("PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0') })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcumulado) <i class="fa fa-info-circle"></i></a></td>
+            }
+        }
+    </tr>
+    <tr>
+        <td colspan="12"></td>
+    </tr>
+}
+</collapse>
+
+@***** Função para exibir linhas por dia util *****@
+<collapse>
+    @helper PrintRowDiaUtil(SGI.Models.MedicoesInd indicador, string cor)
+{
+    //Metas Ano Anterior
+    decimal? valAlvoAnoAnt = 0;
+    if (Model.AnoAnterior.Count(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) ==ViewBag.anoAnterior) > 0)
+    {
+        valAlvoAnoAnt = Convert.ToDecimal(Model.AnoAnterior.FirstOrDefault(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).META);
+    }
+    decimal vlrMetaAnoAnt = valAlvoAnoAnt ?? 0;
+    decimal vlrMetaMesAnoAnt = Math.Round(vlrMetaAnoAnt / 12, 2);
+    //Metas Ano Atual
+    string valAlvoAnoAtu = Model.Medicoes.FirstOrDefault(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO.Substring(0, 4) ==ViewBag.anoAtual).T_Metas.MET_ALVO;
+    decimal vlrMetaAnoAtu = valAlvoAnoAtu != "" ? Decimal.Parse(valAlvoAnoAtu) : 0;
+    decimal vlrMetaMesAnoAtu = vlrMetaAnoAtu;
+
+
+    <tr class="label-primary" style="color: white !important;">
+        <td rowspan="2">@indicador.Indicador.IND_DESCRICAO - @indicador.Indicador.T_Negocio.NEG_DESCRICAO</td>
+        <td>Meta mês</td>
+        <td>@String.Format(GetFormatoValor(indicador.Indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAnt)</td>
+        <td>@String.Format(GetFormatoValor(indicador.Indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAtu)</td>
+        @for (int i = 0; i < 12; i++)
+        {
+            <td><a href="@Url.Action("PorMes", new { @id_meta = indicador.Indicador.T_Metas.FirstOrDefault().MET_ID, @id_indicador = indicador.IND_ID, @periodo =ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0') })">@String.Format(GetFormatoValor(indicador.Indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaMesAnoAtu)</a></td>
+        }
+    </tr>
+    <tr style="color: white !important;">
+        <td class="label-default">Real mês</td>
+        @** Real Mês ano anterior **@
+        @{decimal? realAnoAnt = 0;
+          if (Model.AnoAnterior.Count(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior) > 0)
+        {
+            realAnoAnt = Model.AnoAnterior.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).Sum(y => Convert.ToDecimal(y.Valor));
+        }
+        }
+        @if (AtingiuMeta(vlrMetaAnoAnt, realAnoAnt))
+        {
+            <td class="label-success">@String.Format(GetFormatoValor(indicador.Indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAnt)</td>
+        }
+        else
+        {
+            <td class="label-danger"><a href="@Url.Action("PlanoAcao", new { idIndicador = indicador.Indicador.IND_ID, periodo =ViewBag.anoAnterior })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.Indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAnt)<i class="fa fa-info-circle"></i></a></td>
+        }
+
+        @** Real Mês ano atual **@
+        @{var realAnoAtual = Model.Medicoes.Where(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO.Substring(0, 4) ==ViewBag.anoAtual).Sum(y => Convert.ToDecimal(y.T_VALORMEDIDO));}
+        @if (AtingiuMeta(vlrMetaAnoAtu, realAnoAtual))
+        {
+            <td class="label-success">@String.Format(GetFormatoValor(indicador.Indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAtual)</td>
+        }
+        else
+        {
+            <td class="label-danger"><a href="@Url.Action("PlanoAcao", new { idIndicador = indicador.Indicador.IND_ID, periodo =ViewBag.anoAtual })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.Indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAtual)<i class="fa fa-info-circle"></i></a></td>
+        }
+
+        @** Preenche meses **@
+        @for (int i = 0; i < 12; i++)
+        {
+            decimal? vlrRealMes = 0;
+            if (Model.Medicoes.Count(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO ==ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')) > 0)
+            {
+                vlrRealMes = Convert.ToDecimal(Model.Medicoes.First(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO ==ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')).T_VALORMEDIDO);
+            }
+
+            if (AtingiuMeta(vlrMetaMesAnoAtu, vlrRealMes))
+            {
+                <td class="label-success">@String.Format(GetFormatoValor(indicador.Indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrRealMes)</td>
+            }
+            else
+            {
+                <td class="label-danger"><a href="@Url.Action("PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0') })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.Indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrRealMes) <i class="fa fa-info-circle"></i></a></td>
+            }
+        }
+    </tr>
+    <tr>
+        <td colspan="12"></td>
+    </tr>
+}
+</collapse>
+
+@*** Metódo para imprimir percentuais ***@
+<collapse>
+    @helper PrintRowPercentual(SGI.Models.T_Indicadores indicador, string cor)
+{
+    //Metas Ano Anterior
+    decimal? valAlvoAnoAnt = 0;
+    if (Model.AnoAnterior.Count(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior) > 0)
+    {
+        //valAlvoAnoAnt = Model.VW_Medicoes.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) ==ViewBag.anoAnterior).Average(y => y.MED_PONDERACAO)/100;
+        valAlvoAnoAnt = Convert.ToDecimal(Model.AnoAnterior.FirstOrDefault(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).META) / 100;
+    }
+    decimal vlrMetaAnoAnt = valAlvoAnoAnt ?? 0;
+    decimal vlrMetaMesAnoAnt = Math.Round(vlrMetaAnoAnt / 12, 2);
+    //Metas Ano Atual
+    string valAlvoAnoAtu = Model.Medicoes.FirstOrDefault(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO.Substring(0, 4) ==ViewBag.anoAtual).T_Metas.MET_ALVO;
+    decimal vlrMetaAnoAtu = valAlvoAnoAtu != "" ? Decimal.Parse(valAlvoAnoAtu) / 100 : 0;
+    decimal vlrMetaMesAnoAtu = vlrMetaAnoAtu;
+
+    <tr class="label-primary" style="color: white !important;">
+        <td rowspan="4">@indicador.IND_DESCRICAO - @indicador.T_Negocio.NEG_DESCRICAO</td>
+        <td>Meta mês</td>
+        <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAnt)</td>
+        <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAtu)</td>
+        @for (int i = 0; i < 12; i++)
+        {
+            <td><a href="@Url.Action("PorMes", new { @id_meta = indicador.T_Metas.FirstOrDefault().MET_ID, @id_indicador = indicador.IND_ID, @periodo =ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0') })">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaMesAnoAtu)</a></td>
+        }
+    </tr>
+    <tr style="color: white !important;">
+        <td class="label-default">Real mês</td>
+        @** Real Mês ano anterior **@
+        @{decimal? realAnoAnt = 0;
+          if (Model.AnoAnterior.Count(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior) > 0)
+        {
+            realAnoAnt = Model.AnoAnterior.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).Average(y => Convert.ToDecimal(y.Valor)) / 100;
+        }
+        }
+        @if (AtingiuMeta(vlrMetaAnoAnt, realAnoAnt))
+        {
+            <td class="label-success">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAnt)</td>
+        }
+        else
+        {
+            <td class="label-danger"><a href="@Url.Action("PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAnterior })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAnt) <i class="fa fa-info-circle"></i></a></td>
+        }
+
+        @** Real Mês ano atual **@
+        @{var realAnoAtual = Model.Medicoes.Where(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO.Substring(0, 4) ==ViewBag.anoAtual).Average(y => y.MED_PONDERACAO) / 100;}
+        @if (AtingiuMeta(vlrMetaAnoAtu, realAnoAtual))
+        {
+            <td class="label-success">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAtual)</td>
+        }
+        else
+        {
+            <td class="label-danger"><a href="@Url.Action("PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAtual })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAtual) <i class="fa fa-info-circle"></i></a></td>
+        }
+
+        @** Preenche meses **@
+        @for (int i = 0; i < 12; i++)
+        {
+            decimal? vlrRealMes = 0;
+            if (Model.Medicoes.Count(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO ==ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')) > 0)
+            {
+                vlrRealMes = Model.Medicoes.First(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO ==ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')).MED_PONDERACAO / 100;
+            }
+
+            if (AtingiuMeta(vlrMetaMesAnoAtu, vlrRealMes))
+            {
+                <td class="label-success">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrRealMes)</td>
+            }
+            else
+            {
+                <td class="label-danger"><a href="@Url.Action("PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0') })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrRealMes) <i class="fa fa-info-circle"></i></a></td>
+            }
+        }
+    </tr>
+    <tr class="label-primary" style="color: white !important;">
+        <td>Meta Ac.</td>
+        @** Meta Acumulado ano anterior **@
+        <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAnt)</td>
+        <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAtu)</td>
+        @{decimal metAcu = 0;}
+        @for (int i = 0; i < 12; i++)
+        {
+            metAcu = vlrMetaMesAnoAtu;
+            <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), metAcu)</td>
+        }
+    </tr>
+    <tr style="color: white !important;">
+        <td class="label-default">Real Ac.</td>
+        @** Real Acumulado ano anterior **@
+        @{
+            decimal? realAcAnoAnt = 0;
+            if (Model.AnoAnterior.Count(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) ==ViewBag.anoAnterior) > 0)
+            {
+                realAcAnoAnt = Convert.ToDecimal(Model.AnoAnterior.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).First().Valor) / 100;
+            }
+        }
+        @if (AtingiuMeta(vlrMetaAnoAnt, realAcAnoAnt))
+        {
+            <td class="label-success">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcAnoAnt)</td>
+        }
+        else
+        {
+            <td class="label-danger"><a href="@Url.Action("PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAnterior })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcAnoAnt) <i class="fa fa-info-circle"></i></a></td>
+        }
+
+        @** Real Acumulado ano atual **@
+        @{var realAcAnoAtual = Model.Medicoes.Where(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO.Substring(0, 4) ==ViewBag.anoAtual).First().MED_PONDERACAO / 100;}
+        @if (AtingiuMeta(vlrMetaAnoAnt, realAcAnoAtual))
+        {
+            <td class="label-success">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcAnoAtual)</td>
+        }
+        else
+        {
+            <td class="label-danger"><a href="@Url.Action("PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAtual })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcAnoAtual) <i class="fa fa-info-circle"></i></a></td>
+        }
+
+        @{decimal realAcumulado = 0;}
+        @for (int i = 0; i < 12; i++)
+        {
+            if (Model.Medicoes.Count(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO ==ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')) > 0)
+            {
+                realAcumulado = Convert.ToDecimal(Model.Medicoes.First(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO ==ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')).MED_PONDERACAO.ToString()) / 100;
+            }
+
+            if (AtingiuMeta(vlrMetaMesAnoAtu * (i + 1), realAcumulado))
+            {
+                <td class="label-success">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcumulado)</td>
+            }
+            else
+            {
+                <td class="label-danger"><a href="@Url.Action("PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0') })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcumulado) <i class="fa fa-info-circle"></i></a></td>
+            }
+        }
+    </tr>
+    <tr>
+        <td colspan="12"></td>
+    </tr>
+}
+</collapse>
+
+@*** Metódo para imprimir datas ***@
+<collapse>
+    @helper PrintRowData(SGI.Models.T_Indicadores indicador, string cor)
+{
+    //Metas Ano Anterior
+    decimal? valAlvoAnoAnt = 0;
+    if (Model.AnoAnterior.Count(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior) > 0)
+    {
+        valAlvoAnoAnt = Convert.ToDecimal(Model.AnoAnterior.FirstOrDefault(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).Valor);
+    }
+    decimal vlrMetaAnoAnt = valAlvoAnoAnt ?? 0;
+    decimal vlrMetaMesAnoAnt = Math.Round(vlrMetaAnoAnt / 12, 2);
+    //Metas Ano Atual
+    string valAlvoAnoAtu = Model.Medicoes.FirstOrDefault(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO.Substring(0, 4) ==ViewBag.anoAtual).T_Metas.MET_ALVO;
+    decimal vlrMetaAnoAtu = valAlvoAnoAtu != "" ? Decimal.Parse(valAlvoAnoAtu) : 0;
+    decimal vlrMetaMesAnoAtu = Math.Round(vlrMetaAnoAtu / 12, 2);
+    string formatoValor = "{0:N2}";
+
+
+    <tr class="label-primary" style="color: white !important;">
+        <td rowspan="4">@indicador.IND_DESCRICAO</td>
+        <td>Meta mês</td>
+        <td>@vlrMetaAnoAnt</td>
+        <td>@vlrMetaAnoAtu</td>
+        @for (int i = 0; i < 12; i++)
+        {
+            <td><a href="@Url.Action("PorMes", new { @id_meta = indicador.T_Metas.FirstOrDefault().MET_ID, @id_indicador = indicador.IND_ID, @periodo =ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0') })">@vlrMetaMesAnoAtu</a></td>
+        }
+    </tr>
+    <tr style="color: white !important;">
+        <td class="label-default">Real mês</td>
+        @** Real Mês ano anterior **@
+        @{decimal? realAnoAnt = 0;
+          if (Model.AnoAnterior.Count(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior) > 0)
+        {
+            realAnoAnt = Model.AnoAnterior.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).Sum(y => Convert.ToDecimal(y.Valor));
+        }
+        }
+        @if (AtingiuMeta(vlrMetaAnoAnt, realAnoAnt))
+        {
+            <td class="label-success">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAnt)</td>
+        }
+        else
+        {
+            <td class="label-danger"><a href="@Url.Action("PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAnterior })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(formatoValor, realAnoAnt) <i class="fa fa-info-circle"></i></a></td>
+        }
+
+        @** Real Mês ano atual **@
+        @{var realAnoAtual = Model.Medicoes.Where(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO.Substring(0, 4) ==ViewBag.anoAtual).Sum(y => Convert.ToDecimal(y.T_VALORMEDIDO));}
+        @if (AtingiuMeta(vlrMetaAnoAtu, realAnoAtual))
+        {
+            <td class="label-success">@realAnoAtual</td>
+        }
+        else
+        {
+            <td class="label-danger"><a href="@Url.Action("PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAtual })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@realAnoAtual <i class="fa fa-info-circle"></i></a></td>
+        }
+
+        @** Preenche meses **@
+        @for (int i = 0; i < 12; i++)
+        {
+            decimal? vlrRealMes = 0;
+            if (Model.Medicoes.Count(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO ==ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')) > 0)
+            {
+                vlrRealMes = Convert.ToDecimal(Model.Medicoes.First(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO ==ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')).T_VALORMEDIDO);
+            }
+
+            if (AtingiuMeta(vlrMetaMesAnoAtu, vlrRealMes))
+            {
+                <td class="label-success">@vlrRealMes</td>
+            }
+            else
+            {
+                <td class="label-danger"><a href="@Url.Action("PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0') })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@vlrRealMes <i class="fa fa-info-circle"></i></a></td>
+            }
+        }
+    </tr>
+    <tr class="label-primary" style="color: white !important;">
+        <td>Meta Ac.</td>
+        @** Meta Acumulado ano anterior **@
+        <td>@vlrMetaAnoAnt</td>
+        <td>@vlrMetaAnoAtu</td>
+        @{decimal metAcu = 0;}
+        @for (int i = 0; i < 12; i++)
+        {
+            metAcu += vlrMetaMesAnoAtu;
+            <td>@metAcu</td>
+        }
+    </tr>
+    <tr style="color: white !important;">
+        <td class="label-default">Real Ac.</td>
+        @** Real Acumulado ano anterior **@
+        @{var realAcAnoAnt = Model.AnoAnterior.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).Sum(y => Convert.ToDecimal(y.Valor));}
+        @if (AtingiuMeta(vlrMetaAnoAnt, realAcAnoAnt))
+        {
+            <td class="label-success">@realAcAnoAnt</td>
+        }
+        else
+        {
+            <td class="label-danger"><a href="@Url.Action("PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAnterior })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@realAcAnoAnt <i class="fa fa-info-circle"></i></a></td>
+        }
+
+        @** Real Acumulado ano atual **@
+        @{var realAcAnoAtual = Model.Medicoes.Where(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO.Substring(0, 4) ==ViewBag.anoAtual).Sum(y => Convert.ToDecimal(y.T_VALORMEDIDO));}
+        @if (AtingiuMeta(vlrMetaAnoAnt, realAcAnoAtual))
+        {
+            <td class="label-success">@realAcAnoAtual</td>
+        }
+        else
+        {
+            <td class="label-danger"><a href="@Url.Action("PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAtual })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@realAcAnoAtual <i class="fa fa-info-circle"></i></a></td>
+        }
+
+        @{decimal realAcumulado = 0;}
+        @for (int i = 0; i < 12; i++)
+        {
+            if (Model.Medicoes.Count(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO ==ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')) > 0)
+            {
+                realAcumulado += Convert.ToDecimal(Model.Medicoes.First(x => x.T_Metas.IND_ID == indicador.IND_ID && x.T_DATAMEDICAO ==ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')).T_VALORMEDIDO);
+            }
+
+            if (AtingiuMeta(vlrMetaMesAnoAtu * (i + 1), realAcumulado))
+            {
+                <td class="label-success">@realAcumulado</td>
+            }
+            else
+            {
+                <td class="label-danger"><a href="@Url.Action("PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0') })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@realAcumulado <i class="fa fa-info-circle"></i></a></td>
+            }
+        }
+    </tr>
+    <tr>
+        <td colspan="12"></td>
+    </tr>
+}
+</collapse>
+
+@***** Título *****@
+<div class='col-xs-12'>
+    <div class="page-title">
+
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-pie-chart"></i>Movimentos
+                </li>
+                <li class="active">
+                    <strong>Medições</strong>
+                </li>
+            </ol>
+        </div>
+
+    </div>
+</div>
+
+@***** Grid de Dados *****@
+<div class="col-xs-12">
+    <section class="box ">
+        <header class="panel_header">
+            <h2 class="title pull-left">Lista de medições</h2>
+            <div class="actions panel_actions pull-right">
+            </div>
+        </header>
+        <div class="content-body">
+            <div class="btn-toolbar">
+                @using (Html.BeginForm("Index", "Medicoes", FormMethod.Get))
+                {
+                    <div class="btn-group focus-btn-group">
+                        @Html.DropDownList("pAno", null, "Selecione o ano...", new { @class = "select2", onchange = "this.form.submit();" })
+                    </div>
+                    <div class="btn-group focus-btn-group">
+                        @Html.DropDownList("idNegocio", null, "Filtrar por negócio...", new { @class = "select2", onchange = "this.form.submit();" })
+                    </div>
+                    <div class="btn-group focus-btn-group">
+                        @Html.DropDownList("idGrupo", null, "Filtrar por grupo...", new { @class = "select2", onchange = "this.form.submit();" })
+                    </div>
+                    <div class="btn-group dropdown-btn-group pull-right">
+                        <label>Pesquisar:<input type="search" id="searchString" name="searchString" value="@Html.Value("searchString")" class="form-control input-sm" placeholder="Digite a pesquisa" aria-controls="example-4"></label>
+                        <label>
+                            @Html.DropDownList("nPageSize", (IEnumerable<SelectListItem>)ViewBag.ItensPageSize,
+                       new { @id = "nPageSize", onchange = "this.form.submit();", @class = "form-control input-sm" })
+                        </label>
+                    </div>
+                }
+            </div>
+
+            <div class="table-responsive">
+                <table id="example-1" class="table table-bordered dt-responsive display">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Indicador</th>
+                            <th>@ViewBag.anoAnterior</th>
+                            <th>@ViewBag.anoAtual</th>
+                            <th>Jan</th>
+                            <th>Fev</th>
+                            <th>Mar</th>
+                            <th>Abr</th>
+                            <th>Mai</th>
+                            <th>Jun</th>
+                            <th>Jul</th>
+                            <th>Ago</th>
+                            <th>Set</th>
+                            <th>Out</th>
+                            <th>Nov</th>
+                            <th>Dez</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{string cor = "info"; int cont = 0;}
+                        @foreach (var item in Model.Indicadores)
+                        {
+                            if (Model.Medicoes.ToList().Count(x => x.T_Metas.IND_ID == item.IND_ID && (x.T_DATAMEDICAO.Substring(0, 4) ==ViewBag.anoAtual || x.T_DATAMEDICAO.Substring(0, 4) ==ViewBag.anoAnterior)) > 0)
+                            {
+                                if (cont % 2 == 0)
+                                {
+                                    cor = "label-info";
+                                }
+                                else
+                                {
+                                    cor = "label-primary";
+                                }
+                                cont++;
+                                switch (item.Indicador.T_Metas.FirstOrDefault().MET_TIPOALVO)
+                                {
+                                    case (int)SGI.Enums.TipoAlvo.Valor:
+                                        @PrintRowValor(item.Indicador, cor);
+                                                                 break;
+                                    case (int)SGI.Enums.TipoAlvo.Percentual:
+                                    @PrintRowPercentual(item.Indicador, cor);
+                                                                  break;
+                                    case (int)SGI.Enums.TipoAlvo.Data:
+                                    @PrintRowData(item.Indicador, cor);
+                                                            break;
+                                    case (int)SGI.Enums.TipoAlvo.DiaUtil:
+                                    @PrintRowDiaUtil(item, cor);
+                                                               break;
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="dataTables_info" id="datatable1_info" role="status" aria-live="polite">Exibindo @Model.Indicadores.PageNumber de @Model.Indicadores.PageCount de @Model.Indicadores.TotalItemCount registros</div>
+            <div class="dataTables_paginate paging_simple_numbers" id="datatable1_paginate">
+                @Html.PagedListPager((IPagedList)Model.Indicadores,
+                page => Url.Action("Index",
+                                  new
+                                  {
+                                      page = page,
+                                      nPageSize = ViewBag.CurrentItemsPerPage,
+                                      searchString = ViewBag.CurrentSearch,
+                                      idNegocio = ViewBag.negAtual,
+                                      idGrupo = ViewBag.grpAtual,
+                                      pAno = ViewBag.anoAtual
+                                  }),
+                new PagedListRenderOptions
+                {
+                    LinkToFirstPageFormat = "<< Primera",
+                    LinkToPreviousPageFormat = "< Anterior",
+                    LinkToNextPageFormat = "Proxima >",
+                    LinkToLastPageFormat = "Ultima >>"
+                })
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Styles {
+    <environment names="Development">
+        <link href="~/Content/select2.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+    <style>
+        td > a {
+            color: white !important;
+        }
+    </style>
+}
+
+
+@section Scripts {
+
+    <environment names="Development">
+        <script src="~/Script/select2.js" type="text/javascript"></script>
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+
+    <script type="text/javascript">
+        if ($.isFunction($.fn.select2)) {
+            $('.select2').select2();
+        }
+        $("#mmovimentos").removeClass("open");
+        $("#mmovimentos").addClass("open");
+    </script>
+}

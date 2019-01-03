@@ -1,0 +1,50 @@
+﻿@model SGI.Models.T_USER_GRUPO
+
+<div class="modal-content" id="myModal">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Adicionar grupo ao usuário</h4>
+    </div>
+    <div id="targetDiv">
+        @using (Ajax.BeginForm("AddGrupo", "Usuario", new AjaxOptions
+                    {
+                        InsertionMode = InsertionMode.Replace,
+                        HttpMethod = "POST",
+                        UpdateTargetId = "targetDiv",
+                        OnSuccess = "OnSuccess",
+                        OnFailure = "OnFailure"
+                    }))
+        {
+            <div class="modal-body">
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                @Html.HiddenFor(x => x.ID_USUARIO)
+
+                @if (ViewBag.erro != "" && ViewBag.erro != null)
+                {
+                    <div class="alert alert-error alert-dismissible fade in">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                        <strong>Atenção:</strong> @ViewBag.erro
+                    </div>
+                }
+                
+                <div class="row">
+                    <div class="col-md-8 col-sm-9 col-xs-10">
+                        <div class="form-group">
+                            <label class="form-label">Nome</label>
+                            <div class="controls">
+                                @Html.DropDownList("GRU_ID", null, "Selecione...", new { @class = "form-control select2" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer text-center">
+                <button data-dismiss="modal" class="btn btn-default" type="button">Fechar</button>
+                <button class="btn btn-success" type="submit">Confirmar</button>
+            </div>
+        }
+    </div>
+
+</div>

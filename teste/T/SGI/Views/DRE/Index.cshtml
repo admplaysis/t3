@@ -1,0 +1,159 @@
+﻿@model SGI.Models.Dre
+@{
+    ViewData["Title"] = "Dre Gerencial";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class='col-xs-12'>
+    <div class="page-title">
+
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-tags"></i>Movimentos
+                </li>
+                <li class="active">
+                    <strong>DRE</strong>
+                </li>
+            </ol>
+        </div>
+
+    </div>
+</div>
+
+<div class='col-xs-12'>
+    <div class="page-title">
+
+        @using (Html.BeginForm("Index", "Dre", FormMethod.Get))
+        {
+            <div class="pull-left">
+                <div class="btn-group focus-btn-group" style="width: 100px;">
+                    @Html.DropDownList("pAno", null, "Ano...", new { @class = "select2", onchange = "this.form.submit();" })
+                </div>
+                <div class="btn-group focus-btn-group">
+
+                </div>
+                <div class="btn-group focus-btn-group" style="width: 150px;">
+                    @Html.DropDownList("pIdVisao", null, "Filtrar por visão...", new { @class = "select2", onchange = "this.form.submit();" })
+                </div>
+                <div class="btn-group focus-btn-group">
+                    @*@Html.DropDownList("idDepartamento", null, "Filtrar por departamento...", new { @class = "select2", onchange = "this.form.submit();" })*@
+                </div>
+            </div>
+            <div class="pull-right">
+                <div class="btn-group focus-btn-group">
+                    @Html.Hidden("pGrafico", (string)ViewBag.grafico)
+                    <a href="@Url.Action("Grafico", new { pGrafico = "G" })" title="Exibir em gráfico" rel="tooltip" data-placement="bottom"><i class="fa fa-bar-chart icon-sm"></i></a>
+                    <a href="@Url.Action("Index", new { pGrafico = "L" })" title="Exibir em lista" rel="tooltip" data-placement="bottom"><i class="fa fa-list icon-sm"></i></a>
+                </div>
+            </div>
+        }
+    </div>
+   @*** cabeçalho modelo 2  ***@
+    <div class="content-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th rowspan="2" class="text-center success" style="vertical-align: middle">Código</th>
+                        <th rowspan="2" class="text-center success" style="vertical-align: middle">Descrição</th>
+                        @foreach (var item in Model.DreView.Where(x => !String.IsNullOrEmpty(x.MOV_DATA)).GroupBy(x => new { mes = x.MOV_DATA.Substring(4, 2) }).Select(x => new { x.Key.mes }).OrderBy(x => x.mes))
+                        {
+                            <th class="text-center success" colspan="@Model.Unidades.Count"> @System.Globalization.DateTimeFormatInfo.CurrentInfo.GetMonthName(Int32.Parse(item.mes))</th>
+                        }
+                        <th rowspan="2" class="text-center success" style="vertical-align: middle">Total</th>
+                    </tr>
+                    <tr>
+                        @foreach (var item in Model.DreView.Where(x => !String.IsNullOrEmpty(x.MOV_DATA)).GroupBy(x => new { mes = x.MOV_DATA.Substring(4, 2) }).Select(x => new { x.Key.mes }).OrderBy(x => x.mes))
+                        {
+                            foreach (var unid in Model.Unidades)
+                            {
+                                <th class="danger">@unid.UNI_DESCRICAO</th>
+                            }
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.DreView.GroupBy(x => new { x.PLA_CODIGO, x.PLA_DESCRICAO, x.PLA_ID, x.PLA_TIPO }).Select(x => new { PLA_CODIGO = x.Key.PLA_CODIGO, PLA_DESCRICAO = x.Key.PLA_DESCRICAO, PLA_ID = x.Key.PLA_ID, PLA_TIPO = x.Key.PLA_TIPO }).OrderBy(x => x.PLA_CODIGO))
+                    {
+                        decimal valanterior = 0;
+                        decimal valoratual = 0;
+                        string cor = "";
+
+
+                        <tr class="odd gradeX">
+                            <td>@item.PLA_CODIGO</td>
+                            <td>@item.PLA_DESCRICAO</td>
+                            @foreach (var meses in Model.DreView.Where(x => !String.IsNullOrEmpty(x.MOV_DATA)).GroupBy(x => new { mes = x.MOV_DATA.Substring(4, 2) }).Select(x => new { x.Key.mes }).OrderBy(x => x.mes))
+                            {
+                                foreach (var unid in Model.Unidades)
+                                {
+                                    valoratual = Model.DreView.Where(x => x.PLA_ID == item.PLA_ID && x.MOV_UNID == unid.UNI_ID && x.MOV_DATA.Substring(0, 6) == ViewBag.anoAtual + meses.mes).Sum(x => Convert.ToDecimal(x.Valor));
+                                    if (valanterior == 0 || valanterior <= valoratual)
+                                    {
+                                        cor = " <img src= \"/Imagens/setasima.png\"  width = \"10\" height = \"10\" /> ";
+                                    }
+                                    else
+                                    {
+                                        cor = " <img src= \"/Imagens/setabaixo.png\"  width = \"10\" height = \"10\" /> ";
+                                    }
+                                    valanterior = valoratual;
+                                    <td> <table width="100%" height="100%"><tr><td> @Html.Raw(cor.ToString()) </td><td>@valoratual.ToString("c")</td></tr></table>        </td>
+
+
+                                }
+                            }
+                            <td>   @Model.DreView.Where(x => x.PLA_ID == item.PLA_ID).Sum(x => x.Valor).ToString("c")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+@section Styles {
+    <environment names="Development">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+    <environment names="Staging,Production">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+        <link href="~/Content/jquerydataTables.css" rel="stylesheet" type="text/css" media="screen" />
+        <link href="~/Content/dataTablestableTools.css" rel="stylesheet" type="text/css" media="screen" />
+        <link href="~/Content/dataTablesbootstrap.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+}
+
+
+@section Scripts {
+    <environment names="Development">
+        <link href="~/Content/select2.css" rel="stylesheet" type="text/css" media="screen" />
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/Script/select2.js" type="text/javascript"></script>
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+        <script src="~/Script/jquerydataTables.js" type="text/javascript"></script>
+        <script src="~/Script/dataTablestableTools.js" type="text/javascript"></script>
+        <script src="~/Script/dataTablesresponsive.js" type="text/javascript"></script>
+        <script src="~/Script/dataTablesbootstrap.js" type="text/javascript"></script>
+    </environment>
+
+    <script type="text/javascript">
+        if ($.isFunction($.fn.select2)) {
+            $('.select2').select2();
+        }
+
+        $("#mdre").removeClass("open");
+        $("#mdre").addClass("open");
+    </script>
+}

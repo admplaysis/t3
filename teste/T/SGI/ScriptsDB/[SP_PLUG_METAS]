@@ -1,0 +1,58 @@
+USE [SGI]
+GO
+/****** Object:  StoredProcedure [dbo].[SP_PLUG_METAS]    Script Date: 20/04/2018 18:28:07 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+--EXEC [SP_PLUG_METAS] 'CX001','MQ001' 
+ALTER
+
+PROCEDURE [dbo].[SP_PLUG_METAS] @PRODUTO VARCHAR(30), @MAQUINA VARCHAR(30)
+AS
+BEGIN
+DECLARE @metaSetup FLOAT
+DECLARE @metaSetupa FLOAT
+DECLARE @metaPerformance FLOAT
+
+/*	numop // numero da op
+  metaSetup // tepo estatistico de setup  iniciamente tempo medio dos 25% melhores vaores 
+  iniSetup   //  date time      ou o melhor dos mundos é me mandar em milisegundos a quantidade de milisegundos entre a data de inicio do setup a agora
+  metaSetupa  // tepo estatistico de setup de ajuste   iniciamente tempo medio dos 25% melhores vaores    
+  metaPerformance // tepo estatistico de Performance de produto x maquina iniciamente tempo medio dos 25% melhores vaores
+  */
+
+  
+
+INSERT INTO [T_TARGET_PRODUTO] 
+(PRO_ID,MAQ_ID,TAR_DATA_DE,TAR_DATA_ATE,TAR_PERFORMANCE,UNI_ID,TAR_TEMPO_SETUP,TAR_TEMPO_SETUP_AJUSTE)
+SELECT P.PRO_ID, M.MAQ_ID,GETDATE(),GETDATE(),0,'KG',0,0  FROM [T_PRODUTO] P
+LEFT JOIN [dbo].[T_MAQUINA] M ON 1=1--M ON M.MAQ_ID = T.MAQ_ID 
+LEFT JOIN [dbo].[T_TARGET_PRODUTO] T  ON P.PRO_ID = T.PRO_ID AND M.MAQ_ID = T.MAQ_ID 
+WHERE TAR_PERFORMANCE IS NULL
+
+
+	
+	 
+	SELECT @metaSetup  = ISNULL(AVG(DATEDIFF(SECOND, FEE_DATA_INICIAL,FEE_DATA_FINAL)),-1) FROM T_FEEDBACK F 	
+	INNER JOIN T_ORDEM_PRODUCAO OP ON OP.ORD_ID = F.ORD_ID 
+	WHERE PRO_ID =  @PRODUTO AND MAQ_ID = @MAQUINA AND OCO_ID = '1.1'
+	
+	SELECT @metaSetupa  = ISNULL(AVG(FEE_QUANTIDADE / DATEDIFF(SECOND, FEE_DATA_INICIAL,FEE_DATA_FINAL)),-1) FROM T_FEEDBACK F 	
+	INNER JOIN T_ORDEM_PRODUCAO OP ON OP.ORD_ID = F.ORD_ID 
+	WHERE PRO_ID =  @PRODUTO AND MAQ_ID = @MAQUINA AND OCO_ID = '1.2'  AND DATEDIFF(SECOND, FEE_DATA_INICIAL,FEE_DATA_FINAL) <> 0
+	
+	SELECT @metaPerformance  = ISNULL(AVG(FEE_QUANTIDADE / DATEDIFF(SECOND, FEE_DATA_INICIAL,FEE_DATA_FINAL)),-1) FROM T_FEEDBACK F 	
+	INNER JOIN T_ORDEM_PRODUCAO OP ON OP.ORD_ID = F.ORD_ID 
+	WHERE PRO_ID =  @PRODUTO AND MAQ_ID = @MAQUINA AND  DATEDIFF(SECOND, FEE_DATA_INICIAL,FEE_DATA_FINAL) <> 0
+	
+	UPDATE [T_TARGET_PRODUTO] SET TAR_TEMPO_SETUP = @metaSetup, TAR_TEMPO_SETUP_AJUSTE = @metaSetupa, TAR_PERFORMANCE = @metaPerformance
+	WHERE PRO_ID =  @PRODUTO AND MAQ_ID = @MAQUINA
+
+	
+	select * from [T_TARGET_PRODUTO] 
+	WHERE PRO_ID =  @PRODUTO AND MAQ_ID = @MAQUINA
+	  
+
+END

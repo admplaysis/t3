@@ -1,0 +1,38 @@
+﻿@model SGI.Models.T_Usuario
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_Login.cshtml";
+}
+
+@using (Html.BeginForm("Login", "Acesso", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    @Html.Hidden("ReturnUrl", Html.Value("ReturnUrl"))
+    <p>
+        <label for="user_login">
+            Usuário<br />
+            @Html.TextBoxFor(x => x.EMAIL, new { @class = "input", @placeholder = "Digite o usuário" })
+            @Html.ValidationMessageFor(x => x.EMAIL)
+        </label>
+    </p>
+    <p>
+        <label for="user_pass">
+            Senha<br />
+            @Html.PasswordFor(x => x.SENHA, new { @class = "input", @placeholder = "****" })
+            @Html.ValidationMessageFor(x => x.SENHA)
+        </label>
+    </p>
+
+    if (ViewBag.alerta != null && ViewBag.alerta != "")
+    {
+        <span class="help-block colo"><i class="fa fa-warning"></i> @ViewBag.alerta</span>
+    }
+
+    <p class="submit">
+        <input type="submit" name="wp-submit" id="wp-submit" class="btn btn-accent btn-block" value="Acessar" />
+    </p>
+    @*<p id="nav">
+        <a class="pull-left" href="#" title="Password Lost and Found">Esqueci minha senha?</a>
+    </p>*@
+}

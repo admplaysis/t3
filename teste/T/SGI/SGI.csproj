@@ -1,0 +1,1050 @@
+﻿<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="..\packages\Microsoft.Net.Compilers.2.8.2\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.2.8.2\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1B57B4AF-4B87-4A41-85CC-8C336A8736D4}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SGI</RootNamespace>
+    <AssemblyName>SGI</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TypeScriptToolsVersion>2.5</TypeScriptToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime">
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FormsAuthenticationExtensions">
+      <HintPath>..\packages\FormsAuthenticationExtensions.1.3.0.15\lib\net40\FormsAuthenticationExtensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.8.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Web.Infrastructure">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PagedList">
+      <HintPath>..\packages\PagedList.1.17.0.0\lib\net40\PagedList.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PagedList.Mvc">
+      <HintPath>..\packages\PagedList.Mvc.4.5.0.0\lib\net40\PagedList.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.DirectoryServices.AccountManagement" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.6\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.6\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.6\lib\net45\System.Web.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.6\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.6\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Razor">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.6\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.6\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.6\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.6\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="WebGrease">
+      <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Z.EntityFramework.Plus.EF6, Version=1.8.6.0, Culture=neutral, PublicKeyToken=59b66d028979105b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Z.EntityFramework.Plus.EF6.1.8.6\lib\net45\Z.EntityFramework.Plus.EF6.dll</HintPath>
+    </Reference>
+    <Reference Include="Z.EntityFramework.Plus.QueryIncludeFilter.EF6, Version=1.7.11.0, Culture=neutral, PublicKeyToken=59b66d028979105b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Z.EntityFramework.Plus.QueryIncludeFilter.EF6.1.7.11\lib\net45\Z.EntityFramework.Plus.QueryIncludeFilter.EF6.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\PlugAndPlay\Scripts\CanvasGauge\modalform.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\FilaProducao\Index\js\cadastro.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\FilaProducao\Index\js\data-table-conf.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\FilaProducao\Index\js\jqueryUi.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\FilaProducao\Index\js\tabela-fila-producao.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\FilaProducao\Index\js\global.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\FilaProducao\Index\js\modal-alterar-fila.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\FilaProducao\Index\js\validacao-formulario.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\FilaProducao\Index\js\VisualizacaoDaFilaDeProducao.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Maquinas\ConfigEventos.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Maquinas\CtxGraficos.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Medicoes\FeedbackQuantidade\css\padrao.css" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Medicoes\FeedbackQuantidade\js\global.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Medicoes\FeedbackQuantidade\js\modal-encerramento-op.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Medicoes\FeedbackPeformace\js\global.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Medicoes\FeedbackPeformace\js\salvar-feedback.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Medicoes\FeedbackPeformace\js\validar-campos.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Medicoes\Index\css\global.css" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Medicoes\Index\js\global.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Medicoes\Index\js\fila-producao.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Medicoes\Index\js\monitoramento.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Medicoes\Index\js\tabela-fechamento-producao.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Medicoes\Index\js\tabela-feedback.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Medicoes\FeedbackQuantidade\js\index-apontamento-producao.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Medicoes\Index\js\index.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Medicoes\Index\js\modal-dividir-periodo.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Medicoes\Index\js\modal-setInicio-setup.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Medicoes\Index\css\modal-dividir-periodo.css" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Orders\Create\js\global.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Orders\Index\js\global.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\RelatoriosFeedbacks\FeedbacksDesempenho.js" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Shared\css\GlobalCss.css" />
+    <Content Include="Areas\PlugAndPlay\Scripts\Shared\js\data-table-crud-config.js" />
+    <Content Include="Content\AdminV2.2\style.css" />
+    <Content Include="Content\all.css" />
+    <Content Include="Content\animacao-carregando-tela-inteira.css" />
+    <Content Include="Content\animate.css" />
+    <Content Include="Content\bootstrap-tagsinput.css" />
+    <Content Include="Content\bootstrap-theme.css" />
+    <Content Include="Content\bootstrap-theme.min.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\check-box-multila-selecao.css" />
+    <Content Include="Content\css\alerts.css" />
+    <Content Include="Content\css\progress-bar.css" />
+    <Content Include="Content\dataTablesbootstrap.css" />
+    <Content Include="Content\dataTablesresponsive.css" />
+    <Content Include="Content\dataTablestableTools.css" />
+    <Content Include="Content\flat\aero%402x.png" />
+    <Content Include="Content\flat\aero.css" />
+    <Content Include="Content\flat\aero.png" />
+    <Content Include="Content\flat\blue%402x.png" />
+    <Content Include="Content\flat\blue.css" />
+    <Content Include="Content\flat\blue.png" />
+    <Content Include="Content\flat\flat%402x.png" />
+    <Content Include="Content\flat\flat.css" />
+    <Content Include="Content\flat\flat.png" />
+    <Content Include="Content\flat\green%402x.png" />
+    <Content Include="Content\flat\green.css" />
+    <Content Include="Content\flat\green.png" />
+    <Content Include="Content\flat\grey%402x.png" />
+    <Content Include="Content\flat\grey.css" />
+    <Content Include="Content\flat\grey.png" />
+    <Content Include="Content\flat\orange%402x.png" />
+    <Content Include="Content\flat\orange.css" />
+    <Content Include="Content\flat\orange.png" />
+    <Content Include="Content\flat\pink%402x.png" />
+    <Content Include="Content\flat\pink.css" />
+    <Content Include="Content\flat\pink.png" />
+    <Content Include="Content\flat\purple%402x.png" />
+    <Content Include="Content\flat\purple.css" />
+    <Content Include="Content\flat\purple.png" />
+    <Content Include="Content\flat\red%402x.png" />
+    <Content Include="Content\flat\red.css" />
+    <Content Include="Content\flat\red.png" />
+    <Content Include="Content\flat\yellow%402x.png" />
+    <Content Include="Content\flat\yellow.css" />
+    <Content Include="Content\flat\yellow.png" />
+    <Content Include="Content\flat\_all.css" />
+    <Content Include="Content\font-awesome-4.7.0\css\font-awesome.css" />
+    <Content Include="Content\font-awesome-4.7.0\css\font-awesome.min.css" />
+    <Content Include="Content\font-awesome-4.7.0\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\font-awesome.css" />
+    <Content Include="Content\futurico\futurico %281%29.png" />
+    <Content Include="Content\futurico\futurico%402x.png" />
+    <Content Include="Content\futurico\futurico.css" />
+    <Content Include="Content\futurico\futurico.png" />
+    <Content Include="Content\css\responsive-info.css" />
+    <Content Include="Content\jquery-jvectormap-2.0.1.css" />
+    <Content Include="Content\jquerydataTables.css" />
+    <Content Include="Content\line\aero.css" />
+    <Content Include="Content\line\blue.css" />
+    <Content Include="Content\line\green.css" />
+    <Content Include="Content\line\grey.css" />
+    <Content Include="Content\line\line%402x.png" />
+    <Content Include="Content\line\line.css" />
+    <Content Include="Content\line\line.png" />
+    <Content Include="Content\line\orange.css" />
+    <Content Include="Content\line\pink.css" />
+    <Content Include="Content\line\purple.css" />
+    <Content Include="Content\line\red.css" />
+    <Content Include="Content\line\yellow.css" />
+    <Content Include="Content\line\_all.css" />
+    <Content Include="Content\minimal\aero%402x.png" />
+    <Content Include="Content\minimal\aero.css" />
+    <Content Include="Content\minimal\aero.png" />
+    <Content Include="Content\minimal\blue%402x.png" />
+    <Content Include="Content\minimal\blue.css" />
+    <Content Include="Content\minimal\blue.png" />
+    <Content Include="Content\minimal\green%402x.png" />
+    <Content Include="Content\minimal\green.css" />
+    <Content Include="Content\minimal\green.png" />
+    <Content Include="Content\minimal\grey%402x.png" />
+    <Content Include="Content\minimal\grey.css" />
+    <Content Include="Content\minimal\grey.png" />
+    <Content Include="Content\minimal\minimal%402x.png" />
+    <Content Include="Content\minimal\minimal.css" />
+    <Content Include="Content\minimal\minimal.png" />
+    <Content Include="Content\minimal\orange%402x.png" />
+    <Content Include="Content\minimal\orange.css" />
+    <Content Include="Content\minimal\orange.png" />
+    <Content Include="Content\minimal\pink%402x.png" />
+    <Content Include="Content\minimal\pink.css" />
+    <Content Include="Content\minimal\pink.png" />
+    <Content Include="Content\minimal\purple%402x.png" />
+    <Content Include="Content\minimal\purple.css" />
+    <Content Include="Content\minimal\purple.png" />
+    <Content Include="Content\minimal\red%402x.png" />
+    <Content Include="Content\minimal\red.css" />
+    <Content Include="Content\minimal\red.png" />
+    <Content Include="Content\minimal\white%402x.png" />
+    <Content Include="Content\minimal\white.css" />
+    <Content Include="Content\minimal\white.png" />
+    <Content Include="Content\minimal\yellow%402x.png" />
+    <Content Include="Content\minimal\yellow.css" />
+    <Content Include="Content\minimal\yellow.png" />
+    <Content Include="Content\minimal\_all.css" />
+    <Content Include="Content\perfect-scrollbar.css" />
+    <Content Include="Content\polaris\polaris%402x.png" />
+    <Content Include="Content\polaris\polaris.css" />
+    <Content Include="Content\polaris\polaris.png" />
+    <Content Include="Content\select2-spinner.gif" />
+    <Content Include="Content\select2.css" />
+    <Content Include="Content\select2.png" />
+    <Content Include="Content\select2x2.png" />
+    <Content Include="Content\site.css" />
+    <Content Include="Content\square\aero%402x.png" />
+    <Content Include="Content\square\aero.css" />
+    <Content Include="Content\square\aero.png" />
+    <Content Include="Content\square\blue%402x.png" />
+    <Content Include="Content\square\blue.css" />
+    <Content Include="Content\square\blue.png" />
+    <Content Include="Content\square\green%402x.png" />
+    <Content Include="Content\square\green.css" />
+    <Content Include="Content\square\green.png" />
+    <Content Include="Content\square\grey%402x.png" />
+    <Content Include="Content\square\grey.css" />
+    <Content Include="Content\square\grey.png" />
+    <Content Include="Content\square\orange%402x.png" />
+    <Content Include="Content\square\orange.css" />
+    <Content Include="Content\square\orange.png" />
+    <Content Include="Content\square\pink%402x.png" />
+    <Content Include="Content\square\pink.css" />
+    <Content Include="Content\square\pink.png" />
+    <Content Include="Content\square\purple%402x.png" />
+    <Content Include="Content\square\purple.css" />
+    <Content Include="Content\square\purple.png" />
+    <Content Include="Content\square\red%402x.png" />
+    <Content Include="Content\square\red.css" />
+    <Content Include="Content\square\red.png" />
+    <Content Include="Content\square\square%402x.png" />
+    <Content Include="Content\square\square.css" />
+    <Content Include="Content\square\square.png" />
+    <Content Include="Content\square\white%402x.png" />
+    <Content Include="Content\square\white.css" />
+    <Content Include="Content\square\white.png" />
+    <Content Include="Content\square\yellow%402x.png" />
+    <Content Include="Content\square\yellow.css" />
+    <Content Include="Content\square\yellow.png" />
+    <Content Include="Content\square\_all.css" />
+    <Content Include="Content\style_BK.css" />
+    <Content Include="Content\css\forms.css" />
+    <Content Include="Content\style.css" />
+    <Content Include="fonts\fontawesome-webfont.svg" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Global.asax" />
+    <Content Include="Imagens\apple-touch-icon-114-precomposed.png" />
+    <Content Include="Imagens\apple-touch-icon-144-precomposed.png" />
+    <Content Include="Imagens\apple-touch-icon-57-precomposed.png" />
+    <Content Include="Imagens\apple-touch-icon-72-precomposed.png" />
+    <Content Include="Imagens\avatar-1.png" />
+    <Content Include="Imagens\avatar-2.png" />
+    <Content Include="Imagens\avatar-3.png" />
+    <Content Include="Imagens\avatar-4.png" />
+    <Content Include="Imagens\avatar-5.png" />
+    <Content Include="Imagens\banner1.svg" />
+    <Content Include="Imagens\banner2.svg" />
+    <Content Include="Imagens\banner3.svg" />
+    <Content Include="Imagens\banner4.svg" />
+    <Content Include="Imagens\favicon.png" />
+    <Content Include="Imagens\index.html" />
+    <Content Include="Imagens\loading.gif" />
+    <Content Include="Imagens\login-bg.png" />
+    <Content Include="Imagens\login-logo.png" />
+    <Content Include="Imagens\logo-folded.png" />
+    <Content Include="Imagens\logo.png" />
+    <Content Include="Imagens\profile.jpg" />
+    <Content Include="Imagens\setabaixo.png" />
+    <Content Include="Imagens\setasima.png" />
+    <Content Include="Plugins\bootrap-datepicker\css\bootstrap-datepicker.css" />
+    <Content Include="Plugins\bootrap-datepicker\js\bootstrap-datepicker.min.js" />
+    <Content Include="Plugins\bootrap-datepicker\locales\bootstrap-datepicker.pt-BR.min.js" />
+    <Content Include="Plugins\bootstrap-datetimepicker-master\css\bootstrap-datetimepicker-standalone.css" />
+    <Content Include="Plugins\bootstrap-datetimepicker-master\css\bootstrap-datetimepicker.css" />
+    <Content Include="Plugins\bootstrap-datetimepicker-master\css\bootstrap-datetimepicker.min.css" />
+    <Content Include="Plugins\bootstrap-datetimepicker-master\js\bootstrap-datetimepicker.min.js" />
+    <Content Include="Plugins\bootstrap-modal-create\css\bootstrap-modal-create.css" />
+    <Content Include="Plugins\control-icone-carregando\css\control-carregando.css" />
+    <Content Include="Plugins\custom-tabs\custom-tabs.css" />
+    <Content Include="Plugins\custom-tabs\custom-tabs.js" />
+    <Content Include="Plugins\DataTables\Basic\datatables.min.css" />
+    <Content Include="Plugins\DataTables\Basic\datatables.min.js" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\css\dataTables.bootstrap.css" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\css\dataTables.bootstrap.min.css" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\css\dataTables.bootstrap4.css" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\css\dataTables.bootstrap4.min.css" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\css\dataTables.foundation.css" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\css\dataTables.foundation.min.css" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\css\dataTables.jqueryui.css" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\css\dataTables.jqueryui.min.css" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\css\dataTables.semanticui.css" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\css\dataTables.semanticui.min.css" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\css\jquery.dataTables.css" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\css\jquery.dataTables.min.css" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\images\sort_asc.png" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\images\sort_asc_disabled.png" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\images\sort_both.png" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\images\sort_desc.png" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\images\sort_desc_disabled.png" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\js\dataTables.bootstrap.js" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\js\dataTables.bootstrap.min.js" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\js\dataTables.bootstrap4.js" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\js\dataTables.bootstrap4.min.js" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\js\dataTables.foundation.js" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\js\dataTables.foundation.min.js" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\js\dataTables.jqueryui.js" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\js\dataTables.jqueryui.min.js" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\js\dataTables.semanticui.js" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\js\dataTables.semanticui.min.js" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\js\jquery.dataTables.js" />
+    <Content Include="Plugins\DataTables\DataTables-1.10.16\js\jquery.dataTables.min.js" />
+    <Content Include="Plugins\DataTables\datatables.css" />
+    <Content Include="Plugins\DataTables\datatables.js" />
+    <Content Include="Plugins\DataTables\datatables.min.css" />
+    <Content Include="Plugins\DataTables\datatables.min.js" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\css\responsive.bootstrap.css" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\css\responsive.bootstrap.min.css" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\css\responsive.bootstrap4.css" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\css\responsive.bootstrap4.min.css" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\css\responsive.dataTables.css" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\css\responsive.dataTables.min.css" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\css\responsive.foundation.css" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\css\responsive.foundation.min.css" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\css\responsive.jqueryui.css" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\css\responsive.jqueryui.min.css" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\css\responsive.semanticui.css" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\css\responsive.semanticui.min.css" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\js\dataTables.responsive.js" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\js\dataTables.responsive.min.js" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\js\responsive.bootstrap.js" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\js\responsive.bootstrap.min.js" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\js\responsive.bootstrap4.js" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\js\responsive.bootstrap4.min.js" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\js\responsive.foundation.js" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\js\responsive.foundation.min.js" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\js\responsive.jqueryui.js" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\js\responsive.jqueryui.min.js" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\js\responsive.semanticui.js" />
+    <Content Include="Plugins\DataTables\Responsive-2.2.1\js\responsive.semanticui.min.js" />
+    <Content Include="Plugins\datepicker\css\datepicker.css" />
+    <Content Include="Plugins\datepicker\js\datepicker.js" />
+    <Content Include="Plugins\div-alert-msg\css\alert-page.css" />
+    <Content Include="Plugins\div-alert-msg\css\div-alert-msg.css" />
+    <Content Include="Plugins\div-alert-msg\js\alert-page.js" />
+    <Content Include="Plugins\div-alert-msg\js\div-alert-msg.js" />
+    <Content Include="Plugins\e-charts\Brazil.js" />
+    <Content Include="Plugins\e-charts\echarts.common.min.js" />
+    <Content Include="Plugins\e-charts\echarts.min.js" />
+    <Content Include="Plugins\global-functions\barra-cores-desempenho-maquinas.js" />
+    <Content Include="Plugins\global-functions\global-functions.js" />
+    <Content Include="Plugins\global-functions\gauge-performace-producao.js" />
+    <Content Include="Plugins\jquery-componente\jq-template-grid-list.js" />
+    <Content Include="Plugins\jquery-componente\jquey-componentes.js" />
+    <Content Include="Plugins\highcharts\conf-global.js" />
+    <Content Include="Plugins\janela-modal-bootstrap\janela-modal-bootstrap.js" />
+    <Content Include="Plugins\jquery-resize-master\jquery.resize.js" />
+    <Content Include="Plugins\jquery-validation-1.17.0\additional-methods.min.js" />
+    <Content Include="Plugins\jquery-validation-1.17.0\default-tooltip-message.js" />
+    <Content Include="Plugins\jquery-validation-1.17.0\jquery.validate.min.js" />
+    <Content Include="Plugins\jquery-validation-1.17.0\messages_pt_BR.js" />
+    <Content Include="Plugins\moment-js\js\moment.js" />
+    <Content Include="Plugins\moment-js\js\pt-br.js" />
+    <Content Include="Plugins\responsive-tables\css\rwd-table.min.css" />
+    <Content Include="Plugins\responsive-tables\js\rwd-table.min.js" />
+    <Content Include="ScriptsDB\ScriptBdEstruturaDados.sql" />
+    <Content Include="ScriptsDB\ScriptTesteContadorCLP.sql" />
+    <Content Include="Plugins\bootstrap-modal-create\js\bootstrap-modal-create.js" />
+    <Content Include="Scripts\animacao-carregando-tela-inteira.js" />
+    <Content Include="Content\font-awesome-4.7.0\fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\font-awesome-4.7.0\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\font-awesome-4.7.0\fonts\fontawesome-webfont.woff" />
+    <Content Include="Content\font-awesome-4.7.0\fonts\fontawesome-webfont.woff2" />
+    <Content Include="Content\font-awesome-4.7.0\fonts\FontAwesome.otf" />
+    <Content Include="Content\font-awesome-4.7.0\less\animated.less" />
+    <Content Include="Content\font-awesome-4.7.0\less\bordered-pulled.less" />
+    <Content Include="Content\font-awesome-4.7.0\less\core.less" />
+    <Content Include="Content\font-awesome-4.7.0\less\fixed-width.less" />
+    <Content Include="Content\font-awesome-4.7.0\less\font-awesome.less" />
+    <Content Include="Content\font-awesome-4.7.0\less\icons.less" />
+    <Content Include="Content\font-awesome-4.7.0\less\larger.less" />
+    <Content Include="Content\font-awesome-4.7.0\less\list.less" />
+    <Content Include="Content\font-awesome-4.7.0\less\mixins.less" />
+    <Content Include="Content\font-awesome-4.7.0\less\path.less" />
+    <Content Include="Content\font-awesome-4.7.0\less\rotated-flipped.less" />
+    <Content Include="Content\font-awesome-4.7.0\less\screen-reader.less" />
+    <Content Include="Content\font-awesome-4.7.0\less\stacked.less" />
+    <Content Include="Content\font-awesome-4.7.0\less\variables.less" />
+    <Content Include="Content\font-awesome-4.7.0\scss\font-awesome.scss" />
+    <Content Include="Content\font-awesome-4.7.0\scss\_animated.scss" />
+    <Content Include="Content\font-awesome-4.7.0\scss\_bordered-pulled.scss" />
+    <Content Include="Content\font-awesome-4.7.0\scss\_core.scss" />
+    <Content Include="Content\font-awesome-4.7.0\scss\_fixed-width.scss" />
+    <Content Include="Content\font-awesome-4.7.0\scss\_icons.scss" />
+    <Content Include="Content\font-awesome-4.7.0\scss\_larger.scss" />
+    <Content Include="Content\font-awesome-4.7.0\scss\_list.scss" />
+    <Content Include="Content\font-awesome-4.7.0\scss\_mixins.scss" />
+    <Content Include="Content\font-awesome-4.7.0\scss\_path.scss" />
+    <Content Include="Content\font-awesome-4.7.0\scss\_rotated-flipped.scss" />
+    <Content Include="Content\font-awesome-4.7.0\scss\_screen-reader.scss" />
+    <Content Include="Content\font-awesome-4.7.0\scss\_stacked.scss" />
+    <Content Include="Content\font-awesome-4.7.0\scss\_variables.scss" />
+    <Content Include="Areas\PlugAndPlay\Views\Turmas\Create.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Turmas\Delete.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Turmas\Details.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Turmas\Edit.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Turmas\Index.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Maquinas\Create.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Maquinas\Delete.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Maquinas\Details.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Maquinas\Edit.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Maquinas\Index.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Produto\Create.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Produto\Delete.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Produto\Details.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Produto\Edit.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Produto\Index.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Maquinas\RelatorioPerformace.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Medicoes\FechamentoOp.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Medicoes\FeedbackPerformace.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\FilaProducao\_Create.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\FilaProducao\Delete.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\FilaProducao\Details.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\FilaProducao\Edit.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\FilaProducao\Index.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Orders\Create.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Orders\Delete.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Orders\Details.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Orders\Edit.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Orders\Index.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Roteiros\Create.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Roteiros\Delete.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Roteiros\Details.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Roteiros\Edit.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Roteiros\Index.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Clientes\Create.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Clientes\Delete.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Clientes\Details.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Clientes\Edit.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Clientes\Index.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\GrupoMaquinas\Create.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\GrupoMaquinas\Delete.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\GrupoMaquinas\Details.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\GrupoMaquinas\Edit.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\GrupoMaquinas\Index.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Turnos\Create.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Turnos\Delete.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Turnos\Details.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Turnos\Edit.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Turnos\Index.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Ocorrencias\Create.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Ocorrencias\Delete.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Ocorrencias\Details.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Ocorrencias\Edit.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Ocorrencias\Index.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\TiposOcorrencia\Create.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\TiposOcorrencia\Delete.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\TiposOcorrencia\Details.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\TiposOcorrencia\Edit.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\TiposOcorrencia\Index.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Medicoes\FeedbackQuantidade.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Medicoes\_ProducaoDescTopPage.cshtml" />
+    <Content Include="App_Code\MyHelpers.cshtml" />
+    <Content Include="App_Code\HelpersEspecificos.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\RelatoriosFeedbacks\FeedbacksDesempenho.cshtml" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Content\bootstrap-theme.css.map" />
+    <None Include="packages.config" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <Content Include="Plugins\control-icone-carregando\js\control-carregando.js" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\moment-2.20.1\moment.js" />
+    <Content Include="Scripts\moment-2.20.1\pt-br.js" />
+    <Content Include="Scripts\npm.js" />
+    <Content Include="Scripts\TelasCadastro\tabela-btn-col-acoes.js" />
+    <Content Include="Script\autoNumeric-min.js" />
+    <Content Include="Script\autosize.js" />
+    <Content Include="Script\blo-dashboard.js" />
+    <Content Include="Script\bootstrap-tagsinput.js" />
+    <Content Include="Script\bootstrap.js" />
+    <Content Include="Script\chart-chartjs.js" />
+    <Content Include="Script\chart-easypie.js" />
+    <Content Include="Script\chart-echarts.js" />
+    <Content Include="Script\chart-flot.js" />
+    <Content Include="Script\chart-knobs.js" />
+    <Content Include="Script\chart-morris.js" />
+    <Content Include="Script\chart-rickshaw.js" />
+    <Content Include="Script\chart-sparkline.js" />
+    <Content Include="Script\crm-dashboard.js" />
+    <Content Include="Script\dashboard.js" />
+    <Content Include="Script\dataTablesbootstrap.js" />
+    <Content Include="Script\dataTablesresponsive.js" />
+    <Content Include="Script\dataTablestableTools.js" />
+    <Content Include="Script\echarts-all.js" />
+    <Content Include="Script\echarts-custom-for-dashboard.js" />
+    <Content Include="Script\eco-dashboard.js" />
+    <Content Include="Script\form-validation.js" />
+    <Content Include="Script\frl-dashboard.js" />
+    <Content Include="Script\hos-dashboard.js" />
+    <Content Include="Script\icheck.js" />
+    <Content Include="Script\jquery-1.11.2.min.js" />
+    <Content Include="Areas\PlugAndPlay\Views\web.config" />
+    <Content Include="Areas\PlugAndPlay\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\PlugAndPlay\Views\Medicoes\Index.cshtml" />
+    <None Include="Script\jquery-1.8.0-vsdoc.js" />
+    <Content Include="Script\jquery-1.8.0.js" />
+    <Content Include="Script\jquery-1.8.0.min.js" />
+    <Content Include="Script\jquery-jvectormap-2.0.1.min.js" />
+    <Content Include="Script\jquery-jvectormap-world-mill-en.js" />
+    <Content Include="Script\jquery.easing.min.js" />
+    <Content Include="Script\jquery.inputmask.bundle.min.js" />
+    <Content Include="Script\jquery.unobtrusive-ajax.js" />
+    <Content Include="Script\jquery.unobtrusive-ajax.min.js" />
+    <Content Include="Script\jquery.validate.unobtrusive.js" />
+    <Content Include="Script\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Script\jquerydataTables.js" />
+    <Content Include="Script\jqueryflotfillbetween.js" />
+    <Content Include="Script\jqueryflotnavigate.js" />
+    <Content Include="Script\jqueryflotpie.js" />
+    <Content Include="Script\jqueryflotstack.js" />
+    <Content Include="Script\messenger.js" />
+    <Content Include="Script\modalform.js" />
+    <Content Include="Script\perfect-scrollbar.js" />
+    <Content Include="Script\scripts.js" />
+    <Content Include="Script\select2.js" />
+    <Content Include="Script\site.min.js" />
+    <Content Include="Script\soc-dashboard.js" />
+    <Content Include="Script\uni-dashboard.js" />
+    <Content Include="Script\viewportchecker.js" />
+    <Content Include="Util\pcaprovado.html" />
+    <Content Include="ViewsFiles\Home\Index\js\graficos.js" />
+    <Content Include="ViewsFiles\Home\Index\js\global.js" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Areas\PlugAndPlay\AppServices\InterfaceAsp.cs" />
+    <Compile Include="Areas\PlugAndPlay\Controllers\Asp32Sevices.cs" />
+    <Compile Include="Areas\PlugAndPlay\Controllers\AspController.cs" />
+    <Compile Include="Areas\PlugAndPlay\Controllers\ClientesController.cs" />
+    <Compile Include="Areas\PlugAndPlay\Controllers\FilaProducaoController.cs" />
+    <Compile Include="Areas\PlugAndPlay\Controllers\GrupoMaquinasController.cs" />
+    <Compile Include="Areas\PlugAndPlay\Controllers\MaquinasController.cs" />
+    <Compile Include="Areas\PlugAndPlay\Controllers\MedicoesController.cs" />
+    <Compile Include="Areas\PlugAndPlay\Controllers\OcorrenciasController.cs" />
+    <Compile Include="Areas\PlugAndPlay\Controllers\OrdersController.cs" />
+    <Compile Include="Areas\PlugAndPlay\Controllers\ProdutoController.cs" />
+    <Compile Include="Areas\PlugAndPlay\Controllers\RelatoriosFeedbacksController.cs" />
+    <Compile Include="Areas\PlugAndPlay\Controllers\RoteirosController.cs" />
+    <Compile Include="Areas\PlugAndPlay\Controllers\TiposOcorrenciaController.cs" />
+    <Compile Include="Areas\PlugAndPlay\Controllers\TurmasController.cs" />
+    <Compile Include="Areas\PlugAndPlay\Controllers\TurnosController.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\CalendarioMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\MensagemMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\ClienteMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\ItensCalendarioMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\ParamMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\ViewClpMedicoesMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\ClpMedicoesMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\ColaboradorMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\CorConfiguracaoGraficoMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\EstruturaProdutoMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\FilaProducaoMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\GrupoMaquinaMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\MaquinaMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\FeedbackMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\MovimentoEstoqueMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\OcorrenciaMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\OrderMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\ProdutoMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\RoteiroMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\TargetProdutoMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\TipoMovimentoEstoqueMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\TipoOcorrenciaMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\TurmaMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\TurnoMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\UnidadeMedidaMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\ViewFeedbackMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Map\ViewFilaProducaoMap.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\Calendario.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\Mensagem.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\Cliente.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\GrupoMaquina.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\ItensCalendario.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\Param.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\TipoContador.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\TipoIdentificador.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\ViewClpMedicoes.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\ClpMedicoes.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\Colaborador.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\CorConfiguracaoGrafico.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\EstruturaProduto.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\FilaProducao.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\Maquina.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\Feedback.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\MovimentoEstoque.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\Ocorrencia.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\Order.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\PainelGestor.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\Produto.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\Roteiro.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\TargetProduto.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\TipoMovimentoEstoque.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\TipoOcorrencia.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\Turma.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\Turno.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\UnidadeMedida.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\ViewFeedback.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\ViewFilaProducao.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\VwPainelGestor.cs" />
+    <Compile Include="Areas\PlugAndPlay\Models\V_MOTIVO_FEEDBACKS_DESEMPENHO.cs" />
+    <Compile Include="Areas\PlugAndPlay\PlugAndPlayAreaRegistration.cs" />
+    <Compile Include="Autenticacao\CustomPrincipal.cs" />
+    <Compile Include="Autenticacao\CustomPrincipalSerializeModel.cs" />
+    <Compile Include="Autenticacao\ICustomPrincipal.cs" />
+    <Compile Include="BancoDados\DataBase.cs" />
+    <Compile Include="BancoDados\ObjetoDataBase.cs" />
+    <Compile Include="BancoDados\Tipo.cs" />
+    <Compile Include="BasedViewsPage\BaseViewPage.cs" />
+    <Compile Include="Context\funcoes.cs" />
+    <Compile Include="Context\JProtheus.cs" />
+    <Compile Include="Context\JSgi.cs" />
+    <Compile Include="BaseControllers\BaseController.cs" />
+    <Compile Include="Controllers\AcessoController.cs" />
+    <Compile Include="Controllers\ConsultasController.cs" />
+    <Compile Include="Controllers\DepartamentoController.cs" />
+    <Compile Include="Controllers\DreController.cs" />
+    <Compile Include="Controllers\DynamicLayoutComponentsController.cs" />
+    <Compile Include="Controllers\ErrosController.cs" />
+    <Compile Include="Controllers\GrupoController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\IndicadorController.cs" />
+    <Compile Include="Controllers\MedicoesController.cs" />
+    <Compile Include="Controllers\MetasController.cs" />
+    <Compile Include="Controllers\NegocioController.cs" />
+    <Compile Include="Controllers\PainelGestorController.cs" />
+    <Compile Include="Controllers\PlanoAcaoController.cs" />
+    <Compile Include="Controllers\PlanoContasController.cs" />
+    <Compile Include="Controllers\UndDreController.cs" />
+    <Compile Include="Controllers\UnidadeController.cs" />
+    <Compile Include="Controllers\UsuarioController.cs" />
+    <Compile Include="Controllers\VisaoController.cs" />
+    <Compile Include="Controllers\WorkFlowController.cs" />
+    <Compile Include="EntityExtensions\DatabaseExtension.cs" />
+    <Compile Include="Enums\Acompanhamento.cs" />
+    <Compile Include="Enums\Acumulado.cs" />
+    <Compile Include="Enums\Ativo.cs" />
+    <Compile Include="Enums\OrderTipo.cs" />
+    <Compile Include="Enums\TipoAlvo.cs" />
+    <Compile Include="Enums\TipoConta.cs" />
+    <Compile Include="Enums\TipoGrafico.cs" />
+    <Compile Include="Enums\YesNo.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201805241349591_InitialCreate.cs" />
+    <Compile Include="Migrations\201805241349591_InitialCreate.Designer.cs">
+      <DependentUpon>201805241349591_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201805241351193_InitialCreate1.cs" />
+    <Compile Include="Migrations\201805241351193_InitialCreate1.Designer.cs">
+      <DependentUpon>201805241351193_InitialCreate1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201805241353450_InitialCreate2.cs" />
+    <Compile Include="Migrations\201805241353450_InitialCreate2.Designer.cs">
+      <DependentUpon>201805241353450_InitialCreate2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201805241355351_InitialCreate3.cs" />
+    <Compile Include="Migrations\201805241355351_InitialCreate3.Designer.cs">
+      <DependentUpon>201805241355351_InitialCreate3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201805242011279_InitialCreate4.cs" />
+    <Compile Include="Migrations\201805242011279_InitialCreate4.Designer.cs">
+      <DependentUpon>201805242011279_InitialCreate4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\Anos.cs" />
+    <Compile Include="Models\Compradores.cs" />
+    <Compile Include="Models\Custom\AprovacoesCustom.cs" />
+    <Compile Include="Models\Custom\AprovadorCustom.cs" />
+    <Compile Include="Models\Custom\CompradorCustom.cs" />
+    <Compile Include="Models\Custom\CotacaoCustom.cs" />
+    <Compile Include="Models\Custom\ItensNfCustom.cs" />
+    <Compile Include="Models\Custom\ItensPedCompraCustom.cs" />
+    <Compile Include="Models\Custom\NfeCustom.cs" />
+    <Compile Include="Models\Custom\PedidoCustom.cs" />
+    <Compile Include="Models\Custom\SolicitanteCustom.cs" />
+    <Compile Include="Models\Dre.cs" />
+    <Compile Include="Models\DreView.cs" />
+    <Compile Include="Models\Graficos.cs" />
+    <Compile Include="Models\Historico.cs" />
+    <Compile Include="Models\Dimensao.cs" />
+    <Compile Include="Models\Fato.cs" />
+    <Compile Include="Models\Periodo.cs" />
+    <Compile Include="Models\MedicaoManual.cs" />
+    <Compile Include="Models\MedicoesInd.cs" />
+    <Compile Include="Models\SP_SGI_MEDICOES_MES_Result.cs" />
+    <Compile Include="Models\Tr_CabViscao.cs" />
+    <Compile Include="Models\Tr_Movimentos.cs" />
+    <Compile Include="Models\Tr_PlanoContas.cs" />
+    <Compile Include="Models\Tr_Unidade.cs" />
+    <Compile Include="Models\Tr_Visoes.cs" />
+    <Compile Include="Models\T_Auditoria.cs" />
+    <Compile Include="Models\T_Configuracoes.cs" />
+    <Compile Include="Models\T_Departamentos.cs" />
+    <Compile Include="Models\T_Favoritos.cs" />
+    <Compile Include="Models\T_Grupo.cs" />
+    <Compile Include="Models\T_Grupo_Indicador.cs" />
+    <Compile Include="Models\T_Indicadores.cs" />
+    <Compile Include="Models\T_Indicadores_Departamentos.cs" />
+    <Compile Include="Models\T_Informacoes_Complementares.cs" />
+    <Compile Include="Models\T_Medicoes.cs" />
+    <Compile Include="Models\T_MESES.cs" />
+    <Compile Include="Models\T_Metas.cs" />
+    <Compile Include="Models\T_Negocio.cs" />
+    <Compile Include="Models\T_Perfil.cs" />
+    <Compile Include="Models\T_PlanoAcao.cs" />
+    <Compile Include="Models\T_Tabela.cs" />
+    <Compile Include="Models\T_Unidade.cs" />
+    <Compile Include="Models\T_UNIUSER.cs" />
+    <Compile Include="Models\T_USER_GRUPO.cs" />
+    <Compile Include="Models\T_Usuario.cs" />
+    <Compile Include="Models\ViewMedicoes.cs" />
+    <Compile Include="Models\ViewsCampos.cs" />
+    <Compile Include="Models\ViewsNome.cs" />
+    <Compile Include="Models\vw_SGI_PARAMETRO_RELMEDICOES.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs" />
+    <Compile Include="Util\Auditoria.cs" />
+    <Compile Include="Util\CommandInterceptor.cs" />
+    <Compile Include="Util\CustomAuthorize.cs" />
+    <Compile Include="Util\EnviaEmail.cs" />
+    <Compile Include="Util\ExtratorDre.cs" />
+    <Compile Include="Util\ExtratorMedidor.cs" />
+    <Compile Include="Util\QueryAnaliser.cs" />
+    <Compile Include="ViewModels\JqueryDataTable\JQDTColumnOrder.cs" />
+    <Compile Include="ViewModels\JqueryDataTable\JQDTParams.cs" />
+    <Compile Include="ViewModels\JqueryDataTable\JQDTColumnSearch.cs" />
+    <Compile Include="ViewModels\JqueryDataTable\JQDTColumn.cs" />
+    <Compile Include="ViewModels\JqueryDataTable\JQDTColumnOrderDirection.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="fonts\fontawesome-webfont.eot" />
+    <Content Include="fonts\fontawesome-webfont.ttf" />
+    <Content Include="fonts\fontawesome-webfont.woff" />
+    <Content Include="fonts\FontAwesome.otf" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings2.Designer.cs</LastGenOutput>
+    </None>
+    <Content Include="Views\Acesso\AddFavorito.cshtml" />
+    <Content Include="Views\Acesso\DelFavorito.cshtml" />
+    <Content Include="Views\Acesso\Index.cshtml" />
+    <Content Include="Views\Acesso\Login.cshtml" />
+    <Content Include="Views\Acesso\Perfil.cshtml" />
+    <Content Include="Views\Acesso\SemAcesso.cshtml" />
+    <Content Include="Views\Departamento\Create.cshtml" />
+    <Content Include="Views\Departamento\Delete.cshtml" />
+    <Content Include="Views\Departamento\Details.cshtml" />
+    <Content Include="Views\Departamento\Edit.cshtml" />
+    <Content Include="Views\Departamento\Index.cshtml" />
+    <Content Include="Views\DRE\Grafico.cshtml" />
+    <Content Include="Views\DRE\Index.cshtml" />
+    <Content Include="Views\Erros\Erro403.cshtml" />
+    <Content Include="Views\Erros\Erro404.cshtml" />
+    <Content Include="Views\Erros\Erro405.cshtml" />
+    <Content Include="Views\Erros\Erro408.cshtml" />
+    <Content Include="Views\Erros\Erro500.cshtml" />
+    <Content Include="Views\Erros\Erro503.cshtml" />
+    <Content Include="Views\Erros\Index.cshtml" />
+    <Content Include="Views\Grupo\Create.cshtml" />
+    <Content Include="Views\Grupo\Delete.cshtml" />
+    <Content Include="Views\Grupo\Details.cshtml" />
+    <Content Include="Views\Grupo\Edit.cshtml" />
+    <Content Include="Views\Grupo\Index.cshtml" />
+    <Content Include="Views\Home\Detalhado.cshtml" />
+    <Content Include="Views\Home\DetalhadoView.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Indicador\AddDepartamento.cshtml" />
+    <Content Include="Views\Indicador\AddGrupo.cshtml" />
+    <Content Include="Views\Indicador\Create.cshtml" />
+    <Content Include="Views\Indicador\Delete.cshtml" />
+    <Content Include="Views\Indicador\DepartamentoDel.cshtml" />
+    <Content Include="Views\Indicador\Details.cshtml" />
+    <Content Include="Views\Indicador\Edit.cshtml" />
+    <Content Include="Views\Indicador\GrupoDel.cshtml" />
+    <Content Include="Views\Indicador\Index.cshtml" />
+    <Content Include="Views\Indicador\ListaDepartamentos.cshtml" />
+    <Content Include="Views\Indicador\ListaGrupos.cshtml" />
+    <Content Include="Views\Erros\Medicoes\AddPlano.cshtml" />
+    <Content Include="Views\Erros\Medicoes\Index.cshtml" />
+    <Content Include="Views\Erros\Medicoes\PlanoAcao.cshtml" />
+    <Content Include="Views\Erros\Medicoes\PorMes.cshtml" />
+    <Content Include="Views\Metas\AddMedicao.cshtml" />
+    <Content Include="Views\Metas\Create.cshtml" />
+    <Content Include="Views\Metas\Delete.cshtml" />
+    <Content Include="Views\Metas\DelMedicao.cshtml" />
+    <Content Include="Views\Metas\Details.cshtml" />
+    <Content Include="Views\Metas\Edit.cshtml" />
+    <Content Include="Views\Metas\EdtMedicao.cshtml" />
+    <Content Include="Views\Metas\Index.cshtml" />
+    <Content Include="Views\Metas\ListaGrupos.cshtml" />
+    <Content Include="Views\Metas\Medicao.cshtml" />
+    <Content Include="Views\Negocio\Create.cshtml" />
+    <Content Include="Views\Negocio\Delete.cshtml" />
+    <Content Include="Views\Negocio\Details.cshtml" />
+    <Content Include="Views\Negocio\Edit.cshtml" />
+    <Content Include="Views\Negocio\Index.cshtml" />
+    <Content Include="Views\PlanoAcao\AddPlano.cshtml" />
+    <Content Include="Views\PlanoAcao\Delete.cshtml" />
+    <Content Include="Views\PlanoAcao\Edit.cshtml" />
+    <Content Include="Views\PlanoAcao\PlanoAcao.cshtml" />
+    <Content Include="Views\PlanoContas\Create.cshtml" />
+    <Content Include="Views\PlanoContas\Delete.cshtml" />
+    <Content Include="Views\PlanoContas\Details.cshtml" />
+    <Content Include="Views\PlanoContas\Edit.cshtml" />
+    <Content Include="Views\PlanoContas\Index.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_Container.cshtml" />
+    <Content Include="Views\Shared\_Content.cshtml" />
+    <Content Include="Views\Shared\_Footer.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Shared\_Login.cshtml" />
+    <Content Include="Views\Shared\_Menu.cshtml" />
+    <Content Include="Views\Shared\_Topbar.cshtml" />
+    <Content Include="Views\UndDre\Create.cshtml" />
+    <Content Include="Views\UndDre\Delete.cshtml" />
+    <Content Include="Views\UndDre\Details.cshtml" />
+    <Content Include="Views\UndDre\Edit.cshtml" />
+    <Content Include="Views\UndDre\Index.cshtml" />
+    <Content Include="Views\Unidade\Create.cshtml" />
+    <Content Include="Views\Unidade\Delete.cshtml" />
+    <Content Include="Views\Unidade\Details.cshtml" />
+    <Content Include="Views\Unidade\Edit.cshtml" />
+    <Content Include="Views\Unidade\Index.cshtml" />
+    <Content Include="Views\Usuario\AddGrupo.cshtml" />
+    <Content Include="Views\Usuario\Create.cshtml" />
+    <Content Include="Views\Usuario\Delete.cshtml" />
+    <Content Include="Views\Usuario\Details.cshtml" />
+    <Content Include="Views\Usuario\Edit.cshtml" />
+    <Content Include="Views\Usuario\GrupoUser.cshtml" />
+    <Content Include="Views\Usuario\GrupoUserDel.cshtml" />
+    <Content Include="Views\Usuario\Index.cshtml" />
+    <Content Include="Views\Usuario\Senha.cshtml" />
+    <Content Include="Views\Visao\AddConta.cshtml" />
+    <Content Include="Views\Visao\Create.cshtml" />
+    <Content Include="Views\Visao\Delete.cshtml" />
+    <Content Include="Views\Visao\DelVisao.cshtml" />
+    <Content Include="Views\Visao\Details.cshtml" />
+    <Content Include="Views\Visao\Edit.cshtml" />
+    <Content Include="Views\Visao\Index.cshtml" />
+    <Content Include="Views\WorkFlow\AprovNf.cshtml" />
+    <Content Include="Views\WorkFlow\AprovPed.cshtml" />
+    <Content Include="Views\WorkFlow\NfeDetails.cshtml" />
+    <Content Include="Views\WorkFlow\NfEntrada.cshtml" />
+    <Content Include="Views\WorkFlow\PedCompra.cshtml" />
+    <Content Include="Views\WorkFlow\PedDetails.cshtml" />
+    <Content Include="Views\Consultas\ListaConsultas.cshtml" />
+    <Content Include="Views\Consultas\ExecutaConsulta.cshtml" />
+    <Content Include="Views\PainelGestor\Index.cshtml" />
+    <Content Include="Views\DynamicLayoutComponents\Menu.cshtml" />
+    <Content Include="Views\Consultas\ExecutaConsultaGrafico.cshtml" />
+    <Content Include="Views\Home\ListaMetas.cshtml" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Areas\PlugAndPlay\Views\Asp32\" />
+    <Folder Include="Areas\PlugAndPlay\Views\Asp\" />
+    <Folder Include="Content\componentes\" />
+    <Folder Include="Content\responsive-info\" />
+    <Folder Include="obj\Debug\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201805241349591_InitialCreate.resx">
+      <DependentUpon>201805241349591_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201805241351193_InitialCreate1.resx">
+      <DependentUpon>201805241351193_InitialCreate1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201805241353450_InitialCreate2.resx">
+      <DependentUpon>201805241353450_InitialCreate2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201805241355351_InitialCreate3.resx">
+      <DependentUpon>201805241355351_InitialCreate3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201805242011279_InitialCreate4.resx">
+      <DependentUpon>201805242011279_InitialCreate4.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>65201</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:65201/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Este projeto faz referência a pacotes do NuGet que não estão presentes neste computador. Use a Restauração de Pacotes do NuGet para baixá-los.  Para obter mais informações, consulte http://go.microsoft.com/fwlink/?LinkID=322105. O arquivo ausente é {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.2.8.2\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.2.8.2\build\Microsoft.Net.Compilers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.8\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

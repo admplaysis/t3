@@ -1,0 +1,1287 @@
+﻿@using PagedList
+@using PagedList.Mvc
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using SGI.Models
+
+
+
+<div class='col-xs-12'>
+    <div class="page-title">
+
+        <div class="pull-left">
+            @*  <h1 class="title">@ViewBag.m.Descricao</h1>*@
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li class="active">
+
+                </li>
+            </ol>
+        </div>
+
+    </div>
+</div>
+
+@if (ViewBag.m != null)
+{
+    foreach (V_PAINEL_GESTOR_STATUS_MAQUINAS row in ViewBag.m)
+    {
+        <div class="col-lg-3">
+            <section class="box ">
+                <header class="panel_header">
+                    <h2 class="title pull-left">
+                        <span>
+                            <b>
+                                @row.MAQ_DESCRICAO
+                            </b>
+                        </span>
+                    </h2>
+                </header>
+                <div class="content-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div style=" width:500px; height:80px;  text-align:start;  ">
+
+                                <div style=" width:40px; height:50px; float:left;  ">
+
+                                    @if (row.STATUS_COR_MAQUINA == "AZUL" || row.STATUS_COR_MAQUINA == "P1")
+                                    {
+                                        <div id="MTORRE_AZUL_@row.ROT_MAQ_ID" class="TorreAzulLigado"></div>
+                                    }
+                                    else
+                                    {
+                                        <div id="MTORRE_AZUL_@row.ROT_MAQ_ID" class="TorreAzulDesligado"></div>
+                                    }
+                                    @if (row.STATUS_COR_MAQUINA == "VERDE" || row.STATUS_COR_MAQUINA == "P1")
+                                    {
+                                        <div id="MTORRE_VERDE_@row.ROT_MAQ_ID" class="TorreVerdeLigado"></div>
+                                    }
+                                    else
+                                    {
+                                        <div id="MTORRE_VERDE_@row.ROT_MAQ_ID" class="TorreVerdeDesligado"></div>
+                                    }
+                                    @if (row.STATUS_COR_MAQUINA == "AMARELO" || row.STATUS_COR_MAQUINA == "P1")
+                                    {
+                                        <div id="MTORRE_AMARELO_@row.ROT_MAQ_ID" class="TorreAmareloLigado"></div>
+                                    }
+                                    else
+                                    {
+                                        <div id="MTORRE_AMARELO_@row.ROT_MAQ_ID" class="TorreAmareloDesligado"></div>
+                                    }
+                                    @if (row.STATUS_COR_MAQUINA == "VERMELHO" || row.STATUS_COR_MAQUINA == "P1")
+                                    {
+                                        <div id="MTORRE_VERMELHO_@row.ROT_MAQ_ID" class="TorreVermelhoLigado"></div>
+                                    }
+                                    else
+                                    {
+                                        <div id="MTORRE_VERMELHO_@row.ROT_MAQ_ID" class="TorreVermelhoDesligado"></div>
+                                    }
+                                </div>
+
+                                <div style=" text-align:center;  width:50px; height:15px;  z-index:2; float:left; ">
+                                    <span>Setup</span>
+                                    <div id="M1S_@row.ROT_MAQ_ID" style=" background: linear-gradient(90deg, red 0%, #fff 0%);  margin:0 auto; border-radius:100%;  width:60%; height:200%;  opacity:0.9; background-color:#FFF; border: red; border:1px solid">
+                                    </div>
+                                    <span id="M1ST1_@row.ROT_MAQ_ID"></span>
+                                </div>
+                                <div style=" text-align:center;   width:70px; height:15px;  z-index:2; float:left; ">
+                                    <span>Setup Aj.</span>
+                                    <div id="M1SA_@row.ROT_MAQ_ID" style=" background: linear-gradient(90deg, red 0%, #fff 0%);  margin:0 auto; border-radius:100%; width:42%; height:200%; opacity:0.9; background-color:#FFF; border: red; border:1px solid">
+                                    </div>
+                                    <span id="M1SAT1_@row.ROT_MAQ_ID"></span>
+                                </div>
+                                <div style=" text-align:center;  width:70px; height:15px; z-index:2; float:left; ">
+                                    <span>Producao</span>
+                                    <div id="M1P_@row.ROT_MAQ_ID" style=" background: linear-gradient(90deg, red 0%, #fff 0%);  margin:0 auto; border-radius:100%;  width:42%; height:200%;  opacity:0.9; background-color:#FFF; border: red; border:1px solid">
+                                    </div>
+                                    <span id="M1PT1_@row.ROT_MAQ_ID"></span>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12">
+                            <div>
+                                <div style=" text-align:center; z-index:2; float:left; ">
+                                    <span title="Pecas por segundo"><i class="fa fa-dashboard">&nbsp;&nbsp;</i><span id="M_VELO_ATU_PC_SEGUNDO_ROUD_1_@row.ROT_MAQ_ID">@row.VELO_ATU_PC_SEGUNDO_ROUD_1</span> &nbsp; </span>
+                                </div>
+                                <div style=" text-align:center;   z-index:2; float:left; ">
+                                    <span title="Ultima atualizacao do CLP">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i><span id="M_ULTIMA_ATUALIZACAO_@row.ROT_MAQ_ID">@row.ULTIMA_ATUALIZACAO</span><span id="difference"></span></span>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-sm-12">
+                            <div>
+                                <div style=" text-align:center;   z-index:2; float:left; ">
+                                    <span title="Status Fila de producao"><i class="fa fa-reorder">&nbsp;&nbsp;&nbsp;</i><span id="M_STATUS_FILA_@row.ROT_MAQ_ID">@row.STATUS_FILA</span></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12">
+                            <div>
+                                <div style=" text-align:justify; "><span title="Status Maquina"><i class="fa fa-gears">&nbsp;&nbsp;&nbsp;</i><span id="M_STATUS_@row.ROT_MAQ_ID">@row.MAQ_STATUS</span></span></div>
+                                <div style="  float:left;">
+                                    <span id="M_OCO_@row.ROT_MAQ_ID">@row.OCO_ID&nbsp;</span>
+                                    <span id="M_FEE_OBS_@row.ROT_MAQ_ID">@row.FEE_OBSERVACOES</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="border-bottom:1px solid #ddd; margin-bottom:10px " class="col-sm-12"></div>
+                        <div class="col-sm-12">
+                            <span title="Feedbacks Pendentes"> <i class="fa fa-pencil-square-o">&nbsp;&nbsp;&nbsp;</i><span id="M_FEEDBACKS_PENDENTES_@row.ROT_MAQ_ID">@row.FEEDBACKS_PENDENTES</span>&nbsp;-&nbsp;<span id="M_TEMPO_SEM_FEEDBACK_@row.ROT_MAQ_ID">@row.TEMPO_SEM_FEEDBACK</span> </span>
+                            &nbsp;&nbsp;&nbsp;<span title="OPs Parciais"><i title="OPs Parciais" class="fa fa-chain-broken "></i></span>&nbsp;&nbsp;&nbsp;<span id="M_OPS_PARCIAIS_@row.ROT_MAQ_ID">@row.OPS_PARCIAIS</span>
+                        </div>
+                        <div class="col-sm-12">
+                            <span title="Paradas de maquina"><i class="fa fa-ban"></i>&nbsp;&nbsp;<span id="M_QTD_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP_@row.ROT_MAQ_ID">@row.QTD_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP </span> - <span id="M_TEMPO_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP_@row.ROT_MAQ_ID">@row.TEMPO_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP </span></span>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                            <span title="Pequenas Paradas"> <i class="fa fa-ban" style="font-size:10px"></i>&nbsp;&nbsp;<span id="M_QTD_PEQUENAS_PARADAS_@row.ROT_MAQ_ID">@row.QTD_PEQUENAS_PARADAS </span> - <span id="M_TEMPO_PEQUENAS_PARADAS_@row.ROT_MAQ_ID">@row.TEMPO_PEQUENAS_PARADAS </span></span>
+                        </div>
+                        <div class="col-sm-12">
+                            <table align="center" width="100%" height="100%">
+                                <tr>
+                                    <td align="justify" width="150">
+                                        <span> <b> Setup:</b> </span>
+                                    </td>
+                                    <td align="center">
+                                        <div onclick="document.location.href='@Url.Action("FeedbacksDesempenho", "RelatoriosFeedbacks", new {area = "PlugAndPlay", maquina = row.ROT_MAQ_ID, tipo = "SS", status = "G"})'"  id="M_SETUP_GERAL_AZUL_@row.ROT_MAQ_ID" class="circle bg-circulo-Azul"> @row.SETUP_GERAL_AZUL</div>
+                                    </td>
+                                    <td align="center">
+                                        <div onclick="document.location.href='@Url.Action("FeedbacksDesempenho", "RelatoriosFeedbacks", new {area = "PlugAndPlay", maquina = row.ROT_MAQ_ID, tipo = "SS", status = "G"})'" id="M_SETUP_GERAL_VERDE_@row.ROT_MAQ_ID" class="circle bg-circulo-Verde">@row.SETUP_GERAL_VERDE</div>
+                                    </td>
+                                    <td align="center">
+                                        <div onclick="document.location.href='@Url.Action("FeedbacksDesempenho", "RelatoriosFeedbacks", new {area = "PlugAndPlay", maquina = row.ROT_MAQ_ID, tipo = "SS", status = "B"})'" id="M_SETUP_GERAL_AMARELO_@row.ROT_MAQ_ID" class="circle bg-circulo-Amarelo">@row.SETUP_GERAL_AMARELO</div>
+                                    </td>
+                                    <td align="center">
+                                        <div onclick="document.location.href='@Url.Action("FeedbacksDesempenho", "RelatoriosFeedbacks", new {area = "PlugAndPlay", maquina = row.ROT_MAQ_ID, tipo = "SS", status = "B"})'" id="M_SETUP_GERAL_VERMELHO_@row.ROT_MAQ_ID" class="circle bg-circulo-Vermelho">@row.SETUP_GERAL_VERMELHO</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-sm-12">
+                            <table align="center" width="100%" height="100%">
+                                <tr>
+                                    <td align="justify" width="150">
+                                        <span> <b> Performance:</b> </span>
+                                    </td>
+                                    <td align="center">
+                                        <div onclick="document.location.href='@Url.Action("FeedbacksDesempenho", "RelatoriosFeedbacks", new {area = "PlugAndPlay", maquina = row.ROT_MAQ_ID, tipo = "P", status = "G"})'" id="M_PERFORMANCE_AZUL_@row.ROT_MAQ_ID" class="circle bg-circulo-Azul">@row.PERFORMANCE_AZUL</div>
+                                    </td>
+                                    <td align="center">
+                                        <div onclick="document.location.href='@Url.Action("FeedbacksDesempenho", "RelatoriosFeedbacks", new {area = "PlugAndPlay", maquina = row.ROT_MAQ_ID, tipo = "P", status = "G"})'" id="M_PERFORMANCE_VERDE_@row.ROT_MAQ_ID" class="circle bg-circulo-Verde">@row.PERFORMANCE_VERDE</div>
+                                    </td>
+                                    <td align="center">
+                                        <div onclick="document.location.href='@Url.Action("FeedbacksDesempenho", "RelatoriosFeedbacks", new {area = "PlugAndPlay", maquina = row.ROT_MAQ_ID, tipo = "P", status = "B"})'" id="M_PERFORMANCE_AMARELO_@row.ROT_MAQ_ID" class="circle bg-circulo-Amarelo">@row.PERFORMANCE_AMARELO</div>
+                                    </td>
+                                    <td align="center">
+                                        <div onclick="document.location.href='@Url.Action("FeedbacksDesempenho", "RelatoriosFeedbacks", new {area = "PlugAndPlay", maquina = row.ROT_MAQ_ID, tipo = "P", status = "B"})'" id="M_PERFORMANCE_VERMELHO_@row.ROT_MAQ_ID" class="circle bg-circulo-Vermelho">@row.PERFORMANCE_VERMELHO</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div style="border-bottom:1px solid #ddd; margin-bottom:10px " class="col-sm-12">
+                        </div>
+
+                        <a data-toggle="collapse" href="#@row.ROT_MAQ_ID" aria-expanded="false" title="Turnos"><i class="fa fa-group"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a data-toggle="collapse" href="#@row.ROT_MAQ_ID" aria-expanded="false" title="Menssagens"><i class="fa fa-envelope"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a data-toggle="collapse" href="#@row.ROT_MAQ_ID" aria-expanded="false" title="Fila Expedicao"><i class="fa fa-truck"></i></a>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <div class="collapse" id="@row.ROT_MAQ_ID">
+
+                            @if (ViewBag.m != null)
+                            {
+                                foreach (V_PAINEL_GESTOR_DESEMPENHO_TURNOS_MAQUINA rt in ViewBag.tm)
+                                {
+                                    if (row.ROT_MAQ_ID == rt.MAQ_ID)
+                                    {
+                                        <div style="border-bottom:1px solid #ddd; margin-bottom:10px " class="col-sm-12">
+                                        </div>
+                                        <div class="col-sm-12">
+                                            Turno <b> @rt.TURN_ID</b>
+                                            <table align="center" width="100%" height="100%">
+                                                <tr>
+                                                    <td align="justify" width="150">
+                                                        <span> <b> Setup:</b> </span>
+                                                    </td>
+                                                    <td align="center">
+                                                        <div id="MT_SETUP_GERAL_AZUL_@rt.MAQ_ID@rt.TURN_ID" class="circle bg-circulo-Azul">@rt.SETUP_GERAL_AZUL</div>
+                                                    </td>
+                                                    <td align="center">
+                                                        <div id="MT_SETUP_GERAL_VERDE_@rt.MAQ_ID@rt.TURN_ID" class="circle bg-circulo-Verde">@rt.SETUP_GERAL_VERDE</div>
+                                                    </td>
+                                                    <td align="center">
+                                                        <div id="MT_SETUP_GERAL_AMARELO_@rt.MAQ_ID@rt.TURN_ID" class="circle bg-circulo-Amarelo">@rt.SETUP_GERAL_AMARELO</div>
+                                                    </td>
+                                                    <td align="center">
+                                                        <div id="MT_SETUP_GERAL_VERMELHO_@rt.MAQ_ID@rt.TURN_ID" class="circle bg-circulo-Vermelho">@rt.SETUP_GERAL_VERMELHO</div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <table align="center" width="100%" height="100%">
+                                                <tr>
+                                                    <td align="justify" width="150">
+                                                        <span> <b> Performance:</b> </span>
+                                                    </td>
+                                                    <td align="center">
+                                                        <div id="MT_PERFORMANCE_AZUL_@rt.MAQ_ID@rt.TURN_ID" class="circle bg-circulo-Azul">@rt.PERFORMANCE_AZUL</div>
+                                                    </td>
+                                                    <td align="center">
+                                                        <div id="MT_PERFORMANCE_VERDE_@rt.MAQ_ID@rt.TURN_ID" class="circle bg-circulo-Verde">@rt.PERFORMANCE_VERDE</div>
+                                                    </td>
+                                                    <td align="center">
+                                                        <div id="MT_PERFORMANCE_AMARELO_@rt.MAQ_ID@rt.TURN_ID" class="circle bg-circulo-Amarelo">@rt.PERFORMANCE_AMARELO</div>
+                                                    </td>
+                                                    <td align="center">
+                                                        <div id="MT_PERFORMANCE_VERMELHO_@rt.MAQ_ID@rt.TURN_ID" class="circle bg-circulo-Vermelho">@rt.PERFORMANCE_VERMELHO</div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <b><span id="MT_QTD_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP_@rt.MAQ_ID@rt.TURN_ID">@rt.QTD_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP </span></b> paradas.Total <b><span id="MT_TEMPO_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP_@rt.MAQ_ID@rt.TURN_ID">@rt.TEMPO_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP</span></b>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <b><span id="MT_QTD_PEQUENAS_PARADAS_@rt.MAQ_ID@rt.TURN_ID">@rt.QTD_PEQUENAS_PARADAS </span></b> pequenas paradas. Total <b><span id="MT_TEMPO_PEQUENAS_PARADAS_@rt.MAQ_ID@rt.TURN_ID">@rt.TEMPO_PEQUENAS_PARADAS</span></b>
+                                        </div>
+
+
+                                    }
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    }
+
+}
+
+
+@*
+        -- CONFIGURACAO POR EMPRESA
+        TURNO A		Disponibilidade IND76 DIM4								| 					 Disponibilidade IND76 DIM1
+        TURNO A		Qualidade		IND78 DIM4		OEE-TURNO(IND79 DIM4)   | OEE  (IND79 DIM1)  Qualidade		 IND78 DIM1
+        TURNO A		Performance		IND77 DIM4								|  					 Performance	 IND77 DIM1
+
+
+        -- CONFIGURACAO POR EMPRESA
+        = MAQUINA TURNO   MAQUINA = X
+        TURNO A		Disponibilidade IND76 DIMX								| 							 Disponibilidade IND76 DIM3 FAT = X
+        TURNO A		Qualidade		IND78 DIMX		OEE-TURNO(IND79 DIMX)   | OEE  (IND79 DIM3) FAT = X  Qualidade		 IND78 DIM3 FAT = X
+        TURNO A		Performance		IND77 DIMX								|  							 Performance	 IND77 DIM3	FAT = X
+    <div class="col-lg-4">
+        <canvas id="myCanvas" width="400" height="400" style="border:1px solid #d3d3d3;">
+            Your browser does not support the HTML5 canvas tag.
+        </canvas>
+    </div>
+*@
+
+
+
+
+
+
+
+<script type="text/javascript">
+
+                var _CAD = "";
+                var _CAQ = "";
+                var _CAP = "";
+                var _CAO = "";
+
+                var _VAD = "";
+                var _VAQ = "";
+                var _VAP = "";
+                var _VAO = "";
+
+
+                var _CBD = "";
+                var _CBQ = "";
+                var _CBP = "";
+                var _CBO = "";
+
+                var _VBD = "";
+                var _VBQ = "";
+                var _VBP = "";
+                var _VBO = "";
+
+                var _CCD = "";
+                var _CCQ = "";
+                var _CCP = "";
+                var _CCO = "";
+
+                var _VCD = "";
+                var _VCQ = "";
+                var _VCP = "";
+                var _VCO = "";
+
+                var _CO = "";
+                var _VO = "";
+
+                var _COD = "";
+                var _VOD ="";
+                var _COP = "";
+                var _VOP = "";
+                var _COQ = "";
+                var _VOQ = "";
+
+
+                @for (int ln = 0; ln < ViewBag.oee.Dados.GetLength(0); ln++)
+                {
+                    @Html.Raw(ViewBag.oee.Dados[ln, 1].Trim());
+                    @Html.Raw(ViewBag.oee.Dados[ln, 2].Trim());
+                }
+
+                var or = 0;
+                var ir = 0;
+
+                var X = 200;
+                var Y = 200;
+                var outterRadius = or+140;
+                var innerRadius = ir +150;
+                var i, x, y = 0;
+                var z = X -  190;
+                var w = Y - 160;
+
+                // 1. get a reference to myCanvas element.
+                var c = document.getElementById("myCanvas");
+                // 2. get canvas context
+                var context = c.getContext("2d");
+                var c = document.getElementById("myCanvas");
+                var ctx = c.getContext("2d");
+
+
+
+
+
+                //###################  legenda #######################
+                outterRadius = or +500;
+                innerRadius = ir +100;
+                y = 0.70;
+                i = -1.6;
+                setRadialGradient("A");
+                x = i + y * 3;
+                drawDonut(i, x);
+                //###################  legenda #######################
+                setRadialGradient("B");
+                i = x;
+                x = i + y * 3;
+                drawDonut(i, x);
+                //###################  legenda #######################
+                setRadialGradient("C");
+                i = x;
+                x = i + y * 3;
+                drawDonut(i, x);
+
+
+
+
+
+
+                outterRadius = or + 190;
+                innerRadius = ir +130;
+
+                // 3. draw donut chart
+                y = 0.70;
+                i = -1.6;
+                //###################    turno 1 #######################
+
+                // disponibilidade
+                x = i + y;
+                setRadialGradient(_CAD);
+                drawDonut(i, x);
+
+                // Performance
+                setRadialGradient(_CAP);
+                i = x;
+                x = i + y;
+                drawDonut(i, x);
+
+                // qualidade
+                setRadialGradient(_CAQ);
+                i = x;
+                x = i + y;
+                drawDonut(i, x);
+
+                //###################    turno 2 #######################
+                // disponibilidade
+
+                setRadialGradient(_CBD);
+                i = x;
+                x = i + y;
+                drawDonut(i, x);
+
+
+                // Performance
+                setRadialGradient(_CBP);
+                i = x;
+                x = i + y;
+                drawDonut(i, x);
+
+                // qualidade
+                setRadialGradient(_CBQ);
+                i = x;
+                x = i + y;
+                drawDonut(i, x);
+
+                //###################    turno 3 #######################
+                // disponibilidade
+                setRadialGradient(_CCD);
+                i = x;
+                x = i + y;
+                drawDonut(i, x);
+                // Performance
+                setRadialGradient(_CCP);
+                i = x;
+                x = i + y;
+                drawDonut(i, x);
+                // qualidade
+                setRadialGradient(_CCQ);
+                i = x;
+                x = i + y;
+                drawDonut(i, x);
+
+                //###################  OEE  turno 1 #######################
+                outterRadius = or +135;
+                innerRadius = ir +105;
+                y = 0.70;
+                i = -1.6;
+                setRadialGradient(_CAO);
+                x = i + y * 3;
+                drawDonut(i, x);
+                //###################  OEE  turno 2 #######################
+                setRadialGradient(_CBO);
+                i = x;
+                x = i + y * 3;
+                drawDonut(i, x);
+                //###################  OEE  turno 3 #######################
+                setRadialGradient(_CCO);
+                i = x;
+                x = i + y * 3;
+                drawDonut(i, x);
+                //###################  OEE  geral  #######################
+                outterRadius = or + 71;
+                innerRadius = ir +100;
+                y = 0.70;
+                i = -1.6;
+                setRadialGradient(_CO);
+                x = i + y * 9;
+                drawDonut(i, x);
+                //###################  Disponibilidade #######################
+                outterRadius = or + 3;
+                innerRadius = ir +60;
+                y = 0.70;
+                i = -1.6;
+                setRadialGradient(_COD);
+                x = i + y * 3;
+                drawDonut(i, x);
+                //###################  Performance  geral #######################
+                setRadialGradient(_COP);
+                i = x;
+                x = i + y * 3;
+                drawDonut(i, x);
+                //###################  Qualidade #######################
+                setRadialGradient(_COQ);
+                i = x;
+                x = i + y * 3;
+                drawDonut(i, x);
+
+                ctx.font = "bold 18px Arial ";
+                //ctx.textAlign = "start";
+
+                ctx.fillStyle = "#455A64";
+                ctx.fillText('Turno C', z+15, w+-0);
+                ctx.fillText('Turno A', z + 305, w + -0);
+                ctx.fillText('Turno B', z + 305 , w + 330);
+
+                ctx.fillStyle = "black";
+                ctx.font = "15px Arial ";
+                ctx.fillText(_VCQ == '' ? '' : _VCQ+'%', z + 90, w +20);
+                ctx.fillText(_VCP == '' ? '' : _VCP + '%', z + 8, w +95);
+                ctx.fillText(_VCD == '' ? '' : _VCD + '%', z + 0, w +200);
+
+
+                ctx.fillText(_VAD + '%', z + 240, w +20);
+                ctx.fillText(_VAP + '%', z + 320, w +95);
+                ctx.fillText(_VAQ + '%', z + 325, w +200);
+
+
+                ctx.fillText(_VBD + '%', z + 300, w + 280);
+                ctx.fillText(_VBP + '%', z + 170, w +325);
+                ctx.fillText(_VBQ + '%', z + 45, w +285);
+
+                ctx.fillText(_VOQ + '%', z + 140, w +150);
+                ctx.fillText(_VOD + '%', z + 210, w +150);
+                ctx.fillText(_VOP + '%', z + 170, w +200);
+
+                ctx.fillText(_VO + '%', z + 170, w +80);
+
+                ctx.fillText(_VBO + '%', z + 170, w +285);
+                ctx.rotate(-0.890);
+                ctx.fillText(_VCO == '' ? '' : _VCO + '%', (-60), 170);
+
+                ctx.rotate(3.14 / 1.72);
+                ctx.fillText(_VAO + '%', 300, (-155));
+
+
+                //*******************************************************//\
+                // drawDonut() function drawes 2 full or partial circles inside each other one clockwise and the other is counter-clockwise
+                function drawDonut(sRadian, eRadian) {
+
+                    context.beginPath();
+                    context.arc(X, Y, outterRadius, sRadian, eRadian, false); // Outer: CCW
+                    context.arc(X, Y, innerRadius, eRadian, sRadian, true); // Inner: CW
+                    context.closePath();
+
+                    // add shadow
+                    addShadow();
+
+                    context.fill();
+                }
+
+                function addShadow() {
+                    context.shadowColor = "#333";
+                    context.shadowBlur = 0;
+                    context.shadowOffsetX = 0;
+                    context.shadowOffsetY = 0;
+                }
+
+                function setRadialGradient(cor) {
+                    var grd = context.createRadialGradient(X, Y, innerRadius + 5, X, Y, outterRadius);
+
+                    if (cor == "VERMELHO") {
+                        grd.addColorStop(0, "#EF5350");
+                        grd.addColorStop(1, "#EF9A9A");
+                    }
+                    if (cor == "AMARELO") {
+                        grd.addColorStop(0, "#FFEE58");
+                        grd.addColorStop(1, "#FFF59D");
+                    }
+                    if (cor == "VERDE") {
+                        grd.addColorStop(0, "#66BB6A");
+                        grd.addColorStop(1, "#A5D6A7");
+                    }
+                    if (cor == "AZUL") {
+                        grd.addColorStop(0, "#42A5F5");
+                        grd.addColorStop(1, "#81D4FA");
+                    }
+                    if (cor == "A") {
+                        grd.addColorStop(0, "#ECEFF1");
+                        grd.addColorStop(1, "#CFD8DC");
+                    }
+                    if (cor == "B") {
+                        grd.addColorStop(0, "#CFD8DC");
+                        grd.addColorStop(1, "#B0BEC5");
+                    }
+                    if (cor == "C") {
+                        grd.addColorStop(0, "#B0BEC5");
+                        grd.addColorStop(1, "#CFD8DC");
+                    }
+
+                    if (cor != "VERMELHO" && cor != "AMARELO" && cor != "AZUL" && cor != "VERDE" && cor != "A" && cor != "B" && cor != "C" ) {
+                        grd.addColorStop(0, "#FFFFFF");
+                        grd.addColorStop(1, "#FFFFFF");
+                    }
+                    context.fillStyle = grd;
+                }
+
+
+
+
+
+
+
+        var start_time;
+        var loop;
+
+        jQuery(document).ready(function () {
+            jQuery(document).bind('keyup', 'space', start);
+
+            jQuery(document).bind('keyup', 'esc', clear);
+
+            setUpMessageText();
+
+            jQuery('#info').hover(
+                function () { jQuery('#info-box').fadeIn(100); },
+                function () { jQuery('#info-box').stop(true, true).fadeOut(100); }
+            );
+        });
+
+        function setUpMessageText() {
+            jQuery('#message_text').bind('keyup', function () {
+                charsLeft = 99 - (jQuery('#message_text').val().length);
+                jQuery('#chars_left').text(charsLeft);
+                updateTweetButtonText(jQuery('#message_text').val());
+            });
+        }
+
+        // Testing
+        function startCounting(startTime) {
+            start_time = typeof (startTime) == 'undefined' ? new Date() : startTime;
+
+            jQuery('#start_button').hide();
+            jQuery('#stop_button').show();
+
+            loop = window.setInterval("update()", 1);
+
+            jQuery('body').removeClass().addClass('started');
+        }
+
+        // Unavaiable to be tested
+        function update() {
+
+            printTime(format_seconds(getTime()));
+
+        }
+
+        // Tested
+        function printTime(time) {
+
+            //jQuery('#difference').text(format_seconds(0));
+            jQuery('#difference').text(time);
+
+        }
+
+        // Tested
+        function getTime() {
+            return (new Date() - start_time);
+        }
+
+        // Tested
+        function format_seconds(seconds) {
+            if (isNaN(seconds))
+                seconds = 0;
+
+            var diff = new Date(seconds);
+            var minutes = diff.getMinutes();
+            var seconds = diff.getSeconds();
+            var milliseconds = diff.getMilliseconds();
+
+            if (minutes < 10)
+                minutes = "0" + minutes;
+            if (seconds < 10)
+                seconds = "0" + seconds;
+
+            if (milliseconds < 10)
+                milliseconds = "00" + milliseconds;
+            else if (milliseconds < 100)
+                milliseconds = "0" + milliseconds;
+
+            // document.title = minutes + ":" + seconds + ":" + milliseconds + " - Cronômetro Online";
+            return minutes + ":" + seconds + ":" + milliseconds;
+        }
+
+
+        // Tested
+        function unstart() {
+            clearInterval(loop);
+            start_time = 0;
+            jQuery('#start_button').show();
+            jQuery('#stop_button').hide();
+            jQuery('body').removeClass().addClass('paused');
+            fillText();
+        }
+
+        // Tested
+        function clear() {
+            unstart();
+            jQuery('#difference').text(format_seconds(0));
+
+        }
+
+        // Tested
+        function updateTweetButtonText(message) {
+            var tweetButton = jQuery('#tweet_button');
+            tweetButton.attr('href', tweetButton.attr('href').replace(/&text=[^&]+/, "&text=" + encodeURIComponent(message)));
+        }
+
+        //Testing
+        function fillText() {
+            difference = jQuery('#difference').text();
+            if (jQuery('#flag a').hasClass('flag-english'))
+                jQuery('#message_text').val('Eu gastei ' + difference + ' para ');
+            else
+                jQuery('#message_text').val('I took ' + difference + ' to ');
+
+            setCaret();
+        }
+
+        function setCaret() {
+            ctrl = document.getElementById('message_text');
+            pos = ctrl.value.length;  //value
+            if (ctrl.setSelectionRange) {  // setSelectionRange
+                ctrl.focus();
+                ctrl.setSelectionRange(pos, pos);
+            } else if (ctrl.createTextRange) {
+                var range = ctrl.createTextRange();
+                range.collapse(true);
+                range.moveEnd('character', pos);
+                range.moveStart('character', pos);
+                range.select();
+            }
+        }
+
+        function twitterModal(element) {
+            largura = 500;
+            altura = 400;
+            var esquerda = ((screen.width - largura) / 2);
+            var topo = ((screen.height - altura) / 2);
+            window.open(element.href, element.name, "channelmode=0,directories=0,fullscreen=no,location=0,menubar=0,resizable=0,scrollbars=yes,status=0,titlebar=0,toolbar=0,top=" + topo + "px,left=" + esquerda + "px,width=" + largura + "px,height=" + altura + "px");
+            return false;
+        }
+
+
+
+
+
+
+
+
+
+</script>
+@*</div></section>*@
+
+
+
+
+@if (ViewBag.t != null)
+{
+    foreach (V_PAINEL_GESTOR_DESEMPENHO_TURNOS t in ViewBag.t)
+    {
+        <div class="col-lg-3">
+            <section class="box ">
+                <header class="panel_header">
+                    <h2 class="title pull-left">
+                        <span>
+                            <b>
+                                Turno:@t.TURN_ID Turma: @t.TURM_ID
+                            </b>
+                        </span>
+                    </h2>
+                </header>
+                <div class="content-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table align="center" width="100%" height="100%">
+                                <tr>
+                                    <td align="justify" width="150">
+                                        <span> <b> Setup:</b> </span>
+                                    </td>
+                                    <td align="center">
+                                        <div id="T_SETUP_GERAL_AZUL_@t.TURN_ID" class="circle bg-circulo-Azul">@t.SETUP_GERAL_AZUL</div>
+                                    </td>
+                                    <td align="center">
+                                        <div id="T_SETUP_GERAL_VERDE_@t.TURN_ID" class="circle bg-circulo-Verde">@t.SETUP_GERAL_VERDE</div>
+                                    </td>
+                                    <td align="center">
+                                        <div id="T_SETUP_GERAL_AMARELO_@t.TURN_ID" class="circle bg-circulo-Amarelo">@t.SETUP_GERAL_AMARELO</div>
+                                    </td>
+                                    <td align="center">
+                                        <div id="T_SETUP_GERAL_VERMELHO_@t.TURN_ID" class="circle bg-circulo-Vermelho">@t.SETUP_GERAL_VERMELHO</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-sm-12">
+                            <table align="center" width="100%" height="100%">
+                                <tr>
+                                    <td align="justify" width="150">
+                                        <span> <b> Performance:</b> </span>
+                                    </td>
+                                    <td align="center">
+                                        <div id="T_PERFORMANCE_AZUL_@t.TURN_ID" class="circle bg-circulo-Azul">@t.PERFORMANCE_AZUL</div>
+                                    </td>
+                                    <td align="center">
+                                        <div id="T_PERFORMANCE_VERDE_@t.TURN_ID" class="circle bg-circulo-Verde">@t.PERFORMANCE_VERDE</div>
+                                    </td>
+                                    <td align="center">
+                                        <div id="T_PERFORMANCE_AMARELO_@t.TURN_ID" class="circle bg-circulo-Amarelo">@t.PERFORMANCE_AMARELO</div>
+                                    </td>
+                                    <td align="center">
+                                        <div id="T_PERFORMANCE_VERMELHO_@t.TURN_ID" class="circle bg-circulo-Vermelho">@t.PERFORMANCE_VERMELHO</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-sm-12">
+                            <b id="T_QTD_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP_@t.TURN_ID">@t.QTD_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP </b> paradas em:<b id="T_TEMPO_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP_@t.TURN_ID">@t.TEMPO_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP</b>
+                        </div>
+                        <div class="col-sm-12">
+                            <b id="T_QTD_PEQUENAS_PARADAS_@t.TURN_ID">@t.QTD_PEQUENAS_PARADAS </b> pequenas paradas em:<b id="T_TEMPO_PEQUENAS_PARADAS_@t.TURN_ID">@t.TEMPO_PEQUENAS_PARADAS</b>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+        </div>
+    }
+}
+
+
+
+
+
+
+<div class="col-sm-12">
+    <div class="row">
+        @if (ViewBag.r.Qtdlinhas != 0)
+        {
+            <div class="col-lg-2">
+                <section class="box ">
+                    <header class="panel_header">
+                        <h1 class="title pull-left">
+                            <span> <b>Ranking Mensal</b> </span>
+                        </h1>
+                    </header>
+                    <div class="content-body">
+                        <div class="row">
+                            @for (int ln = 0; ln < ViewBag.r.Dados.GetLength(0); ln++)
+                            {
+                                if (@ViewBag.r.Dados[ln, 1] == "MES")
+                                {
+                                    <div class="col-md-6"> <img height="60" alt="" src="/Imagens/profile.jpg" class="img-circle img-inline"></div>
+                                    <div class="col-md-6">OEE  @ViewBag.r.Dados[ln, 2]%</div>
+                                    <div class="col-md-12">@ViewBag.r.Dados[ln, 3]</div>
+                                    <div style="border-bottom:1px solid #ddd; margin-bottom:10px " class="col-sm-12"> </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </section>
+            </div>
+        }
+
+        @if (ViewBag.r.Qtdlinhas != 0)
+        {
+            <div class="col-lg-2">
+                <section class="box ">
+                    <header class="panel_header">
+                        <h1 class="title pull-left">
+                            <span> <b>Ranking Anual</b> </span>
+                        </h1>
+                    </header>
+                    <div class="content-body">
+                        <div class="row">
+                            @for (int ln = 0; ln < ViewBag.r.Dados.GetLength(0); ln++)
+                            {
+                                if (@ViewBag.r.Dados[ln, 1] == "ANO")
+                                {
+                                    <div class="col-md-6"> <img height="60" alt="" src="/Imagens/profile.jpg" class="img-circle img-inline"></div>
+                                    <div class="col-md-6">OEE  @ViewBag.r.Dados[ln, 2]%</div>
+                                    <div class="col-md-12">@ViewBag.r.Dados[ln, 3]</div>
+                                    <div style="border-bottom:1px solid #ddd; margin-bottom:10px " class="col-sm-12"> </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </section>
+            </div>
+        }
+
+    </div>
+</div>
+
+
+<div id="divLoading" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+    top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+    opacity: .8; filter: alpha(opacity=70);display:none">
+    <p style="position: absolute; top: 30%; left: 45%; color: White;">
+        Carregando, aguarde ...<img src="~/Imagens/loading.gif">
+    </p>
+</div>
+
+@section Styles {
+    <environment names="Development">
+        <link href="~/Content/select2.css" rel="stylesheet" type="text/css" media="screen" />
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+    <environment names="Staging,Production">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+
+    <style>
+        .coamarelo {
+            a: #F57F17;
+        }
+        .circle:hover {
+           cursor: pointer
+        }
+        .circle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-weight: 500;
+            font-size: 15px;
+            font-family: Arial;
+            color: #FFF;
+            line-height: 20px;
+            justify-content: center;
+            text-align: center;
+            margin-left: 5px;
+        }
+        .bg-circulo-Azul {
+            background: #1E88E5
+        }
+
+        .bg-circulo-Verde {
+            background: #43A047
+        }
+
+        .bg-circulo-Amarelo {
+            background: #F57F17
+        }
+
+        .bg-circulo-Vermelho {
+            background: #E53935
+        }
+
+        .TorreAzulLigado {
+            border-radius: 50%;
+            border: 1px solid #1E88E5;
+            width: 15px;
+            height: 15px;
+            background-color: #1E88E5;
+            margin-bottom: 2px;
+        }
+
+        .TorreAzulDesligado {
+            border-radius: 50%;
+            border: 1px solid #1E88E5;
+            width: 15px;
+            height: 15px;
+            margin-bottom: 2px;
+        }
+
+        .TorreVerdeLigado {
+            border-radius: 50%;
+            border: 1px solid #43A047;
+            width: 15px;
+            height: 15px;
+            background-color: #43A047;
+            margin-bottom: 2px;
+        }
+
+        .TorreVerdeDesligado {
+            border-radius: 50%;
+            border: 1px solid #43A047;
+            width: 15px;
+            height: 15px;
+            margin-bottom: 2px;
+        }
+
+        .TorreAmareloLigado {
+            border-radius: 50%;
+            border: 1px solid #F57F17;
+            width: 15px;
+            height: 15px;
+            background-color: #F57F17;
+            margin-bottom: 2px;
+        }
+
+        .TorreAmareloDesligado {
+            border-radius: 50%;
+            border: 1px solid #F57F17;
+            width: 15px;
+            height: 15px;
+            margin-bottom: 2px;
+        }
+
+        .TorreVermelhoLigado {
+            border-radius: 50%;
+            border: 1px solid #E53935;
+            width: 15px;
+            height: 15px;
+            background-color: #E53935;
+            margin-bottom: 2px;
+        }
+
+        .TorreVermelhoDesligado {
+            border-radius: 50%;
+            border: 1px solid #E53935;
+            width: 15px;
+            height: 15px;
+            margin-bottom: 2px;
+        }
+    </style>
+
+}
+@section Scripts {
+
+    <environment names="Development">
+        <script src="~/Script/select2.js" type="text/javascript"></script>
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/jquery.inputmask.bundle.min.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+        <script src="~/Script/jquerydataTables.js" type="text/javascript"></script>
+        <script src="~/Script/dataTablestableTools.js" type="text/javascript"></script>
+        <script src="~/Script/dataTablesresponsive.js" type="text/javascript"></script>
+        <script src="~/Script/dataTablesbootstrap.js" type="text/javascript"></script>
+    </environment>
+
+    <script type="text/javascript">
+
+
+
+        $("#mhome").removeClass("open");
+        $("#mhome").addClass("open");
+
+        $(document).ready(function () {
+            monitorTempoReal.iniciar();
+            //startCounting();
+        });
+
+        function JavascriptFunction() {
+            var url = '@Url.Action("PostMethod", "Historico")';
+
+        }
+
+        function teste() {
+
+            $('#01').css('background', 'linear-gradient(90deg, red 10%, #fff 0%)');
+            $('#TESTE').text("testeeee");
+
+           // alert("BBBBBBBBBBBBBddd");
+
+        }
+
+
+        var monitorTempoReal = {
+            ajax: null,
+            timeout: null,
+            iniciar: function () {
+                var AZUL = '#1E88E5';
+                var VERDE = '#43A047';
+                var AMARELO = '#F57F17';
+                var VERMELHO = '#E53935';
+                var COR = '';
+                var PRIMEIIRA_PRODUCAO = '#263238';
+
+                (function obterDados() {
+                    monitorTempoReal.ajax = $.ajax({
+                        url: '/PainelGestor/GestorAjax',
+                        type: 'GET',
+
+                        success: function (result) {
+                            if (result.t.length > 0) {
+                                result.t.forEach(function (t) {
+
+                                    $('#T_SETUP_GERAL_AZUL_' + t.TURN_ID).text(t.SETUP_GERAL_AZUL);
+                                    $('#T_SETUP_GERAL_VERDE_' + t.TURN_ID).text(t.SETUP_GERAL_VERDE);
+                                    $('#T_SETUP_GERAL_AMARELO_' + t.TURN_ID).text(t.SETUP_GERAL_AMARELO);
+                                    $('#T_SETUP_GERAL_VERMELHO_' + t.TURN_ID).text(t.SETUP_GERAL_VERMELHO);
+
+                                    $('#T_PERFORMANCE_AZUL_' + t.TURN_ID).text(t.PERFORMANCE_AZUL);
+                                    $('#T_PERFORMANCE_VERDE_' + t.TURN_ID).text(t.PERFORMANCE_VERDE);
+                                    $('#T_PERFORMANCE_AMARELO_' + t.TURN_ID).text(t.PERFORMANCE_AMARELO);
+                                    $('#T_PERFORMANCE_VERMELHO_' + t.TURN_ID).text(t.PERFORMANCE_VERMELHO);
+                                    $('#T_QTD_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP_' + t.TURN_ID).text(t.QTD_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP);
+                                    $('#T_TEMPO_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP_' + t.TURN_ID).text(t.TEMPO_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP);
+                                    $('#T_QTD_PEQUENAS_PARADAS_' + t.TURN_ID).text(t.QTD_PEQUENAS_PARADAS);
+                                    $('#T_TEMPO_PEQUENAS_PARADAS_' + t.TURN_ID).text(t.TEMPO_PEQUENAS_PARADAS);
+                                })
+                            }
+
+
+                            if (result.m.length > 0) {
+                                result.m.forEach(function (m) {
+
+                                    /*start_time.clear;
+                                    start_time = new Date();//typeof (startTime) == 'undefined' ? new Date() : startTime;
+
+
+                                    jQuery('#difference').text(format_seconds(0))
+                                    */
+
+
+                                    if (m.STATUS_COR_SETUP == 'AZUL') {
+                                        COR = AZUL;
+                                    }
+                                    if (m.STATUS_COR_SETUP == 'VERDE') {
+                                        COR = VERDE;
+                                    }
+                                    if (m.STATUS_COR_SETUP == 'AMARELO') {
+                                        COR = AMARELO;
+                                    }
+                                    if (m.STATUS_COR_SETUP == 'VERMELHO') {
+                                        COR = VERMELHO;
+                                    }
+                                    if (m.TAR_ID == -1) {
+                                        COR = PRIMEIIRA_PRODUCAO;
+                                    }
+                                    if (m.PERCENTUAL_SETUP < 999) {
+                                        $('#M1ST1_' + m.ROT_MAQ_ID).text(m.PERCENTUAL_SETUP + '%');
+                                    } else {
+                                        $('#M1ST1_' + m.ROT_MAQ_ID).text(">900" + '%');
+                                    }
+                                    $('#M1S_' + m.ROT_MAQ_ID).css('background', 'linear-gradient(90deg, ' + COR + ' ' + m.PERCENTUAL_CONCLUIDO_SETUP + '%, #fff 0%)');
+                                    if (m.STATUS_COR_SETUP_AJUSTE == 'AZUL') {
+                                        COR = AZUL;
+                                    }
+                                    if (m.STATUS_COR_SETUP_AJUSTE == 'VERDE') {
+                                        COR = VERDE;
+                                    }
+                                    if (m.STATUS_COR_SETUP_AJUSTE == 'AMARELO') {
+                                        COR = AMARELO;
+                                    }
+                                    if (m.STATUS_COR_SETUP_AJUSTE == 'VERMELHO') {
+                                        COR = VERMELHO;
+                                    }
+                                    if (m.TAR_ID == -1) {
+                                        COR = PRIMEIIRA_PRODUCAO;
+                                    }
+                                    if (m.PERCENTUAL_SETUP_AJUSTE < 999) {
+                                        $('#M1SAT1_' + m.ROT_MAQ_ID).text(m.PERCENTUAL_SETUP_AJUSTE + '%');
+                                    } else {
+                                        $('#M1SAT1_' + m.ROT_MAQ_ID).text(">999" + '%');
+                                    }
+                                    $('#M1SA_' + m.ROT_MAQ_ID).css('background', 'linear-gradient(90deg,' + COR + ' ' + m.PERCENTUAL_CONCLUIDO_SETUP_AJUSTE + '%, #fff 0%)');
+                                    if (m.STATUS_COR_PERFORMANCE == 'AZUL') {
+                                        COR = AZUL;
+                                    }
+                                    if (m.STATUS_COR_PERFORMANCE == 'VERDE') {
+                                        COR = VERDE;
+                                    }
+                                    if (m.STATUS_COR_PERFORMANCE == 'AMARELO') {
+                                        COR = AMARELO;
+                                    }
+                                    if (m.STATUS_COR_PERFORMANCE == 'VERMELHO') {
+                                        COR = VERMELHO;
+                                    }
+                                    if (m.TAR_ID == -1) {
+                                        COR = PRIMEIIRA_PRODUCAO;
+                                    }
+                                    $('#M1P_' + m.ROT_MAQ_ID).css('background', 'linear-gradient(90deg, ' + COR + ' ' + m.PERCENTUAL_CONCLUIDO_PERFORMANCE + '%, #fff 0%)');
+                                    $('#M1P_' + m.ROT_MAQ_ID).attr('title', 'Percentual pronto:' + m.PERCENTUAL_CONCLUIDO_PERFORMANCE + ' qtd planejada:' + m.FPR_QUANTIDADE_PREVISTA + ' qtd produzida:' + m.FPR_QTD_PRODUZIDA);
+                                    if (m.PERCENTUAL_PERFORMANCE < 999) {
+                                        $('#M1PT1_' + m.ROT_MAQ_ID).text(m.PERCENTUAL_PERFORMANCE + '%');
+                                    } else {
+                                        $('#M1PT1_' + m.ROT_MAQ_ID).text(">999" + '%');
+                                    }
+
+
+                                    if (m.STATUS_COR_MAQUINA == "AZUL" || m.STATUS_COR_MAQUINA == "P1") {
+                                        $('#MTORRE_AZUL_' + m.ROT_MAQ_ID).removeClass('TorreAzulDesligado').addClass('TorreAzulLigado');
+                                    }
+                                    else {
+                                        $('#MTORRE_AZUL_' + m.ROT_MAQ_ID).removeClass('TorreAzulLigado').addClass('TorreAzulDesligado');
+                                    }
+                                    if (m.STATUS_COR_MAQUINA == "VERDE" || m.STATUS_COR_MAQUINA == "P1") {
+                                        $('#MTORRE_VERDE_' + m.ROT_MAQ_ID).removeClass('TorreVerdeDesligado').addClass('TorreVerdeLigado');
+                                    }
+                                    else {
+                                        $('#MTORRE_VERDE_' + m.ROT_MAQ_ID).removeClass('TorreVerdeLigado').addClass('TorreVerdeDesligado');
+                                    }
+                                    if (m.STATUS_COR_MAQUINA == "AMARELO" || m.STATUS_COR_MAQUINA == "P1") {
+                                        $('#MTORRE_AMARELO_' + m.ROT_MAQ_ID).removeClass('TorreAmareloDesligado').addClass('TorreAmareloLigado');
+                                    }
+                                    else {
+                                        $('#MTORRE_AMARELO_' + m.ROT_MAQ_ID).removeClass('TorreAmareloLigado').addClass('TorreAmareloDesligado');
+                                    }
+                                    if (m.STATUS_COR_MAQUINA == "VERMELHO" || m.STATUS_COR_MAQUINA == "P1") {
+                                        $('#MTORRE_VERMELHO_' + m.ROT_MAQ_ID).removeClass('TorreVermelhoDesligado').addClass('TorreVermelhoLigado');
+                                    }
+                                    else {
+                                        $('#MTORRE_VERMELHO_' + m.ROT_MAQ_ID).removeClass('TorreVermelhoLigado').addClass('TorreVermelhoDesligado');
+                                    }
+
+
+                                    $('#M_VELO_ATU_PC_SEGUNDO_ROUD_1_' + m.ROT_MAQ_ID).text(m.VELO_ATU_PC_SEGUNDO_ROUD_1);
+                                    $('#M_STATUS_FILA_' + m.ROT_MAQ_ID).text(m.STATUS_FILA);
+
+
+                                    $('#M_STATUS_' + m.ROT_MAQ_ID).text(m.MAQ_STATUS);
+                                    $('#M_FEEDBACKS_PENDENTES_' + m.ROT_MAQ_ID).text(m.FEEDBACKS_PENDENTES);
+                                    $('#M_TEMPO_SEM_FEEDBACK_' + m.ROT_MAQ_ID).text(m.TEMPO_SEM_FEEDBACK);
+                                    $('#M_ULTIMA_ATUALIZACAO_' + m.ROT_MAQ_ID).text(m.ULTIMA_ATUALIZACAO);
+                                    $('#M_OPS_PARCIAIS_' + m.ROT_MAQ_ID).text(m.OPS_PARCIAIS);
+
+
+                                    $('#M_SETUP_GERAL_AZUL_' + m.ROT_MAQ_ID).html(m.SETUP_GERAL_AZUL);
+                                    $('#M_SETUP_GERAL_VERDE_' + m.ROT_MAQ_ID).text(m.SETUP_GERAL_VERDE);
+                                    $('#M_SETUP_GERAL_AMARELO_' + m.ROT_MAQ_ID).text(m.SETUP_GERAL_AMARELO);
+                                    $('#M_SETUP_GERAL_VERMELHO_' + m.ROT_MAQ_ID).text(m.SETUP_GERAL_VERMELHO);
+                                    $('#M_PERFORMANCE_AZUL_' + m.ROT_MAQ_ID).text(m.PERFORMANCE_AZUL);
+                                    $('#M_PERFORMANCE_VERDE_' + m.ROT_MAQ_ID).text(m.PERFORMANCE_VERDE);
+                                    $('#M_PERFORMANCE_AMARELO_' + m.ROT_MAQ_ID).text(m.PERFORMANCE_AMARELO);
+                                    $('#M_PERFORMANCE_VERMELHO_' + m.ROT_MAQ_ID).text(m.PERFORMANCE_VERMELHO);
+
+
+
+                                    $('#M_QTD_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP_' + m.ROT_MAQ_ID).text(m.QTD_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP);
+                                    $('#M_TEMPO_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP_' + m.ROT_MAQ_ID).text(m.TEMPO_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP);
+                                    $('#M_QTD_PEQUENAS_PARADAS_' + m.ROT_MAQ_ID).text(m.QTD_PEQUENAS_PARADAS);
+                                    $('#M_TEMPO_PEQUENAS_PARADAS_' + m.ROT_MAQ_ID).text(m.TEMPO_PEQUENAS_PARADAS);
+
+
+
+
+
+                                    if (result.tm.length > 0) {
+                                        result.tm.forEach(function (tm) {
+                                            $('#MT_SETUP_GERAL_AZUL_' + tm.MAQ_ID + tm.TURN_ID).text(tm.SETUP_GERAL_AZUL);
+                                            $('#MT_SETUP_GERAL_VERDE_' + tm.MAQ_ID + tm.TURN_ID).text(tm.SETUP_GERAL_VERDE);
+                                            $('#MT_SETUP_GERAL_AMARELO_' + tm.MAQ_ID + tm.TURN_ID).text(tm.SETUP_GERAL_AMARELO);
+                                            $('#MT_SETUP_GERAL_VERMELHO_' + tm.MAQ_ID + tm.TURN_ID).text(tm.SETUP_GERAL_VERMELHO);
+
+                                            $('#MT_PERFORMANCE_AZUL_' + tm.MAQ_ID + tm.TURN_ID).text(tm.PERFORMANCE_AZUL);
+                                            $('#MT_PERFORMANCE_VERDE_' + tm.MAQ_ID + tm.TURN_ID).text(tm.PERFORMANCE_VERDE);
+                                            $('#MT_PERFORMANCE_AMARELO_' + tm.MAQ_ID + tm.TURN_ID).text(tm.PERFORMANCE_AMARELO);
+                                            $('#MT_PERFORMANCE_VERMELHO_' + tm.MAQ_ID + tm.TURN_ID).text(tm.PERFORMANCE_VERMELHO);
+
+                                            $('#MT_QTD_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP_' + tm.MAQ_ID + tm.TURN_ID).text(tm.QTD_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP);
+                                            $('#MT_TEMPO_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP_' + tm.MAQ_ID + tm.TURN_ID).text(tm.TEMPO_PARADAS_NAO_PROGRAMADAS_EXETO_SETUP);
+                                            $('#MT_QTD_PEQUENAS_PARADAS_' + tm.MAQ_ID + tm.TURN_ID).text(tm.QTD_PEQUENAS_PARADAS);
+                                            $('#MT_TEMPO_PEQUENAS_PARADAS_' + tm.MAQ_ID + tm.TURN_ID).text(tm.TEMPO_PEQUENAS_PARADAS);
+
+                                        })
+                                    }
+                                })
+
+                            }
+
+
+
+                            console.log(result);
+                        },
+                        error: function () {
+                            alert('Falha na comunicação.');
+                        },
+                        complete: function () {//chama a mesma função após 5 segundos
+                            monitorTempoReal.timeout = setTimeout(obterDados, 5000);
+                        }
+                    });
+                })()
+            },
+            cancelar: function () {
+                if (monitorTempoReal.ajax != null)
+                    monitorTempoReal.ajax.abort();
+                if (monitorTempoReal.timeout != null)
+                    clearTimeout(monitorTempoReal.timeout);
+            }
+        }
+
+
+
+
+
+    </script>
+}

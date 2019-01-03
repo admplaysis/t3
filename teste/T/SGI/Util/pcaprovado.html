@@ -1,0 +1,409 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <title>Aprovação de Pedido de Compras</title>
+    <style type="text/css">
+        a:hover {
+            text-decoration: underline;
+        }
+
+        a:link {
+            text-decoration: none;
+        }
+
+        a:active {
+        }
+
+        .texto {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            color: #333333;
+            text-decoration: none;
+            font-weight: normal;
+        }
+
+
+        .Scroll {
+            SCROLLBAR-FACE-COLOR: #DEDEDE;
+            SCROLLBAR-HIGHLIGHT-COLOR: #DEDEDE;
+            SCROLLBAR-SHADOW-COLOR: #ffffff;
+            SCROLLBAR-3DLIGHT-COLOR: #ffffff;
+            SCROLLBAR-ARROW-COLOR: #ffffff;
+            SCROLLBAR-TRACK-COLOR: #ffffff;
+            SCROLLBAR-DARKSHADOW-COLOR: #DEDEDE;
+        }
+
+
+
+        .combo {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            margin: 1px;
+            padding: 1px;
+            border: 1px solid #000000;
+        }
+
+        .comboselect {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #666666;
+            font-size: 11px;
+            border: 1px #CCCCCC double;
+        }
+
+        .links {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            color: #CC0000;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .links-clientes {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            color: #003366;
+            text-decoration: none;
+        }
+
+        .textobold {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            color: #003366;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .textoItalico {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            color: 7F7F7F;
+            text-decoration: none;
+            font-style: italic;
+            font-weight: bold;
+        }
+
+        .titulo {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 16px;
+            color: #19167D;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .links-detalhes {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10px;
+            color: FF0000;
+            text-decoration: none;
+        }
+
+        .TituloMenor {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            color: #19167D;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .Botoes {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10px;
+            font-weight: normal;
+            text-decoration: none;
+            margin: 2px;
+            padding: 2px;
+            cursor: hand;
+            border: 1px outset #000000;
+        }
+
+        .TarjaTopoMenu {
+            text-decoration: none;
+            height: 6px;
+            background-image: url(https://portal.jaepel.com.br/workflow/imagens/apmenu-right.jpg);
+        }
+
+        .FundoMenu {
+            text-decoration: none;
+            background-image: url(https://portal.jaepel.com.br/workflow/imagens/apmenu-right.jpg);
+        }
+
+
+        .FonteMenu {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            color: #19167D;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+
+        .FonteSubMenu {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            color: #19167D;
+            text-decoration: none;
+        }
+
+        .FundoSubMenu {
+            text-decoration: none;
+            background-image: url(https://portal.jaepel.com.br/workflow/imagens/apmenu-right.jpg);
+        }
+
+        .DivisoriaOpçõesMenu {
+            text-decoration: none;
+            background-color: #6680A6;
+            background-image: url(https://portal.jaepel.com.br/workflow/imagens/apmenu-right.jpg);
+        }
+
+        .TarjaTopoLogin {
+            text-decoration: none;
+            background-color: #426285;
+            height: 6px;
+        }
+
+        .FundoLogin {
+            text-decoration: none;
+            background-color: #F7F7F7;
+        }
+
+        .FundoClaro {
+            text-decoration: none;
+            background-color: #fbfbfb;
+        }
+
+        .TituloDestaques {
+            font-family: Verdana, Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            color: #19167D;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .TextoDestaques {
+            font-family: Verdana, Arial, Helvetica, sans-serif;
+            font-size: 10px;
+            color: #363537;
+            text-decoration: none;
+            font-weight: normal;
+        }
+
+        .FundoDestaques {
+            text-decoration: none;
+            background-color: #E5E5E5;
+        }
+
+        .FundoPontilhado {
+            text-decoration: none;
+            background-image: url(https://portal.jaepel.com.br/workflow/imagens/pontilhado.gif);
+            height: 5px;
+        }
+
+        .FundoPontilhadoVertical {
+            text-decoration: none;
+            background-image: url(https://portal.jaepel.com.br/workflow/imagens/pontilhado_vertical.gif);
+            height: 5px;
+        }
+
+        .TituloTabelas {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            color: #FFFFFF;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .FundoTituloTabela {
+            text-decoration: none;
+            background-color: #495E73;
+        }
+
+        .TarjaTopoCor {
+            text-decoration: none;
+            height: 6px;
+            background-image: url(https://portal.jaepel.com.br/workflow/imagens/pontilhado.gif);
+            background-color: #6699CC;
+        }
+
+        .FundoTabelaDestaques {
+            text-decoration: none;
+            background-color: #495E73;
+        }
+
+        .comboselect-pequeno {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #666666;
+            font-size: 11px;
+            border: 1px solid #CCCCCC;
+            width: 132px;
+            clear: none;
+            float: none;
+            text-decoration: none;
+            left: 1px;
+            top: 1px;
+            right: 1px;
+            bottom: 1px;
+            clip: rect(1px 1px 1px 1px);
+        }
+
+        .comboselect-grande {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #666666;
+            font-size: 11px;
+            border: 1px #CCCCCC double;
+            width: 415px;
+        }
+
+        .texto-layer {
+            font-family: Verdana, Arial, Helvetica, sans-serif;
+            font-size: 9px;
+            color: #000000;
+            text-decoration: none;
+        }
+
+        .tituloAvaliacao {
+            font-family: Verdana, Arial, Helvetica, sans-serif;
+            font-size: 9px;
+            color: #19167D;
+            text-decoration: none;
+            font-weight: bold;
+            vertical-align: middle;
+            text-align: center;
+            line-height: 12px;
+        }
+    </style>
+
+    <style type="text/css">
+        <!--
+        .style1 {
+            font-size: 24px;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #339933;
+        }
+
+        .style2 {
+            font-size: 18px;
+        }
+
+        .style4 {
+            font-family: "Courier New", Courier, mono;
+        }
+
+        .style6 {
+            color: #19167D;
+            font-size: 12px;
+        }
+
+        .style10 {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        -->
+    </style>
+</head>
+
+<body>
+    <table width="96%" border="0" align="center" cellpadding="0" cellspacing="0">
+        <tr>
+            <td height="66" background="https://portal.jaepel.com.br/workflow/imagens/topo_04.gif"><div align="center"><img src="https://portal.jaepel.com.br/workflow/imagens/topo_03.gif" width="600" height="66" 89">  <img src="https://portal.jaepel.com.br/workflow/imagens/jaepel.jpg" width="180" height="66"></div></td>
+        </tr>
+        <tr background="https://portal.jaepel.com.br/workflow/imagens/pontilhado.gif">
+            <td height="5" class="TarjaTopoCor"><img src="https://portal.jaepel.com.br/workflow/imagens/transparente.gif" width="1" height="1"></td>
+        </tr>
+    </table>
+
+    <table width="96%" border="0" align="center" cellpadding="0" cellspacing="1">
+        <tr>
+            <td width="35%"> <div align="justify"><span class="titulo"><font size="3">&raquo; </font>Pedido  de Compras </span></div></td>
+            <td width="20%" bgcolor="#FFFFFF"><div align="center"><strong><span class="style1">APROVADO</span></strong></div></td>
+            <td width="45%"><div align="right"><span class="TituloMenor"><span class="textoItalico"><span class="style2">No. %PEDIDO% - %EMPRESA%</span>&nbsp;&nbsp;</span></span></div></td>
+        </tr>
+    </table>
+    <table width="96%" border="1" align="center" cellpadding="6" cellspacing="0" bordercolor="#E5E5E5" bgcolor="#F7F7F7">
+        <tr>
+            <td width="100%" bordercolor="#FFFFFF" class="titulo">
+                <table border="0" cellpadding="2" cellspacing="1" width="100%">
+                    <tr>
+                        <td width="12%" class="TituloMenor"><b>Emiss&atilde;o</b>: </td>
+                        <td width="38%" class="texto">%C7_EMISSAO%</td>
+                        <td width="12%" class="TituloMenor"><b>Total Bruto </b>: </td>
+                        <td width="38%" class="texto">%CR_TOTAL%</td>
+                    </tr>
+                    <tr>
+                        <td class="TituloMenor"><b>Comprador</b>:&nbsp; </td>
+                        <td class="texto">%C7_USER%</td>
+                        <td class="TituloMenor"><b>Desconto</b>: </td>
+                        <td class="texto">%CR_DESCONTO%</td>
+                    </tr>
+                    <tr>
+                        <td class="TituloMenor"><b>Fornecedor</b>:&nbsp; </td>
+                        <td class="texto">%A2_NOME%</td>
+                        <td class="TituloMenor"><b>Total L&iacute;quido </b>: </td>
+                        <td class="texto">%CR_LIQUIDO%</td>
+                    </tr>
+                    <tr>
+                        <td class="TituloMenor">Tipo de Frete : </td>
+                        <td class="texto">%FRETE%</td>
+                        <td class="TituloMenor"><b>Cond.Pagamento</b>: </td>
+                        <td class="texto">%E4_DESCRI%</td>
+                    </tr>
+
+                    <tr>
+                        <td class="TituloMenor">&nbsp;</td>
+                        <td class="texto">&nbsp;</td>
+                        <td class="TituloMenor">Solicitante:</td>
+                        <td class="texto">%Y_JPSOLICIT%</td>
+                    </tr>
+                </table>
+
+                <table border="0" cellspacing="1" width="100%">
+                    <tr bgcolor="#E4E4E4" class="TituloMenor">
+                        <td width="5%" height="3" align="center"><span class="style14">Item</span></td>
+                        <td width="6%" align="center"><span class="style14">C&oacute;digo</span></td>
+                        <td width="17%" align="center"><span class="style14">Descri&ccedil;&atilde;o</span></td>
+                        <td width="5%" align="center"><span class="style14">Um</span></td>
+                        <td width="5%" align="center"><span class="style14">Quant</span></td>
+                        <td width="5%" align="center"><span class="style14">Vl.Unit</span></td>
+                        <td width="5%" align="center"><span class="style14">IPI</span></td>
+                        <td width="6%" align="center"><span class="style14">Vl.Total</span></td>
+                        <td width="7%" align="center"><span class="style15">Entrega</span></td>
+                        <td width="10%" align="center"><span class="style15">Prc &Uacute;lt.Compra </span></td>
+                        <td width="12%" align="center"><p class="style15">Dt &Uacute;ltima Compra </p></td>
+                        <td width="11%" align="center"><span class="style15">Centro de Custo</span></td>
+                        <td width="6%" align="center"><span class="style15"><b>Nro S.C </b></span><span class="style15"></span></td>
+                    </tr>
+                    %ITENS%
+                    <tbody>
+                        <tr>
+                            <td colspan="13" background="https://portal.jaepel.com.br/workflow/imagens/pontilhado.gif" class="texto-layer"><span class="TituloMenor"><img src="https://portal.jaepel.com.br/workflow/imagens/transparente.gif" width="10" height="3"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+        </tr>
+    </table>
+    <table width="96%" border="0" align="center" cellpadding="0" cellspacing="1">
+        <tr>
+            <td><span class="titulo"><font size="3">&raquo; </font>Processo de Aprova&ccedil;&atilde;o do Pedido de Compra </span></td>
+        </tr>
+    </table>
+    <table width="96%" border="1" align="center" cellpadding="6" cellspacing="0" bordercolor="#E5E5E5" bgcolor="#F7F7F7">
+        <tr>
+            <td width="100%" bordercolor="#FFFFFF" class="titulo">
+                <table width="100%" border="0" cellspacing="1" height="42">
+                    <tr bgcolor="#E4E4E4" class="TituloMenor">
+                        <td width="4%" height="17" align="center"><b>N&iacute;vel</b></td>
+                        <td width="11%" height="17" align="center"><b>Situa&ccedil;&atilde;o</b></td>
+                        <td width="13%" height="17" align="center"><b>Aprovado por</b></td>
+                        <td width="7%" height="17" align="center"><b>Data da Libera&ccedil;&atilde;o</b></td>
+                        <td width="54%" height="17" align="center"><b>Observa&ccedil;&otilde;es</b></td>
+                    </tr>
+                    <tbody>
+                        %APROVADORES%
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>

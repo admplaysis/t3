@@ -1,0 +1,40 @@
+﻿@model IEnumerable<SGI.Areas.PlugAndPlay.Models.TipoOcorrencia>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<div class="btn-group focus-btn-group">
+    <a href="@Url.Action("Create")" rel="tooltip" title="Incluir" class="btn btn-success">
+        <span class="fa fa-plus"></span> Incliur
+    </a>
+</div>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Descricao)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Descricao)
+            </td>
+            <td>
+
+                <a href="@Url.Action("Edit", new {id = item.Id })" class="btn btn-warning" title="Editar" rel="tooltip"><span class="fa fa-edit"></span></a>
+                <a href="@Url.Action("Details", new {id = item.Id })" class="btn btn-info" title="Visualizar" rel="tooltip"><span class="fa fa-eye"></span></a>
+                <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-danger" title="Remover" rel="tooltip"><span class="fa fa-eraser"></span></a>
+
+            </td>
+        </tr>
+    }
+
+</table>

@@ -1,0 +1,116 @@
+﻿@model SGI.Models.T_PlanoAcao
+@{
+    ViewBag.Title = "Novo Plano de ação";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class='col-xs-12'>
+    <div class="page-title">
+
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-tags"></i>Movimentos
+                </li>
+                <li>
+                    <a href="@Url.Action("Index","Medicoes")">Medições</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("PlanoAcao", "Medicoes", new { idIndicador = Html.Value("idIndicador"), ano = Html.Value("ano"), mes = Html.Value("mes") })">Planos de ação</a>
+                </li>
+                <li class="active">
+                    <strong>Novo Plano de ação</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="col-xs-12">
+    <section class="box ">
+        <header class="panel_header">
+            <h2 class="title pull-left">@Model.T_Metas.T_Indicadores.IND_DESCRICAO</h2>
+            <div class="actions panel_actions pull-right">
+            </div>
+        </header>
+        <div class="content-body">
+            @using (Html.BeginForm("AddPlano", "Medicoes", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                @Html.HiddenFor(x => x.MET_ID)
+                @Html.HiddenFor(x => x.PLA_REFERENCIA)
+                @Html.HiddenFor(x => x.PLA_STATUS)
+                <div class="row">
+                    <div class="col-md-8 col-sm-9 col-xs-10">
+                        <div class="form-group">
+                            <label class="form-label">Data</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.PLA_DATA, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Referência</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.PLA_REFERENCIA, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Descrição</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.PLA_DESCRICAO, new { @class = "form-control", @placeholder = "Digite a descrição", @maxlength = 100 })
+                                @Html.ValidationMessageFor(x => x.PLA_DESCRICAO)
+                            </div>
+                        </div>
+                        <div class="pull-right">
+                            <button type="submit" class="btn btn-success">Salvar</button>
+                            <a href="@Url.Action("Index")" type="button" class="btn">Cancelar</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+</div>
+
+
+@section Styles {
+    <environment names="Development">
+        <link href="~/Content/select2.css" rel="stylesheet" type="text/css" media="screen" />
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+    <environment names="Staging,Production">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+}
+
+
+@section Scripts {
+
+    <environment names="Development">
+        <script src="~/Script/select2.js" type="text/javascript"></script>
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+
+    <script type="text/javascript">
+        if ($.isFunction($.fn.select2)) {
+            $('.select2').select2();
+        }
+        $("#mmovimentos").removeClass("open");
+        $("#mmovimentos").addClass("open");
+    </script>
+}

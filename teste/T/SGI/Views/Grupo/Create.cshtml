@@ -1,0 +1,116 @@
+﻿@model SGI.Models.T_Grupo
+@{
+    ViewData["Title"] = "Cadastrar grupo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class='col-xs-12'>
+    <div class="page-title">
+
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-tags"></i>Cadastros
+                </li>
+                <li>
+                    <a href="@Url.Action("Index","Grupo")">Grupo</a>
+                </li>
+                <li class="active">
+                    <strong>Novo Grupo</strong>
+                </li>
+            </ol>
+        </div>
+
+    </div>
+</div>
+
+<div class="col-xs-12">
+    <section class="box ">
+        <header class="panel_header">
+            <h2 class="title pull-left">Cadastrar Grupo</h2>
+            <div class="actions panel_actions pull-right">
+            </div>
+        </header>
+        <div class="content-body">
+            @using (Html.BeginForm("Create", "Grupo", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            <div class="row">
+                <div class="col-md-8 col-sm-9 col-xs-10">
+                    <div class="form-group">
+                        <label class="form-label">Nome</label>
+                        <div class="controls">
+                            @Html.TextBoxFor(x => x.NOME, new { @class = "form-control", @placeholder = "Digite o nome do grupo" })
+                            @Html.ValidationMessageFor(x => x.NOME)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Descricão</label>
+                        <div class="controls">
+                            @Html.TextBoxFor(x => x.GRU_DESCRICAO, new { @class = "form-control", @placeholder = "Digite a descrição para o grupo" })
+                            @Html.ValidationMessageFor(x => x.GRU_DESCRICAO)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Exibe Lista</label>
+                        <div class="controls">
+                            @Html.DropDownList("EXIBELISTA", new[] {
+                                                               new SelectListItem() {Text = "Sim", Value = "0"},
+                                                               new SelectListItem() {Text = "Não", Value = "1"}
+                                                           },
+                                         new { @id = "EXIBELISTA", @class = "select2" })
+                        </div>
+                    </div>
+
+                    <div class="pull-right">
+                        <button type="submit" class="btn btn-success">Salvar</button>
+                        <a href="@Url.Action("Index")" type="button" class="btn">Cancelar</a>
+                    </div>
+                </div>
+            </div>
+    }
+        </div>
+    </section>
+</div>
+
+@section Styles {
+    <environment names="Development">
+        <link href="~/Content/select2.css" rel="stylesheet" type="text/css" media="screen" />
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+    <environment names="Staging,Production">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+}
+
+
+
+
+@section Scripts {
+
+    <environment names="Development">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/Script/select2.js" type="text/javascript"></script>
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+
+    <script type="text/javascript">
+        if ($.isFunction($.fn.select2)) {
+            $('.select2').select2();
+        }
+
+        $("#mcadastros").removeClass("open");
+        $("#mcadastros").addClass("open");
+    </script>
+}

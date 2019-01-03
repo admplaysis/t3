@@ -1,0 +1,51 @@
+﻿@model SGI.Models.T_PlanoAcao
+
+<div class="modal-content" id="myModal">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Remover Plano de ação</h4>
+    </div>
+    <div id="targetDiv">
+        @using (Ajax.BeginForm("Delete", "PlanoAcao", new AjaxOptions
+                    {
+                        InsertionMode = InsertionMode.InsertAfter,
+                        HttpMethod = "POST",
+                        UpdateTargetId = "targetDiv"
+                    }))
+        {
+            <div class="modal-body">
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="form-group">
+                            <label class="form-label">Data</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.PLA_DATA, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Referência</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.PLA_REFERENCIA, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Descrição</label>
+                            <div class="controls">
+                                @Html.TextAreaFor(x => x.PLA_DESCRICAO, 5, 3, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer text-center">
+                <button class="btn btn-success" type="submit">Confirmar</button>
+                <button data-dismiss="modal" aria-hidden="true" type="button" class="btn">Cancelar</button>
+            </div>
+        }
+    </div>
+</div>

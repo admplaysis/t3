@@ -1,0 +1,251 @@
+﻿@using SGI.Areas.PlugAndPlay.Models
+@using System.Web.Script.Serialization;
+@model TargetProduto
+@{
+    ViewBag.Title = "Feedback de Desempenho";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section scripts{
+    <script>
+        var ServerValues = {
+            target : @(Html.Raw(new JavaScriptSerializer().Serialize(ViewBag.target)))
+        }
+    </script>
+    <!--global functions-->
+    <script src="~/Plugins/global-functions/global-functions.js"></script>
+    <!--graficos-->
+    <script src="~/Areas/PlugAndPlay/Scripts/CanvasGauge/modalform.js"></script>
+    <!--Grafico velocimetro-->
+    <script src="~/Areas/PlugAndPlay/Scripts/Medicoes/Index/js/graficos.js"></script>
+    <!--Barra-cores-desenpenho-maquina-->
+    <script src="~/Plugins/global-functions/barra-cores-desempenho-maquinas.js"></script>
+    <!--modal botstrap create-->
+    <script src="~/Plugins/bootstrap-modal-create/js/bootstrap-modal-create.js"></script>
+    <!--control icone carregando-->
+    <script src="~/Plugins/control-icone-carregando/js/control-carregando.js"></script>
+
+    <script src="~/Plugins/div-alert-msg/js/alert-page.js"></script>
+    <!--Scripts da pagina-->
+    <script src="~/Areas/PlugAndPlay/Scripts/Medicoes/FeedbackPeformace/js/validar-campos.js"></script>
+    <script src="~/Areas/PlugAndPlay/Scripts/Medicoes/FeedbackPeformace/js/salvar-feedback.js"></script>
+    <script src="~/Plugins/global-functions/gauge-performace-producao.js"></script>
+    <script src="~/Areas/PlugAndPlay/Scripts/Medicoes/FeedbackPeformace/js/global.js"></script>
+}
+@section styles{
+    <!-- Progress Bar-->
+    <link href="~/Content/css/progress-bar.css" rel="stylesheet" />
+    <!--Alert-->
+    <link href="~/Plugins/div-alert-msg/css/alert-page.css" rel="stylesheet" />
+    <!--Generic-->
+    <link href="~/Content/css/responsive-info.css" rel="stylesheet" />
+    <link href="~/Content/css/forms.css" rel="stylesheet" />
+    <!--control icone carregando-->
+    <link href="~/Plugins/control-icone-carregando/css/control-carregando.css" rel="stylesheet" />
+    <style>
+        .infoModalTop {
+            background-color: #eee;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+            .infoModalTop .title {
+                color: #505458;
+                font-weight: 600;
+            }
+
+            .infoModalTop .desc {
+            }
+    </style>
+}
+<input id="hfMovimentoId" type="hidden" value="@Model.MovimentoEstoqueId" />
+<input id="hfTargetId" type="hidden" value="@Model.Id" />
+
+@*<input id="hfQtdPecaBoaProduzida" type="hidden" value="@ViewBag.qtdPecaBoaProduzida" />*@
+
+<div class="col-xs-12">
+    <div class="page-title">
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+        @*<div class="pull-right hidden-xs">
+                <ol class="breadcrumb">
+                    <li><a href="#"></a>Teste</li>
+                    <li><a href="#"></a>Teste</li>
+                    <li><a href="#"></a>Teste</li>
+                    <li><a href="#"></a>Teste</li>
+                </ol>
+            </div>*@
+    </div>
+</div>
+<div class="col-xs-12">
+    <section class="box">
+        <header class="panel_header">
+            @*<h2 class="title pull-left">
+                    Producao
+                </h2>*@
+        </header>
+        <div class="content-body">
+            @Html.Partial("_ProducaoDescTopPage", null, new ViewDataDictionary {
+    { "maquina", ViewBag.movimento.Maquina.Descricao },
+    { "op", ViewBag.op },
+    { "pedidido", ViewBag.movimento.OrderId },
+    { "descricao", ViewBag.movimento.Produto.Descricao } })
+            <div class="form-section">
+                <h4 class="form-section-title">Performance</h4>
+                <div class="row">
+                    <div class="col-md-3 col-sm-4">
+                        <div class="form-group">
+                            @HelpersEspecificos.BarraCoresDesenpenhoProducao(1, false)
+                            @*<div class="row">
+                                    <div class="col-xs-6">
+                                        <label class="form-label">Resultado</label>
+                                        <div class="controls">
+                                            <input readonly type="text" value="@Model.RealizadoPerformace" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <label class="form-label">Meta</label>
+                                        <div class="controls">
+                                            <input readonly type="text" value="@Model.MetaPerformace" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>*@
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-8">
+                        <input id="hfTipoFeedPerformace" type="hidden" value="@Model.TipoFeedbackPerformace.ToUpper()" />
+                        @printMotivo("sltOcorrenciaPerformace", Model.TipoFeedbackPerformace)
+                        @printJustificativa("txtJustificativaPerformace", Model.TipoFeedbackPerformace, "95px")
+                    </div>
+                </div>
+            </div>
+            @if (Model.RealizadoTempoSetup != -1)
+            {
+                <div class="form-section">
+                    <h4 class="form-section-title">Setup</h4>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        @HelpersEspecificos.BarraCoresDesenpenhoProducao(2, false)
+                                    </div>
+                                    @*<div class="progress">
+                                            <div class="progress-bar animated fadeIn animated-duration-1s animated-delay-200ms" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%;"> </div>
+                                            <div class="progress-bar animated fadeIn animated-duration-1s animated-delay-200ms" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 30%;"> </div>
+                                        </div>*@
+                                    @*<div class="col-xs-6">
+                                            <label class="form-label">Resultado</label>
+                                            <div class="controls">
+                                                <input readonly type="text" value="@Model.RealizadoTempoSetup" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <label class="form-label">Meta</label>
+                                            <div class="controls">
+                                                <input readonly type="text" value="@Model.MetaTempoSetup" class="form-control">
+                                            </div>
+                                        </div>*@
+                                    @*<div class="col-xs-6">
+                                            <label class="form-label">Resultado</label>
+                                            <div class="controls">
+                                                <input readonly type="text" value="@Model.RealizadoTempoSetup" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <label class="form-label">Meta</label>
+                                            <div class="controls">
+                                                <input readonly type="text" value="@Model.MetaTempoSetup" class="form-control">
+                                            </div>
+                                        </div>*@
+                                </div>
+                            </div>
+                            @printMotivo("sltOcorrenciaSetup", Model.TipoFeedbackSetup)
+                            <input id="hfTipoFeedSetup" type="hidden" value="@Model.TipoFeedbackSetup.ToUpper()" />
+                        </div>
+                        <div class="col-sm-6">
+                            @printJustificativa("txtJustificativaSetup", Model.TipoFeedbackSetup, "121px")
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (Model.RealizadoTempoSetupAjuste != -1)
+            {
+
+                <div class="form-section">
+                    <h4 class="form-section-title">Setup ajuste</h4>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            @HelpersEspecificos.BarraCoresDesenpenhoProducao(3, false)
+                            @*<div class="form-group">
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <label class="form-label">Resultado</label>
+                                            <div class="controls">
+                                                <input readonly type="text" value="@Model.RealizadoTempoSetupAjuste" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <label class="form-label">Meta</label>
+                                            <div class="controls">
+                                                <input readonly type="text" value="@Model.MetaTempoSetupAjuste" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>*@
+                            @printMotivo("sltOcorrenciaSetupA", Model.TipoFeedbackSetupAjuste)
+                            <input id="hfTipoFeedSetupA" type="hidden" value="@Model.TipoFeedbackSetupAjuste.ToUpper()" />
+                        </div>
+                        <div class="col-sm-6">
+                            @printJustificativa("txtJustificativaSetupA", Model.TipoFeedbackSetupAjuste, "121px")
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="text-right">
+                <a href="@ViewBag.urlAnterior" class="btn btn-default">Cancelar</a>
+                <button type="button" class="btn btn-success" id="btnSalvarFeedback">Salvar</button>
+            </div>
+        </div>
+    </section>
+</div>
+
+@helper printJustificativa(string txtId, string tipoFeed, string heigth)
+    {
+        bool disabled = false;
+        if (tipoFeed.ToUpper() != "N")
+        {
+            <div class="form-group has-feedback">
+                <label class="form-label">Justificativa</label>
+                <div class="controls">
+                    <textarea style="height: @heigth;" @(disabled ? "disabled" : "") id="@txtId" class="form-control"></textarea>
+                    <span class="help-block"></span>
+                </div>
+            </div>
+        }
+        else
+        {
+            disabled = true;
+        }
+
+}
+@helper printMotivo(string sltId, string tipoFeed)
+    {
+        <div class="form-group has-feedback">
+            @if (tipoFeed.ToUpper() == "G")
+            {
+                <label class="form-label">Ocorrência</label>
+                @Html.DropDownList(sltId, ViewBag.sltOcoAltaPerform as List<SelectListItem>, "Selecione a ocorrência...", new { @class = "form-control" })
+            }
+            else if (tipoFeed.ToUpper() == "B")
+            {
+                <label class="form-label">Ocorrência</label>
+                @Html.DropDownList(sltId, ViewBag.sltOcoBaixaPerform as List<SelectListItem>, "Selecione a ocorrência...", new { @class = "form-control" })
+            }
+            else
+            {
+                @*@Html.DropDownList(sltId, new List<SelectListItem>(), "Selecione a ocorrência...", new { @disabled = true, @class = "form-control" })*@
+            }
+            <span class="help-block"></span>
+        </div>
+}

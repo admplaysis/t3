@@ -1,0 +1,133 @@
+﻿@model SGI.Models.Custom.PedidoCustom
+@{
+    System.Globalization.CultureInfo culturaInfo = new System.Globalization.CultureInfo("pt-BR");
+    if (Model.Moeda == 2)//Seta formato moeda em dolar
+    {
+        culturaInfo = new System.Globalization.CultureInfo("en-US");
+    }
+}
+
+<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Aprovar Pedido Nº @Model.Pedido</h4>
+    </div>
+    @using (Html.BeginForm("AprovPed", "WorkFlow", FormMethod.Post, new { id = "formDados", name = "formDados" }))
+    {
+        <div class="modal-body">
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(x => x.Usuario)
+            @Html.HiddenFor(x => x.Fornecedor)
+            @Html.HiddenFor(x => x.Loja)
+            @Html.HiddenFor(x => x.ForNome)
+            @Html.HiddenFor(x => x.Empresa)
+            @Html.HiddenFor(x => x.Aprovador.Email)
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="form-label">Emissão</label>
+                        <div class="controls">
+                            @Html.TextBox("Emissao", DateTime.ParseExact(Model.Emissao, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy"), new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="form-label">Pedido</label>
+                        <div class="controls">
+                            @Html.TextBoxFor(x => x.Pedido, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="form-label">Total</label>
+                        <div class="controls">
+                            @Html.TextBox("Total", Model.Total.ToString("C", culturaInfo), new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label class="form-label">Fornecedor</label>
+                        <div class="controls">
+                            @Html.TextBox("Fornecedor", Model.Fornecedor + Model.Loja + " - " + Model.ForNome, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="form-label">Aprovação</label>
+                        <div class="controls">
+                            @if (Request["aprovacao"] == "N")
+                            {
+                                <input type="radio" name="aprovacao" class="skin-square-green" value="S"><i></i>
+                                <label class="iradio-label form-label" for="square-radio-2">Sim</label>
+                                <input type="radio" name="aprovacao" value="N" class="skin-square-red" checked><i></i>
+                                <label class="iradio-label form-label" for="square-radio-2">Não</label>
+                                @Html.TextAreaFor(x => x.MotivoRejeicao, 4, 5, new { @class = "form-control", @placeholder = "Caso marcado como 'Não' digite a justificativa" })
+                            }
+                            else
+                            {
+                                <input type="radio" name="aprovacao" value="S" class="skin-square-green" checked><i></i>
+                                <label class="iradio-label form-label" for="square-radio-2">Sim</label>
+                                <input type="radio" name="aprovacao" value="N" class="skin-square-red"><i></i>
+                                <label class="iradio-label form-label" for="square-radio-2">Não</label>
+                                @Html.TextAreaFor(x => x.MotivoRejeicao, 4, 5, new { @class = "form-control", @placeholder = "Caso marcado como 'Não' digite a justificativa" })
+                            }
+                            @Html.ValidationMessageFor(x => x.MotivoRejeicao)
+                            @if (!string.IsNullOrEmpty(ViewBag.alerta))
+                            {
+                                <span class="field-validation-error" data-valmsg-for="MotivoRejeicao" data-valmsg-replace="true">@ViewBag.alerta</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <div>
+                            <label class="iradio-label form-label"></label>
+                        </div>
+                        <label class="form-label">Obs.Aprov.Pré-Pedido</label>
+                        <div class="controls">
+                            @Html.TextAreaFor(x => x.ObsAprovacao, 5, 5, new { @class = "form-control", @placeholder = "Digite a observação" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer text-center">
+            <button data-dismiss="modal" class="btn btn-default" type="button">Fechar</button>
+            <button class="btn btn-success" type="submit">Confirmar</button>
+        </div>
+    }
+</div>
+
+<script type="text/javascript">
+    $('#formDados').submit(function () { // catch the form's submit event
+        $.ajax({ // create an AJAX call...
+            data: $(this).serialize(), // get the form data
+            type: $(this).attr('method'), // GET or POST
+            url: $(this).attr('action'), // the file to call
+            success: function (response) { // on success..
+                if (response.success) {
+                    location.reload();
+                }
+            },
+            error: function () {
+                //location.reload();
+            }
+        });
+        return false; // cancel original event to prevent form submitting
+    });
+</script>

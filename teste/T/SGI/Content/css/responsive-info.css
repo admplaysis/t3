@@ -1,0 +1,15 @@
+﻿.responsive-info {
+    padding: 10px;
+    background-color: #f5f5f5;
+    border: 1px solid #eaeaea;
+    margin-bottom: 20px;
+}
+
+    .responsive-info .title {
+        color: rgba(118, 118, 118, 1.0);
+        font-weight: 600;
+    }
+
+    .responsive-info .desc {
+        color: rgba(118, 118, 118, 1.0)
+    }

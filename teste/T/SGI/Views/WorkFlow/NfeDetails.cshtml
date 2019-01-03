@@ -1,0 +1,376 @@
+﻿@model SGI.Models.Custom.NfeCustom
+@{
+    ViewBag.Title = "Aprovação nota fiscal";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    System.Globalization.CultureInfo culturaInfo = new System.Globalization.CultureInfo("pt-BR");
+    if (Model.Moeda == 2)//Seta formato moeda em dolar
+    {
+        culturaInfo = new System.Globalization.CultureInfo("en-US");
+    }
+}
+
+<div class='col-xs-12'>
+    <div class="page-title">
+
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action(" index","home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-th-large"></i>Workflow
+                </li>
+                <li class="active">
+                    <strong>Aprovação de notas</strong>
+                </li>
+            </ol>
+        </div>
+
+    </div>
+</div>
+
+<div class="col-xs-12">
+    <section class="box">
+        <header class="panel_header">
+            <h1 class="text-center">@Model.Empresa - Nº @Model.Numero/@Model.Serie </h1>
+        </header>
+        <div class="content-body">
+            @if (Html.Value("msg").ToString() != "")
+            {
+                <div class="alert alert-success fade in">
+                    <button class="close" data-dismiss="alert">
+                        ×
+                    </button>
+                    <i class="fa-fw fa fa-check"></i>
+                    @Html.Value("msg").ToString()
+                </div>
+            }
+
+            @if (ViewBag.erro != "" && ViewBag.erro != null)
+            {
+                <div class="alert alert-danger fade in">
+                    <button class="close" data-dismiss="alert">
+                        ×
+                    </button>
+                    <i class="fa-fw fa fa-times"></i>
+                    @ViewBag.erro
+                </div>
+            }
+            @using (Html.BeginForm("NfeDetails", "WorkFlow", FormMethod.Post, new { @id = "formDados", @name = "formDados" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                @Html.HiddenFor(x => x.Empresa)
+                @Html.HiddenFor(x => x.Status)
+                @Html.HiddenFor(x => x.Recno)
+                @Html.HiddenFor(x => x.Origem)
+                <div class="row">
+                    <div class="row marginBottom30">
+                        <div class="col-md-12">
+                            <div class="pull-left">
+                                <a href="@Url.Action("NfEntrada", new { searchString = Html.Value("searchString"), nPageSize = Html.Value("nPageSize"), page = Html.Value("page"), pEmpresa = Html.Value("pEmpresa"), pStatus = Html.Value("pStatus") })" class="btn btn-default" title="Voltar" rel="tooltip">
+                                    Voltar
+                                </a>
+                                @if (Model.Status == "1")
+                                {
+                                    <button type="submit" id="btnConfirmar" class="btn btn-primary" title="Confirmar" rel="tooltip">
+                                        <i class="fa fa-check"></i> Confirmar
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    @*** Linha 1 ***@
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="form-label">Emissão</label>
+                                <div class="controls">
+                                    @if (!string.IsNullOrEmpty(Model.Emissao))
+                                    {
+                                        @Html.TextBox("Emissao", DateTime.ParseExact(Model.Emissao, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy"), new { @class = "form-control", @readonly = true })
+                                    }
+                                    else
+                                    {
+                                        @Html.TextBox("Emissao", "", new { @class = "form-control", @readonly = true })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="form-label">Número</label>
+                                <div class="controls">
+                                    @Html.TextBoxFor(x => x.Numero, new { @class = "form-control", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <label class="form-label">Serie</label>
+                                <div class="controls">
+                                    @Html.TextBoxFor(x => x.Serie, new { @class = "form-control", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="form-label">Cod.Fornecedor</label>
+                                <div class="controls">
+                                    @Html.TextBox("CodFornecedor", Model.Fornecedor + Model.Loja, new { @class = "form-control", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label class="form-label">Fornecedor</label>
+                                <div class="controls">
+                                    @Html.TextBoxFor(x => x.NomeFor, new { @class = "form-control", @readonly = true, @title = Model.Fornecedor + Model.Loja })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @*** Linha 2 ***@
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="form-label">Valor Mercadoria</label>
+                                <div class="controls">
+                                    @Html.TextBox("VlrMerc", Model.VlrMerc.ToString("C", culturaInfo), new { @class = "form-control", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="form-label">Desconto</label>
+                                <div class="controls">
+                                    @Html.TextBox("Desconto", Model.Desconto.ToString("C", culturaInfo), new { @class = "form-control", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="form-label">Tp.Frete</label>
+                                <div class="controls">
+                                    @if (Model.TipoFrete == "C")
+                                    {
+                                        @Html.TextBox("TipoFrete", "CIF", new { @class = "form-control", @readonly = true })
+                                    }
+                                    else if (Model.TipoFrete == "F")
+                                    {
+                                        @Html.TextBox("TipoFrete", "FOB", new { @class = "form-control", @readonly = true })
+                                    }
+                                    else if (Model.TipoFrete == "T")
+                                    {
+                                        @Html.TextBox("TipoFrete", "Terceiros", new { @class = "form-control", @readonly = true })
+                                    }
+                                    else if (Model.TipoFrete == "S")
+                                    {
+                                        @Html.TextBox("TipoFrete", "Sem Frete", new { @class = "form-control", @readonly = true })
+                                    }
+                                    else
+                                    {
+                                        @Html.TextBox("TipoFrete", "", new { @class = "form-control", @readonly = true })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="form-label">Frete</label>
+                                <div class="controls">
+                                    @Html.TextBox("Frete", Model.Frete.ToString("C", culturaInfo), new { @class = "form-control", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="form-label">Valor Bruto</label>
+                                <div class="controls">
+                                    @Html.TextBox("VlrBruto", Model.VlrBruto.ToString("C", culturaInfo), new { @class = "form-control", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="form-label">Cond.Pagamento</label>
+                                <div class="controls">
+                                    @Html.TextBoxFor(x => x.CondPag, new { @class = "form-control", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @*** Linha 3 ***@
+                    @if (Model.Origem != "Financeiro")
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Pedido</th>
+                                        <th>Item</th>
+                                        <th>Código</th>
+                                        <th>Descrição</th>
+                                        <th>Um</th>
+                                        <th>Quant</th>
+                                        <th>Vl.Unit</th>
+                                        <th>IPI</th>
+                                        <th>Vl.Total</th>
+                                        <th>Preço Últ. Compra</th>
+                                        <th>Data da Última Compra</th>
+                                        <th>Centro de Custo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.ItensNfe)
+                                {
+                                <tr>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.Pedido))
+                                            {
+                                            <a target="_blank" rel="tooltip" title="Clique para visualizar o pedido" href="@Url.Action("PedDetails", new { @pedido = item.Pedido, pEmpresa  = item.Empresa})">@item.Pedido</a>
+                                            }
+                                            else
+                                            {
+                                            <a target="_blank" rel="tooltip" title="Nota não possui pedido de compra" href="#">@item.Pedido</a>
+                                            }
+                                    </td>
+                                    <td>@item.Item</td>
+                                    <td>@item.CodProduto</td>
+                                    <td>@item.Produto</td>
+                                    <td>@item.Un</td>
+                                    <td>@item.Qtd</td>
+                                    <td>@item.VlrUnit.ToString("C", culturaInfo)</td>
+                                    <td>@item.VlrIpi.ToString("C", culturaInfo)</td>
+                                    <td>@item.VlrTotal.ToString("C", culturaInfo)</td>
+                                    <td>@item.UltPrcCompra.ToString("C", culturaInfo)</td>
+                                    @if (!string.IsNullOrEmpty(item.DtUtmComp))
+                                        {
+                                        <td>@DateTime.ParseExact(item.DtUtmComp, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy")</td>
+                                        }
+                                        else
+                                        {
+                                        <td></td>
+                                        }
+                                    <td>@item.CC</td>
+                                </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+
+                    @*** Linha 4 ***@
+                    <fieldset>
+                        <strong>Processo de Aprovação do pagamento da NF</strong>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <td>Situação</td>
+                                        <td>Dt.Aprovação</td>
+                                        <td>Nível</td>
+                                        <td>Aprovador</td>
+                                        <td>Obs</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.LstAprovacoes)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @if (item.Status == "N")//Bloqueado
+                                                {
+                                                    <span class="label label-danger">Pagamento não autorizado</span>
+                                                }
+                                                else if (item.Status == "S")//Liberado
+                                                {
+                                                    <span class="label label-success">Autorizado pagamento</span>
+                                                }
+                                                else if (item.Status == "R")//Rejeitado
+                                                {
+                                                    <span class="label label-warning">Autorizado rejeitada</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(item.DtLib))
+                                                {
+                                                    @DateTime.ParseExact(item.DtLib, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy")
+                                                }
+                                            </td>
+                                            <td>@item.Nivel.Trim()</td>
+                                            <td>@item.Nome</td>
+                                            <td>@item.Obs</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </fieldset>
+
+                    @**** Botões ****@
+                    <div class="row marginBottom30">
+                        <div class="col-md-12">
+                            <div class="pull-left">
+                                <a href="@Url.Action("NfEntrada", new { searchString = Html.Value("searchString"), nPageSize = Html.Value("nPageSize"), page = Html.Value("page"), pEmpresa = Html.Value("pEmpresa"), pStatus = Html.Value("pStatus") })" class="btn btn-default" title="Voltar" rel="tooltip">
+                                    Voltar
+                                </a>
+                                @if (Model.Status == "1")
+                                {
+                                    <button type="submit" id="btnConfirmar" class="btn btn-primary" title="Confirmar" rel="tooltip">
+                                        <i class="fa fa-check"></i> Confirmar
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+</div>
+
+
+
+
+@section Styles {
+    <environment names="Development">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+    <environment names="Staging,Production">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+}
+
+
+@section Scripts {
+    <environment names="Development">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+
+    <script type="text/javascript">
+        $("#mworkflow").removeClass("open");
+        $("#mworkflow").addClass("open");
+    </script>
+}

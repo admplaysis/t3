@@ -1,0 +1,237 @@
+﻿@using PagedList
+@using PagedList.Mvc
+@model IPagedList<SGI.Models.Custom.PedidoCustom>
+@{
+    ViewBag.Title = "Lista de pedidos pendentes aprovação";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var dados = new SGI.Context.JProtheus();
+}
+
+<div class='col-xs-12'>
+    <div class="page-title">
+
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-th-large"></i>Workflow
+                </li>
+                <li class="active">
+                    <strong>Pedidos de compra</strong>
+                </li>
+            </ol>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="col-xs-12">
+    <section class="box ">
+        <header class="panel_header">
+            <h2 class="title pull-left">Lista de pedidos para aprovação</h2>
+            <div class="actions panel_actions pull-right">
+            </div>
+        </header>
+        <div class="content-body">
+            <div class="btn-toolbar">
+                @using (Html.BeginForm("PedCompra", "Workflow", FormMethod.Get))
+                {
+                    @Html.Hidden("page", Html.Value("page"))
+                    <div class="col-xs-12 col-sm-6">
+                        <div id="dt_basic_filter" class="dataTables_filter">
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xs-12 hidden-xs">
+                        <div class="dataTables_filter" id="dt_basic_length">
+                            <label style="float:right">
+                                @Html.DropDownList("nPageSize", (IEnumerable<SelectListItem>)ViewBag.ItensPageSize,
+                            new { @id = "nPageSize", onchange = "this.form.submit();", @class = "form-control" })
+                            </label>
+                            <label style="float:right" class="col-md-5">
+                                @Html.DropDownList("pStatus", (IEnumerable<SelectListItem>)ViewBag.Status, "Status...",
+              new { @id = "pStatus", onchange = "this.form.submit();", @class = "form-control" })
+                            </label>
+                            <label style="float:right" class="col-md-5">
+                                @Html.DropDownList("pEmpresa", (IEnumerable<SelectListItem>)ViewBag.Empresa, "Empresa...",
+       new { @id = "pEmpresa", onchange = "this.form.submit();", @class = "form-control" })
+                            </label>
+
+                            <label style="padding-right:1%">
+                                <div class="input-group">
+                                    <input class="form-control" aria-label="Text input with multiple buttons" placeholder="Digite a pesquisa..." id="searchString" name="searchString" value="@Html.Value("searchString")">
+                                    <div class="input-group-btn">
+                                        <button onclick="JavascriptFunction();" type="submit" class="btn btn-default" aria-label="Help">
+                                            <span class="fa fa-search"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>
+                                #
+                            </th>
+                            <th>
+                                Empresa
+                            </th>
+                            <th>
+                                Emissão
+                            </th>
+                            <th>
+                                Pedido
+                            </th>
+                            <th>
+                                Fornecedor
+                            </th>
+                            <th>
+                                Valor
+                            </th>
+                            <th>
+                                Dt.Liberação
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @if (item.StatusSCR == "02")
+                                    {
+                                        <span class="label label-danger">Aguardando Aprovação</span>
+                                    }
+                                    else if (item.StatusSCR == "03")
+                                    {
+                                        <span class="label label-success">Aprovado</span>
+                                    }
+                                    else if (item.StatusSCR == "04")
+                                    {
+                                        <span class="label label-warning">Rejeitado</span>
+                                    }
+                                </td>
+                                <td>
+                                    @item.Empresa
+                                </td>
+                                <td>
+                                    @DateTime.ParseExact(item.Emissao, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy")
+                                </td>
+                                <td>
+                                    @item.Pedido
+                                </td>
+                                <td>
+                                    @item.Fornecedor - @item.ForNome
+                                </td>
+                                <td>
+                                    @{
+                                    System.Globalization.CultureInfo culturaInfo = new System.Globalization.CultureInfo("pt-BR");
+                                    if (item.Moeda == 2)//Seta formato moeda em dolar
+                                    {
+                                        culturaInfo = new System.Globalization.CultureInfo("en-US");
+                                    }
+                                    }
+                                    @item.Total.ToString("C", culturaInfo)
+                                </td>
+                                @if (!String.IsNullOrEmpty(item.DtLiberacao))
+                                {
+                                    <td>
+                                        @DateTime.ParseExact(item.DtLiberacao, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy")
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                                <td>
+                                    <a onclick="JavascriptFunction()" href="@Url.Action("PedDetails", new { pedido = item.Pedido, pEmpresa = item.Empresa, searchString = Html.Value("searchString"), nPageSize = Html.Value("nPageSize"), page = Html.Value("page"), pStatus = Html.Value("pStatus") })" title="Visualizar" rel="tooltip" class="btn btn-info">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                    @if (item.StatusSCR != "03")
+                                    {
+                                        <a href="@Url.Action("AprovPed", new { pedido = item.Pedido, empresa = item.Empresa })" title="Aprovar pedido" rel="tooltip" class="btn btn-success" data-modal="">
+                                            <i class="fa fa-check"></i>
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+            <div class="dataTables_info" id="datatable1_info" role="status" aria-live="polite">Exibindo @Model.PageNumber de @Model.PageCount de @Model.TotalItemCount registros</div>
+            <div class="dataTables_paginate paging_simple_numbers" id="datatable1_paginate">
+                @Html.PagedListPager((IPagedList)Model,
+                         page => Url.Action("PedCompra",
+                         new
+                         {
+                             page = page,
+                             nPageSize = Html.Value("nPageSize"),
+                             searchString = Html.Value("searchString"),
+                             empresa = Html.Value("empresa"),
+                             status = Html.Value("status")
+                         }),
+                new PagedListRenderOptions
+                {
+                    LinkToFirstPageFormat = "<< Primera",
+                    LinkToPreviousPageFormat = "< Anterior",
+                    LinkToNextPageFormat = "Proxima >",
+                    LinkToLastPageFormat = "Ultima >>"
+                })
+            </div>
+        </div>
+    </section>
+</div>
+
+<div id="divLoading" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+    top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+    opacity: .8; filter: alpha(opacity=70);display:none">
+    <p style="position: absolute; top: 30%; left: 45%; color: White;">
+        Carregando, aguarde ...<img src="~/Imagens/loading.gif">
+    </p>
+</div>
+
+<!-- modal placeholder-->
+<div id='myModal' class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <environment names="Staging,Production">
+        <script src="~/Script/modalform.js" type="text/javascript"></script>
+    </environment>
+
+    <script type="text/javascript">
+        $("#mworkflow").removeClass("open");
+        $("#mworkflow").addClass("open");
+
+        function JavascriptFunction() {
+            var url = '@Url.Action("PostMethod", "Historico")';
+            $("#divLoading").show();
+            $.post(url, null,
+                    function (data) {
+                        $("#PID")[0].innerHTML = data;
+                        $("#divLoading").hide();
+                    });
+        }
+    </script>
+}

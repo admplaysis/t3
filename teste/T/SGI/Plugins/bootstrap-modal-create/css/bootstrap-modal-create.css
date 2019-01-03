@@ -1,0 +1,13 @@
+﻿.modal-grid-info {
+
+}
+    .modal-grid-info .titulo {
+        font-weight: 600;
+        color: #777;
+    }
+    .modal-grid-info .info {
+        margin-bottom: 7px;
+    }
+    .modal-grid-info .desc {
+        color: #777;
+    }

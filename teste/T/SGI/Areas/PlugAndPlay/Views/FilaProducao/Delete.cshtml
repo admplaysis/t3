@@ -1,0 +1,105 @@
+﻿@model SGI.Areas.PlugAndPlay.Models.FilaProducao
+
+@{
+    ViewBag.Title = "Delete";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>FilaProducao</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Maquina.Descricao)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Maquina.Descricao)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.OrdemProducao.Tipo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OrdemProducao.Tipo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Produto.Descricao)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Produto.Descricao)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DataInicioPrevista)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DataInicioPrevista)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DataFimPrevista)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DataFimPrevista)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DataFimMaxima)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DataFimMaxima)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SequenciaTansformacao)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SequenciaTansformacao)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SequencaRepeticao)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SequencaRepeticao)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ObservacaoProducao)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ObservacaoProducao)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.QuantidadePrevista)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.QuantidadePrevista)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

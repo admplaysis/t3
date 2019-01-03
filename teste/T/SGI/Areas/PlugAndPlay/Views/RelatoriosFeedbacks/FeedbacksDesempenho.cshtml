@@ -1,0 +1,106 @@
+﻿@{
+    ViewBag.Title = "Feedbacks de Desempenho.";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section scripts{
+    <script src="~/Plugins/bootrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+    <script src="~/Plugins/bootrap-datepicker/locales/bootstrap-datepicker.pt-BR.min.js"></script>
+    <script src="~/Plugins/responsive-tables/js/rwd-table.min.js"></script>
+    <script src="~/Areas/PlugAndPlay/Scripts/RelatoriosFeedbacks/FeedbacksDesempenho.js"></script>
+}
+@section styles{
+    <link href="~/Plugins/bootrap-datepicker/css/bootstrap-datepicker.css" rel="stylesheet" />
+    <link href="~/Plugins/responsive-tables/css/rwd-table.min.css" rel="stylesheet" />
+    <style>
+
+        .table-wrapper .btn-group.dropdown-btn-group.pull-right {
+            float: initial !important;
+        }
+    </style>
+
+}
+<div class='col-xs-12'>
+    <div class="page-title">
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home", new { area = ""})"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-tags"></i>Cadastros
+                </li>
+                <li>
+                    <a href="@Url.Action("Index","Produto")">Produtos</a>
+                </li>
+                <li class="active">
+                    <strong>Adicionar</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+</div>
+<div class="col-xs-12">
+    <section class="box">
+        <header class="panel_header">
+            <h2 class="title pull-left">Feedbacks de Desenpenho</h2>
+            <div class="actions panel_actions pull-right">
+            </div>
+        </header>
+        <div class="content-body">
+            <div class="form-inline form-group">
+                <div class="form-group">
+                    <label class="form-label">Maquina</label>
+                    @Html.DropDownList("maquinaId", null, "Todas", new { @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label class="form-label">De</label>
+                    <input id="dataDe" type="text" value="@ViewBag.dataDe" class="form-control datepicker" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">a</label>
+                    <input id="dataAte" type="text" value="@ViewBag.dataAte" class="form-control datepicker" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tipo</label>
+                    @Html.DropDownList("tipo", null, new { @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    @Html.DropDownList("status", null, new { @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <button id="btnFiltar" class="btn btn-primary">Filtrar</button>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <div class="table-responsive" >
+                    <table id="tabTargets" class="table table-small-font table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th id="tabTargets-col-id0" data-priority="13">Tipo</th>
+                                <th id="tabTargets-col-id1" data-priority="12">Dia Turma</th>
+                                <th id="tabTargets-col-id2" data-priority="11">ID Performace</th>
+                                <th id="tabTargets-col-id3" data-priority="10">Ocorrência</th>
+                                <th id="tabTargets-col-id4" data-priority="9">Observação</th>   
+                                <th id="tabTargets-col-id5" data-priority="8">Funcionário</th>
+                                <th id="tabTargets-col-id6" data-priority="7">Máquina</th>
+                                <th id="tabTargets-col-id7" data-priority="6">Pedido</th>
+                                <th id="tabTargets-col-id8" data-priority="5">Produto</th>
+                                <th id="tabTargets-col-id9" data-priority="4">Seq. Repetição</th>
+                                <th id="tabTargets-col-id10" data-priority="3">Seq. Transfomação</th>
+                                <th id="tabTargets-col-id11" data-priority="2">Turma</th>
+                                <th id="tabTargets-col-id12" data-priority="1">Turno</th>
+                                <th id="tabTargets-col-id13" data-priority="0">Data</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+

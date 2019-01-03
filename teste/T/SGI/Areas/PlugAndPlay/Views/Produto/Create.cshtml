@@ -1,0 +1,113 @@
+﻿@model SGI.Areas.PlugAndPlay.Models.Produto
+
+@{
+    ViewBag.Title = "Adicionar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class='col-xs-12'>
+    <div class="page-title">
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home", new { area = ""})"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-tags"></i>Cadastros
+                </li>
+                <li>
+                    <a href="@Url.Action("Index","Produto")">Produtos</a>
+                </li>
+                <li class="active">
+                    <strong>Adicionar</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="col-xs-12">
+    <section class="box">
+        <header class="panel_header">
+            <h2 class="title pull-left">Produto</h2>
+            <div class="actions panel_actions pull-right">
+            </div>
+        </header>
+        <div class="content-body">
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                <div class="row">
+                    <div class="col-md-8 col-sm-9 col-xs-10">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Id, htmlAttributes: new { @class = "form-label" })
+                            <div class="controls">
+                                @Html.EditorFor(model => model.Id, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Id, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Descricao, htmlAttributes: new { @class = "form-label" })
+                            <div class="controls">
+                                @Html.EditorFor(model => model.Descricao, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Descricao, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Estoque, htmlAttributes: new { @class = "form-label" })
+                            <div class="controls">
+                                @Html.EditorFor(model => model.Estoque, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Estoque, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.UnidadeMedidaId, htmlAttributes: new { @class = "form-label" })
+                            <div class="controls">
+                                @Html.DropDownList("UnidadeMedidaId", null, "Selecione...", htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.UnidadeMedidaId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PecasPorFardo, htmlAttributes: new { @class = "form-label" })
+                            <div class="controls">
+                                @Html.EditorFor(model => model.PecasPorFardo, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.PecasPorFardo, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FardosPorPalet, htmlAttributes: new { @class = "form-label" })
+                            <div class="controls">
+                                @Html.EditorFor(model => model.FardosPorPalet, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.FardosPorPalet, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.TPIdentificador, htmlAttributes: new { @class = "form-label" })
+                            <div class="controls">
+                                @Html.EditorFor(model => model.TPIdentificador, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.TPIdentificador, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.Label("Metas", htmlAttributes: new { @class = "form-label" })
+                            <div class="lista-itens-add">
+
+                            </div>
+                        </div>
+                        <div class="form-group pull-right">
+                            <a href="@Url.Action("Index")" type="button" class="btn btn-default">Cancelar</a>
+                            <input type="submit" value="Salvar" class="btn btn-success" />
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+</div>
+

@@ -1,0 +1,182 @@
+﻿@model SGI.Models.T_Indicadores
+@{
+    ViewData["Title"] = "Cadastrar indicador";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class='col-xs-12'>
+    <div class="page-title">
+
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-pie-chart"></i>Movimentos
+                </li>
+                <li>
+                    <a href="@Url.Action("Index","Indicador")">Indicadores</a>
+                </li>
+                <li class="active">
+                    <strong>Cadastrar indicador</strong>
+                </li>
+            </ol>
+        </div>
+
+    </div>
+</div>
+
+<div class="col-xs-12">
+    <section class="box ">
+        <header class="panel_header">
+            <h2 class="title pull-left">Cadastrar indicador</h2>
+            <div class="actions panel_actions pull-right">
+            </div>
+        </header>
+        <div class="content-body">
+            @using (Html.BeginForm("Create", "Indicador", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                <div class="row">
+                    <div class="col-md-8 col-sm-9 col-xs-10">
+                        <div class="form-group">
+                            <label class="form-label">Descrição</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.IND_DESCRICAO, new { @class = "form-control", @placeholder = "Digite a descrição", @maxlength = 100 })
+                                @Html.ValidationMessageFor(x => x.IND_DESCRICAO)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Negócio</label>
+                            <div class="controls">
+                                @Html.DropDownList("NEG_ID", null, "Selecione...", new { @class = "select2" })
+                                @Html.ValidationMessageFor(x => x.NEG_ID)
+                            </div>
+                        </div>
+
+                        
+                        <div class="form-group">
+                            <label class="form-label">Tipo Comparador</label>
+                            <div class="controls">
+                                @Html.DropDownList("IND_TIPOCOMPARADOR", new[] {
+                                           new SelectListItem() {Text = "Igual", Value = "0"},
+                                           new SelectListItem() {Text = "Maior ou igual", Value = "1"},
+                                           new SelectListItem() {Text = "Menor ou igual", Value = "2"},
+                                           new SelectListItem() {Text = "Maior ou igual grange 3", Value = "3"},
+                                           new SelectListItem() {Text = "Maior ou igual grange 3", Value = "4"}
+                                       }, "Selecione...",
+   new { @id = "IND_TIPOCOMPARADOR", @class = "select2" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Tipo Meta</label>
+                            <div class="controls">
+                                @Html.DropDownList("IND_GATILHOACUMULADO", new[] {
+                                           new SelectListItem() {Text = "Período", Value = "1"},
+                                           new SelectListItem() {Text = "Acumulado", Value = "2"}
+                           }, "Selecione...",
+                                    new { @id = "IND_GATILHOACUMULADO", @class = "select2" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Descrição Cálculo</label>
+                            <div class="controls">
+                                @Html.TextAreaFor(x => x.DESC_CALCULO, 4, 3, new { @class = "form-control", @placeholder = "Digite a descrição do cálculo", @maxlength = "3000" })
+                                @Html.ValidationMessageFor(x => x.DESC_CALCULO)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Fonte de dados</label>
+                            <div class="controls">
+                                @Html.TextAreaFor(x => x.IND_CONEXAO, 2, 2, new { @class = "form-control", @placeholder = "Digite a origem dos dados", @maxlength = "100" })
+                                @Html.ValidationMessageFor(x => x.IND_CONEXAO)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Dt.Criação</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.IND_DTCRIACAO, new { @class = "form-control", @placeholder = "Digite a data de criação",@data_mask="99/99/9999"  })
+                                @Html.ValidationMessageFor(x => x.IND_DTCRIACAO)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Responsável Indicador</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.RESPOSAVELIND, new { @class = "form-control", @placeholder = "Digite o responsável pelo indicador", @maxlength = 100 })
+                                @Html.ValidationMessageFor(x => x.RESPOSAVELIND)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Responsável Carga</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.RESPOSAVELCARGA, new { @class = "form-control", @placeholder = "Digite o responsável pela carga", @maxlength = 100 })
+                                @Html.ValidationMessageFor(x => x.RESPOSAVELCARGA)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Proc. Exportação Aut.</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.PROCEXTRACAO, new { @class = "form-control", @placeholder = "Digite o processo de exportação", @maxlength = 100 })
+                                @Html.ValidationMessageFor(x => x.PROCEXTRACAO)
+                            </div>
+                        </div>
+
+                        <div class="pull-right">
+                            <button type="submit" class="btn btn-success">Salvar</button>
+                            <a href="@Url.Action("Index")" type="button" class="btn">Cancelar</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+</div>
+
+
+@section Styles {
+    <environment names="Development">
+        <link href="~/Content/select2.css" rel="stylesheet" type="text/css" media="screen" />
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+    <environment names="Staging,Production">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+}
+
+
+
+
+@section Scripts {
+
+    <environment names="Development">
+        <script src="~/Script/select2.js" type="text/javascript"></script>
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/jquery.inputmask.bundle.min.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+
+    <script type="text/javascript">
+        if ($.isFunction($.fn.select2)) {
+            $('.select2').select2();
+        }
+        $("#mcadastros").removeClass("open");
+        $("#mcadastros").addClass("open");
+    </script>
+}

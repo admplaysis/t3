@@ -1,0 +1,223 @@
+﻿@using SGI.Autenticacao
+<!-- SIDEBAR - START -->
+<div class="page-sidebar @(ViewData["mainmenu_scroll"] != null ? ViewData["mainmenu_scroll"] : "fixedscroll" ) @(ViewData["pagesidebar_class"] == null ? "collapseit" : ViewData["pagesidebar_class"] )">
+
+    <!-- MAIN MENU - START -->
+    <div class="page-sidebar-wrapper" id="main-menu-wrapper">
+
+        <!-- USER INFO - START -->
+        <div class="profile-info row">
+
+            <div class="profile-image col-xs-4">
+                <a href="@Url.Action("Perfil","Acesso")">
+                    <img alt="" src="~/Imagens/profile.jpg" class="img-responsive img-circle">
+                </a>
+            </div>
+
+            <div class="profile-details col-xs-8">
+
+                <h3>
+                    <a href="@Url.Action("Perfil","Acesso")">@((HttpContext.Current.User as CustomPrincipal).Name)</a>
+
+                    <!-- Available statuses: online, idle, busy, away and offline -->
+                    <span class="profile-status online"></span>
+                </h3>
+
+                <p class="profile-title">Seja bem vindo</p>
+
+            </div>
+
+        </div>
+        <!-- USER INFO - END -->
+        <ul class='wraplist'>
+            <li class='menusection'>Menu</li>
+            @**** Perfils
+                HttpContext.Current.User.IsInRole("AdiminstradorTI")
+                HttpContext.Current.User.IsInRole("Coordenador")
+                HttpContext.Current.User.IsInRole("Supervisor")
+                HttpContext.Current.User.IsInRole("Lider")
+                HttpContext.Current.User.IsInRole("Equipe")
+                HttpContext.Current.User.IsInRole("Operacao")
+                HttpContext.Current.User.IsInRole("Controller")
+                HttpContext.Current.User.IsInRole("Operador")
+                HttpContext.Current.User.IsInRole("Medicoes")
+                HttpContext.Current.User.IsInRole("Diretoria")
+                HttpContext.Current.User.IsInRole("AdiminstradorPCP")
+                HttpContext.Current.User.IsInRole("Gerente")  *@
+
+
+            @if (HttpContext.Current.User.IsInRole("AdiminstradorTI") || HttpContext.Current.User.IsInRole("Diretoria") || HttpContext.Current.User.IsInRole("Gerente") || HttpContext.Current.User.IsInRole("AdiminstradorPCP"))
+            {
+                <li id="mhome" class="@("" + (ViewContext.RouteData.Values["controller"]) == "Home" ? "open" : "" )">
+                    <a href="@Url.Action("Index", "Home", new { area = "" })">
+                        <i class="fa fa-bar-chart"></i>
+                        <span class="title">Indicadores</span>
+                    </a>
+                </li>
+            }
+
+            @if (HttpContext.Current.User.IsInRole("AdiminstradorTI") || HttpContext.Current.User.IsInRole("AdiminstradorPCP"))
+            {
+                <li id="mcadastros">
+                    <a href="javascript:;">
+                        <i class="fa fa-tags"></i>
+                        <span class="title">Cadastros</span>
+                        <span class="arrow open"></span>
+                    </a>
+                    <ul class="sub-menu">
+                        @Cadastros()
+                        @CadastroUsuario()
+                    </ul>
+                </li>
+
+            }
+            @if (HttpContext.Current.User.IsInRole("AdiminstradorTI"))
+            {
+                <li id="mconfiguracoes">
+                    <a href="javascript:;">
+                        <i class="fa fa-gears"></i>
+                        <span class="title">Configurações</span>
+                        <span class="arrow open"></span>
+                    </a>
+                    <ul class="sub-menu">
+                        <li>
+                            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "Usuario" ? "active" : "" )" href="@Url.Action("Index", "Usuario", new { area = "" })">Usuários</a>
+                        </li>
+                    </ul>
+                </li>
+            }
+            @if (HttpContext.Current.User.IsInRole("Operador") || HttpContext.Current.User.IsInRole("AdiminstradorTI") || HttpContext.Current.User.IsInRole("Diretoria") || HttpContext.Current.User.IsInRole("Gerente") || HttpContext.Current.User.IsInRole("AdiminstradorPCP"))
+            {
+                <li id="mfeedback">
+                    <a href="javascript:;">
+                        <i class="fa fa-check-square-o"></i>
+                        <span class="title">FeedBacks</span>
+                        <span class="arrow open"></span>
+
+                    </a>
+                    <ul class="sub-menu">
+                        @if (ViewBag.MaquinasMenu != null)
+                        {
+                            foreach (var m in ViewBag.MaquinasMenu)
+                            {
+                                <li>
+
+                                    <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "Medicoes" && ViewContext.RouteData.Values["action"] == "Index" ? "active" : "")"
+                                       href="@Url.Action("Index", "Medicoes", new { area =  "PlugAndPlay", id = m.Id,ip=m.ControlIp })">@m.Descricao</a>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </li>
+            }
+            @if (HttpContext.Current.User.IsInRole("Operador") || HttpContext.Current.User.IsInRole("AdiminstradorTI") || HttpContext.Current.User.IsInRole("Diretoria") || HttpContext.Current.User.IsInRole("Gerente") || HttpContext.Current.User.IsInRole("AdiminstradorPCP"))
+            {
+                <li id="mhome" class="@("" + (ViewContext.RouteData.Values["controller"]) == "Home" ? "open" : "" )">
+                    <a href="@Url.Action("Index", "PainelGestor", new { area = "" })">
+                        <i class="fa fa-dashboard"></i>
+                        <span class="title">Painel De Máquinas</span>
+                    </a>
+                </li>
+            }
+
+
+        </ul>
+    </div>
+</div>
+<!--  SIDEBAR - END -->
+
+
+@helper Cadastros()
+    {
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "Grupo" ? "active" : "" )" href="@Url.Action("Index", "Grupo", new { area = ""})">Grupo de Indicadores</a>
+        </li>
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "Unidade" ? "active" : "" )" href="@Url.Action("Index", "Unidade", new { area = ""})">Unidade de medida</a>
+        </li>
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "Departamento" ? "active" : "" )" href="@Url.Action("Index", "Departamento", new { area = ""})">Departamentos</a>
+        </li>
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "Negocio" ? "active" : "" )" href="@Url.Action("Index", "Negocio", new { area = ""})">Negócio</a>
+        </li>
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "Indicador" ? "active" : "" )" href="@Url.Action("Index", "Indicador", new { area = ""})">Indicadores</a>
+        </li>
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "Metas" ? "active" : "" )" href="@Url.Action("Index", "Metas", new { area = ""})">Metas</a>
+        </li>
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "FilaProducao" ? "active" : "" )" href="@Url.Action("Index", "FilaProducao", new { area = "PlugAndPlay"})">Fila De Produção</a>
+        </li>
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "Maquinas" ? "active" : "" )" href="@Url.Action("Index", "Maquinas", new { area = "PlugAndPlay"})">Maquinas</a>
+        </li>
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "Orders" ? "active" : "" )" href="@Url.Action("Index", "Orders", new { area = "PlugAndPlay"})">Pedidos</a>
+        </li>
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "Produto" ? "active" : "" )" href="@Url.Action("Index", "Produto", new { area = "PlugAndPlay"})">Produto</a>
+        </li>
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "Roteiros" ? "active" : "" )" href="@Url.Action("Index", "Roteiros", new { area = "PlugAndPlay"})">Roteiros</a>
+        </li>
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "Turmas" ? "active" : "" )" href="@Url.Action("Index", "Turmas", new { area = "PlugAndPlay"})">Turmas</a>
+        </li>
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "Clientes" ? "active" : "" )" href="@Url.Action("Index", "Clientes", new { area = "PlugAndPlay"})">Clientes</a>
+        </li>
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "GrupoMaquinas" ? "active" : "" )" href="@Url.Action("Index", "GrupoMaquinas", new { area = "PlugAndPlay"})">Grupo Máquina</a>
+        </li>
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "Turnos" ? "active" : "" )" href="@Url.Action("Index", "Turnos", new { area = "PlugAndPlay"})">Turnos</a>
+        </li>
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "TiposOcorrencia" ? "active" : "" )" href="@Url.Action("Index", "TiposOcorrencia", new { area = "PlugAndPlay"})">Tipo de Ocorrencia</a>
+        </li>
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "Ocorrencias" ? "active" : "" )" href="@Url.Action("Index", "Ocorrencias", new { area = "PlugAndPlay"})">Ocorrencia</a>
+        </li>
+}
+@helper CadastroUsuario()
+    {
+
+}
+@helper Dre()
+    {
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "Dre" ? "active" : "" )" href="@Url.Action("Index", "Dre")">Dre</a>
+        </li>
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "Visao" ? "active" : "" )" href="@Url.Action("Index", "Visao")">Visão</a>
+        </li>
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "PlanoContas" ? "active" : "")" href="@Url.Action("Index", "PlanoContas")">Plano Contas</a>
+        </li>
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "UndDre" ? "active" : "")" href="@Url.Action("Index", "UndDre")">Unidade</a>
+        </li>
+}
+@helper Overflow()
+    {
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "WorkFlow" && ViewContext.RouteData.Values["action"] == "PedCompra" ? "active" : "")" href="@Url.Action("PedCompra", "WorkFlow")">Pedidos de compra</a>
+        </li>
+        <li>
+            <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "WorkFlow" && ViewContext.RouteData.Values["action"] == "NfEntrada" ? "active" : "")" href="@Url.Action("NfEntrada", "WorkFlow")">Aprovação de títulos PA</a>
+        </li>
+}
+@helper Feedbacks()
+    {
+        <a class="@("" + (ViewContext.RouteData.Values["controller"]) == "Medicoes" && ViewContext.RouteData.Values["action"] == "Index" ? "active" : "")" href="@Url.Action("Index", "Medicoes", new { area = "PlugAndPlay"})">FeedBack</a>
+}
+@helper Indicadores()
+    {
+
+}
+@helper PainelGestor()
+    {
+
+}

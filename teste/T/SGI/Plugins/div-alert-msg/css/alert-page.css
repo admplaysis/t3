@@ -1,0 +1,27 @@
+﻿#principalAlertPage {
+    padding: 0px 10px 0 10px;
+    margin-bottom: 0px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 200000;
+    display: none
+}
+
+    #principalAlertPage > div {
+        float: left;
+    }
+
+    #principalAlertPage .lateral {
+        width: 5%;
+    }
+
+    #principalAlertPage .texto {
+        width: 90%;
+        text-align: center;
+    }
+
+    #principalAlertPage button {
+        top: auto;
+        right: auto;
+    }

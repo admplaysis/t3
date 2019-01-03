@@ -1,0 +1,195 @@
+﻿@model SGI.Models.T_Metas
+@{
+    ViewBag.Title = "Editar meta";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class='col-xs-12'>
+    <div class="page-title">
+
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-tags"></i>Movimentos
+                </li>
+                <li>
+                    <a href="@Url.Action("Index","Metas")">Metas</a>
+                </li>
+                <li class="active">
+                    <strong>Editar Meta</strong>
+                </li>
+            </ol>
+        </div>
+
+    </div>
+</div>
+
+<div class="col-xs-12">
+    <section class="box ">
+        <header class="panel_header">
+            <h2 class="title pull-left">Editar meta</h2>
+            <div class="actions panel_actions pull-right">
+            </div>
+        </header>
+        <div class="content-body">
+            @using (Html.BeginForm("Edit", "Metas", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                @Html.HiddenFor(x => x.MET_ID)
+                @Html.HiddenFor(x => x.IND_ID)
+                <div class="row">
+                    <div class="col-md-8 col-sm-9 col-xs-10">
+                        <div class="form-group">
+                            <label class="form-label">Negócio</label>
+                            <div class="controls">
+                                @Html.TextBox("negNome", Model.T_Indicadores.T_Negocio.NEG_DESCRICAO, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Indicador</label>
+                            <div class="controls">
+                                @Html.TextBox("indNome", Model.T_Indicadores.IND_DESCRICAO, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Dt.Início</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.MET_DTINICIO, new { @class = "form-control", @data_mask = "99/99/9999", @placeholder = "Digite a data inicial" })
+                                @Html.ValidationMessageFor(x => x.MET_DTINICIO)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Dt.Fim</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.MET_DTFIM, new { @class = "form-control", @data_mask = "99/99/9999", @placeholder = "Digita a data final" })
+                                @Html.ValidationMessageFor(x => x.MET_DTFIM)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Tipo Alvo</label>
+                            <div class="controls">
+                                @Html.DropDownList("MET_TIPOALVO", new[] {
+                                           new SelectListItem() {Text = "Valor", Value = "1"},
+                                           new SelectListItem() {Text = "Data", Value = "2"},
+                                           new SelectListItem() {Text = "Percentual", Value = "3"},
+                                           new SelectListItem() {Text = "Dia Util", Value = "4"},
+                                           new SelectListItem() {Text = " QUANTO MAIOR MELHOR 3 RAGES", Value = "5"},
+                                           new SelectListItem() {Text = " QUANTO MENOR MELHOR 3 RAGES", Value = "6"}
+
+                                       }, "Selecione...",
+                         new { @id = "MET_TIPOALVO", @class = "select2" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Alvo</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.MET_ALVO, new { @class = "form-control", @placeholder = "Digite o valor do alvo" })
+                                @Html.ValidationMessageFor(x => x.MET_ALVO)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Range 01</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.MET_RANGE01, new { @class = "form-control", @data_a_sep = ",", data_a_dec = ".", @placeholder = "0,000" })
+                                @Html.ValidationMessageFor(x => x.MET_RANGE01)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Range 02</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.MET_RANGE02, new { @class = "form-control", @data_a_sep = ",", data_a_dec = ".", @placeholder = "0,000" })
+                                @Html.ValidationMessageFor(x => x.MET_RANGE02)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Range 03</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.MET_RANGE03, new { @class = "form-control", @data_a_sep = ",", data_a_dec = ".", @placeholder = "0,000" })
+                                @Html.ValidationMessageFor(x => x.MET_RANGE03)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Dimencao</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.DIM_ID, new { @class = "form-control", @data_a_sep = ",", data_a_dec = ".", @placeholder = "0,000" })
+                                @Html.ValidationMessageFor(x => x.DIM_ID)
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="form-label">Fato</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.FAT_ID, new { @class = "form-control", @data_a_sep = ",", data_a_dec = ".", @placeholder = "" })
+                                @Html.ValidationMessageFor(x => x.FAT_ID)
+                            </div>
+                        </div>
+                        <div class="pull-right">
+                            <button type="submit" class="btn btn-success">Salvar</button>
+                            <a href="@Url.Action("Index")" type="button" class="btn">Cancelar</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+</div>
+
+<!-- modal placeholder-->
+<div id='myModal' class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <environment names="Development">
+        <link href="~/Content/select2.css" rel="stylesheet" type="text/css" media="screen" />
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/Script/jquery.inputmask.bundle.min.js" type="text/javascript"></script>
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+}
+
+
+@section Scripts {
+
+    <environment names="Development">
+        <script src="~/Script/select2.js" type="text/javascript"></script>
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/jquery.inputmask.bundle.min.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+        <script src="~/Script/modalform.js" type="text/javascript"></script>
+    </environment>
+
+    <script type="text/javascript">
+        if ($.isFunction($.fn.select2)) {
+            $('.select2').select2();
+        }
+        $("#mcadastros").removeClass("open");
+        $("#mcadastros").addClass("open");
+    </script>
+}

@@ -1,0 +1,142 @@
+﻿@model IEnumerable<SGI.Models.T_PlanoAcao>
+@{
+    ViewData["Title"] = "Planos de ação";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class='col-xs-12'>
+    <div class="page-title">
+
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-tags"></i>Movimentos
+                </li>
+                <li>
+                    <a href="@Url.Action("Index","Medicoes")">Medições</a>
+                </li>
+                <li class="active">
+                    <strong>Planos de ação</strong>
+                </li>
+            </ol>
+        </div>
+
+    </div>
+</div>
+
+<div class="col-xs-12">
+    <section class="box ">
+        <header class="panel_header">
+            <h2 class="title pull-left">Planos de ações</h2>
+            <div class="actions panel_actions pull-right">
+            </div>
+        </header>
+        <div class="content-body">
+            <div class="btn-toolbar">
+                @using (Html.BeginForm("Index", "Metas", FormMethod.Get))
+                {
+                    <div class="btn-group focus-btn-group">
+                        <a href="@Url.Action("AddPlano", new { idIndicador = Html.Value("idIndicador"), periodo = Html.Value("periodo") })" rel="tooltip" title="Incluir plano de ação" class="btn btn-success">
+                            <span class="fa fa-plus"></span> Incliur
+                        </a>
+                        <a href="@Url.Action("Index")" rel="tooltip" title="Voltar" class="btn btn-default">
+                            <span class="fa fa-mail-reply"></span> Voltar
+                        </a>
+                    </div>
+                    <div class="btn-group dropdown-btn-group pull-right">
+                        
+                    </div>
+                }
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-striped dt-responsive display">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Indicador</th>
+                            <th>Ação</th>
+                            <th>Alvo</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @if (item.PLA_STATUS == "P")
+                                    {
+                                        <span class="label label-danger">Pendente</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="label label-success">Finalizado</span>
+                                    }
+                                </td>
+                                <td>@item.T_Metas.T_Indicadores.IND_DESCRICAO</td>
+                                <td>@item.PLA_DESCRICAO</td>
+                                <td>@item.T_Metas.MET_ALVO</td>
+                                <td>
+                                    <a href="#cmpltadminModal-2" data-toggle="modal" class="btn btn-success" title="Confirmar execução do plano de ação" rel="tooltip"><span class="fa fa-check"></span></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- modal start -->
+<div class="modal fade col-xs-12" id="cmpltadminModal-2" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Execução plano de ação</h4>
+            </div>
+            <div class="modal-body">
+                Tem certeza que o plano de ação foi executado?
+            </div>
+            <div class="modal-footer">
+                <button data-dismiss="modal" class="btn btn-default" type="button">Não</button>
+                <button class="btn btn-warning" type="button"> Sim</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Styles {
+    <environment names="Development">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+    <environment names="Staging,Production">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+}
+
+
+@section Scripts {
+    <environment names="Development">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+
+    <script type="text/javascript">
+        $("#mmovimentos").removeClass("open");
+        $("#mmovimentos").addClass("open");
+    </script>
+}

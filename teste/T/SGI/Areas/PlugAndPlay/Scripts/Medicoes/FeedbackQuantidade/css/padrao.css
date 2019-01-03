@@ -1,0 +1,42 @@
+﻿.secao {
+    margin-bottom: 5px;
+}
+.tab-coluna-desc, .secao {
+    background-color: #ddd;
+    padding: 2px;
+    color: rgba(118, 118, 118, 1.0);
+    font-weight: 600;
+}
+/*div do resultado da pesquisa do produto*/
+#divResultPesq {
+    overflow: auto;
+    z-index: 1500;
+    position: absolute;
+    width: 100%;
+    max-height: 100px;
+    border-bottom: 1px solid #363537;
+    border-left: 1px solid #363537;
+    border-right: 1px solid #363537;
+    background-color: #fff;
+    padding: 5px;
+    display: none;
+}
+#divResultPesq>ul{
+    list-style: none;
+    margin: 0;
+    padding: 0
+}
+#divResultPesq>ul>li:hover{
+    background-color: #ddd;
+    cursor: pointer;
+}
+/*info ordem producao top*/
+.topInfo {
+    margin-bottom: 20px;
+}
+.topInfo .info{
+    font-weight: 600;
+}
+.topInfo .desc{
+
+}

@@ -1,0 +1,99 @@
+﻿@model SGI.Areas.PlugAndPlay.Models.FilaProducao
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>FilaProducao</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Maquina.Descricao)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Maquina.Descricao)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.OrdemProducao.Tipo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OrdemProducao.Tipo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Produto.Descricao)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Produto.Descricao)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DataInicioPrevista)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DataInicioPrevista)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DataFimPrevista)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DataFimPrevista)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DataFimMaxima)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DataFimMaxima)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SequenciaTansformacao)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SequenciaTansformacao)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SequencaRepeticao)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SequencaRepeticao)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ObservacaoProducao)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ObservacaoProducao)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.QuantidadePrevista)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.QuantidadePrevista)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

@@ -1,0 +1,109 @@
+﻿@model SGI.Models.Tr_PlanoContas
+@{
+    ViewData["Title"] = "Detalhes da conta";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class='col-xs-12'>
+    <div class="page-title">
+
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-tags"></i>Cadastros
+                </li>
+                <li>
+                    <a href="@Url.Action("Index","PlanoContas")">Plano de Contas</a>
+                </li>
+                <li class="active">
+                    <strong>Detalhes da Conta</strong>
+                </li>
+            </ol>
+        </div>
+
+    </div>
+</div>
+
+<div class="col-xs-12">
+    <section class="box ">
+        <header class="panel_header">
+            <h2 class="title pull-left">Detalhes da conta</h2>
+            <div class="actions panel_actions pull-right">
+            </div>
+        </header>
+        <div class="content-body">
+            <div class="row">
+                <div class="col-md-8 col-sm-9 col-xs-10">
+                    <div class="form-group">
+                        <label class="form-label">Tipo</label>
+                        <div class="controls">
+                            @Html.DropDownList("PLA_TIPO", new[] {
+                                           new SelectListItem() {Text = "Sintética", Value = "0"},
+                                           new SelectListItem() {Text = "Análitica", Value = "1"}
+                                       }, "Selecione...",
+              new { @id = "PLA_TIPO", @class = "select2",@disabled = true })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Código</label>
+                        <div class="controls">
+                            @Html.TextBoxFor(x => x.PLA_CODIGO, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Descrição</label>
+                        <div class="controls">
+                            @Html.TextBoxFor(x => x.PLA_DESCRICAO, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+
+                    <div class="pull-right">
+                        <a href="@Url.Action("Edit", new { id = Model.PLA_ID})" class="btn btn-warning">Editar</a>
+                        <a href="@Url.Action("Index")" class="btn">Cancelar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+@section Styles {
+    <environment names="Development">
+        <link href="~/Content/select2.css" rel="stylesheet" type="text/css" media="screen" />
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+    <environment names="Staging,Production">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+}
+
+@section Scripts {
+
+    <environment names="Development">
+        <script src="~/Script/select2.js" type="text/javascript"></script>
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+
+    <script type="text/javascript">
+        if ($.isFunction($.fn.select2)) {
+            $('.select2').select2();
+        }
+
+        $("#mdre").removeClass("open");
+        $("#mdre").addClass("open");
+    </script>
+}

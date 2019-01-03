@@ -1,0 +1,19 @@
+﻿/*inputs*/
+#modalDividirPeriodo .group-controls input {
+    padding: 6px 12px;
+    width: 45px;
+    /*margin-right: 3px;*/
+}
+/*botoes com os icones mais e menos*/
+#modalDividirPeriodo .group-controls .btn-incon {
+    padding: 6px 5px;
+    border: none;
+    background: #eeeeee;
+    border-top: 1px solid #e1e1e1;
+    border-bottom: 1px solid #e1e1e1;
+    border-right: 1px solid #e1e1e1;
+}
+/*datetime exibidos na tabela*/
+#modalDividirPeriodo .dataTopHora{
+    font-size: 12px;
+}

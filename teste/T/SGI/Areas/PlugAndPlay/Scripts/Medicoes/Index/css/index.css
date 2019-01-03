@@ -1,0 +1,317 @@
+﻿/*BootStrap date picker widget*/
+.bootstrap-datetimepicker-widget .btn {
+    background: #fff;
+    color: initial;
+}
+
+.bootstrap-datetimepicker-widget .timepicker-hours, .bootstrap-datetimepicker-widget .timepicker-picker, .bootstrap-datetimepicker-widget .timepicker-minutes {
+    margin-top: 27px;
+}
+
+.bootstrap-datetimepicker-widget .timepicker-picker {
+    margin-top: 27px;
+}
+/*icones alertas sobrepostos em selects*/
+.ic-alert-slt {
+    position: absolute;
+    display: block;
+    top: 10px;
+}
+
+.ic-error {
+    color: red;
+}
+/*---*/
+.alert-gray {
+    padding: 5px;
+    color: gray;
+}
+
+.secao {
+    padding: 2px;
+    background-color: #ddd;
+    margin-bottom: 15px;
+}
+
+#divResultPesq table tr:hover {
+    cursor: pointer;
+}
+
+#modalApProducao .table > tbody > tr > td {
+    border-top: initial;
+}
+
+.table .jsPeriodo input {
+    width: 40px;
+}
+
+.table .jsPeriodo .error:focus {
+    border-color: #f44336;
+}
+
+.table .jsPeriodo .width {
+    width: 100px !important;
+}
+
+.color-cinza {
+    color: rgba(118, 118, 118, 1.0) !important;
+}
+
+.color-red {
+    color: #E26E67 !important;
+}
+
+.ic-input-line, .ic-slt-line {
+    position: relative;
+}
+
+    .ic-input-line i {
+        right: 8px;
+    }
+
+    .ic-input-line .ic-error, .ic-slt-line .ic-error {
+        color: red;
+        top: 10px;
+    }
+
+    .ic-input-line i, .ic-slt-line i {
+        position: absolute;
+        display: block;
+        top: 10px;
+    }
+
+        .ic-input-line i:hover, .ic-slt-line i:hover {
+            font-size: 18px !important;
+            cursor: pointer;
+        }
+
+    .ic-slt-line i {
+        right: 15px;
+    }
+
+.panel-ind .fa-exclamation-circle {
+    color: red !important;
+    position: absolute;
+    right: 2px;
+    top: -6px;
+    margin-right: 0px !important;
+    font-size: 20px !important;
+    line-height: 35px !important;
+}
+
+table .processando div {
+    display: inline-block;
+    margin-left: 5px;
+}
+
+.blocoLegenda {
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+}
+
+.nav-tabs.nav-justified > li > a {
+    margin-right: 0 !important;
+    border-radius: 0px !important;
+}
+
+.nav-tabs.nav-justified > li > a {
+    margin-right: 0 !important;
+    border-radius: 0px !important;
+}
+
+.tab-content {
+    padding: 30px;
+    border: 1px solid #eaeaea;
+    background-color: #ffffff;
+    border-top: 0px;
+}
+
+.legenda-grupo {
+    display: table;
+    margin-bottom: 10px;
+}
+
+    .legenda-grupo > div {
+        float: left;
+    }
+
+        .legenda-grupo > div:nth-child(1n+2) {
+            margin-left: 10px;
+        }
+
+.cfVerde {
+    background-color: #2CC990;
+}
+
+.cfAmarela {
+    background-color: #FEC606;
+}
+
+.cfVermelha {
+    background-color: #E26E67;
+}
+
+.cfAzul {
+    background-color: #3D8EB9;
+}
+
+.panel-ind.inverted {
+    border: 2px solid #efefef;
+}
+
+.panel-ind {
+    position: relative;
+    padding: 15px 30px;
+    margin: 0 0 30px 0;
+    box-shadow: 0 1px 3px rgba(33,33,33,.2);
+    -webkit-box-shadow: 0 1px 3px rgba(33,33,33,.2);
+    -moz-box-shadow: 0 1px 3px rgba(33,33,33,.2);
+    -o-box-shadow: 0 1px 3px rgba(33,33,33,.2);
+    -ms-box-shadow: 0 1px 3px rgba(33,33,33,.2);
+}
+
+.text-primary {
+    color: #3F51B5;
+}
+
+.panel-ind .content, .panel-prod-name .content {
+    display: block;
+    text-align: center;
+    color: rgba(118, 118, 118, 1.0);
+}
+
+    .panel-ind .content h2, .panel-prod-name .content h2 {
+        color: #D2D7D3 !important;
+    }
+
+.panel-ind i, .panel-prod-name i {
+    margin-right: 15px;
+    font-size: 30px;
+    line-height: 35px;
+}
+
+.panel-ind.inverted h2, .panel-ind .inverted span {
+    color: inherit;
+}
+
+.panel-ind h2, .panel-prod-name h2 {
+    color: #f5f5f5;
+    font-weight: 700;
+    line-height: 35px;
+    margin: 0px 0 0 0;
+    font-size: 26px;
+    display: inline-block;
+}
+
+.panel-prod-name {
+    margin-top: 20px;
+}
+
+    .panel-prod-name i {
+        color: #03A9F4 !important;
+    }
+
+h1, h2, h3, h4, h5, h6 {
+    /* font-family: Roboto, Helvetica, Arial, sans-serif; */
+    margin: 10px 0;
+    font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+    font-weight: 400;
+    color: #505458;
+}
+
+.grupo-tab {
+    width: 50%;
+    float: left;
+    color: gray;
+}
+
+.font-negrito {
+    font-weight: 600;
+}
+
+.control-label {
+    color: rgba(118, 118, 118, 1.0);
+}
+
+#exMedicoes table .btn {
+    padding: 10px;
+    height: 34px;
+}
+
+table .div-incon {
+    position: relative;
+}
+
+    table .div-incon i {
+        display: block;
+        position: absolute;
+        top: 10px;
+        left: 3px;
+    }
+
+table .ic-error {
+    color: red;
+}
+
+/*table .fa {
+            cursor: pointer;
+        }*/
+
+table .fa-floppy-o {
+    color: #4CAF50;
+}
+
+table tr td {
+    vertical-align: middle !important;
+}
+
+table .jsObservacao > div {
+    float: left
+}
+
+    table .jsObservacao > div > div {
+        height: 34px;
+        display: table-cell;
+        vertical-align: middle
+    }
+
+table .jsAcoes > div {
+    float: left
+}
+
+    table .jsAcoes > div > div {
+        height: 34px;
+        display: table-cell;
+        vertical-align: middle
+    }
+
+table .jsMeta > div:nth-child(1) {
+    float: left
+}
+
+table .jsMeta > div:nth-child(2) {
+    float: right
+}
+
+table .jsMeta > div > div {
+    height: 34px;
+    display: table-cell;
+    vertical-align: middle
+}
+
+table .fa-spin {
+    color: #3F51B5;
+}
+
+table .jsBtnSalvarMedicao {
+    margin-left: 5px;
+}
+
+table .fa-check {
+    color: green;
+}
+
+#exMedicoes table .fa-pencil-square-o, #divTabMedicoes table .fa-pencil-square-o {
+    color: #673AB7;
+}

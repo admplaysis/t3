@@ -1,0 +1,25 @@
+﻿.checkbox-multiple {
+    border: 1px solid #e1e1e1;
+    max-height: 150px;
+    overflow: auto;
+}
+
+    .checkbox-multiple label {
+        padding: 10px;
+        display: block;
+        margin: 0;
+        font-weight: normal;
+    }
+
+        .checkbox-multiple label:hover {
+            background-color: #eeeeee;
+        }
+
+.color-blue {
+    background-color: #eeeeee !important;
+}
+
+.checkbox-multiple p {
+    padding: 10px;
+    color: gray;
+}

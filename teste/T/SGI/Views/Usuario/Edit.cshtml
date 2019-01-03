@@ -1,0 +1,119 @@
+﻿@model SGI.Models.T_Usuario
+@{
+    ViewData["Title"] = "Editar usuário";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class='col-xs-12'>
+    <div class="page-title">
+
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-gears"></i>Configurações
+                </li>
+                <li>
+                    <a href="@Url.Action("Index", "Usuario")">Usuários</a>
+                </li>
+                <li class="active">
+                    <strong>Editar usuário</strong>
+                </li>
+            </ol>
+        </div>
+
+    </div>
+</div>
+
+<div class="col-xs-12">
+    <section class="box ">
+        <header class="panel_header">
+            <h2 class="title pull-left">Editar usuário</h2>
+            <div class="actions panel_actions pull-right">
+            </div>
+        </header>
+        <div class="content-body">
+            @using (Html.BeginForm("Edit", "Usuario", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                @Html.HiddenFor(x => x.ID_USUARIO)
+                @Html.HiddenFor(x => x.SENHA)
+                <div class="row">
+                    <div class="col-md-8 col-sm-9 col-xs-10">
+                        <div class="form-group">
+                            <label class="form-label">Nome</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.NOME, new { @class = "form-control", @placeholder = "Digite o nome completo" })
+                                @Html.ValidationMessageFor(x => x.NOME)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Perfil</label>
+                            <div class="controls">
+                                @Html.DropDownList("id_perfil", null, "Selecione...", new { @class = "form-control select2" })
+                                @Html.ValidationMessageFor(x => x.ID_PERFIL)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Usuário</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.EMAIL, new { @class = "form-control", @placeholder = "Digite o login do usuário" })
+                                @Html.ValidationMessageFor(x => x.EMAIL)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Cod. ERP</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.CODERP, new { @class = "form-control",@data_role="tagsinput", @placeholder = "Em caso de férias adicionar aqui o código do usuário." })
+                                @Html.ValidationMessageFor(x => x.CODERP)
+                            </div>
+                        </div>
+
+                        <div class="pull-right">
+                            <button type="submit" class="btn btn-success">Salvar</button>
+                            <a href="@Url.Action("Index")" type="button" class="btn">Cancelar</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+</div>
+
+
+@section Styles {
+    <environment names="Development">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+    <environment names="Staging,Production">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+        <link href="~/Content/bootstrap-tagsinput.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+}
+
+@section Scripts {
+
+    <environment names="Development">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+        <script src="~/Script/bootstrap-tagsinput.js" type="text/javascript"></script>
+    </environment>
+
+    <script type="text/javascript">
+        $("#mconfiguracoes").removeClass("open");
+        $("#mconfiguracoes").addClass("open");
+    </script>
+}

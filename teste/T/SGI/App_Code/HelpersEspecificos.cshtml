@@ -1,0 +1,71 @@
+﻿@helper BarraCoresDesenpenhoProducao(int tipo, bool label)
+    {
+        if (tipo == 1)
+        {
+            <div style="height: 210px" id="divCanvVelocimetroPerformace">
+                <canvas id="canvVelocimetroPerformace"></canvas>
+            </div>
+        }
+        else if (tipo == 2)
+        {
+            <div id="divProgressSetupRealizado" class="form-group">
+                @if (label)
+                {
+                    <label class="form-label">Setup</label>
+                    <span id="spanMetaDescSetup" class="form-label-desc">Meta entre <span id="spanTempoSegundoSetupMinVerde">0</span> e <span id="spanTempoSegundoSetupMaxVerde">0</span></span>
+                }
+                else
+                {
+                    <label id="spanMetaDescSetup" class="form-label">Meta entre <span id="spanTempoSegundoSetupMinVerde">0</span> e <span id="spanTempoSegundoSetupMaxVerde">0</span></label>
+                }
+                <div class="progress bar-desempenho-maquina">
+                    <div id="divProgressSetupAzul" class="progress-bar" style="width: 0%;">
+
+                    </div>
+                    <div id="divProgressSetupVerde" class="progress-bar progress-bar-success" style="width: 0%;">
+
+                    </div>
+                    <div id="divProgressSetupAmarelo" class="progress-bar progress-bar-warning" style="width: 0%;">
+
+                    </div>
+                    <div id="divProgressSetupVermelho" class="progress-bar progress-bar-danger" style="width: 0%;">
+
+                    </div>
+                </div>
+                <div style="width: 0%; height: 10px; display: inline-block" id="divPositionIconeSetup"></div>
+                <span id="spanTempoGastoSetup"></span>
+                <span id="spanIconeTempoGastoSetup" class="pont-time-setup glyphicon glyphicon-eject"></span>
+            </div>
+        }
+        else if (tipo == 3)
+        {
+            <div id="divProgressSetupAjuste" class="form-group">
+                @if (label)
+                {
+                    <label class="form-label">Setup Ajuste</label>
+                    <span id="spanMetaDescSetupAjuste" class="form-label-desc">Meta entre <span id="spanTempoSegundoSetupAjusteMinVerde">0</span> e <span id="spanTempoSegundoSetupAjusteMaxVerde">0</span></span>
+                }
+                else
+                {
+                    <label id="spanMetaDescSetupAjuste" class="form-label">Meta entre <span id="spanTempoSegundoSetupAjusteMinVerde">0</span> e <span id="spanTempoSegundoSetupAjusteMaxVerde">0</span></label>
+                }
+
+                <div class="progress bar-desempenho-maquina">
+                    <div id="divProgressSetupAjusteAzul" class="progress-bar" style="width: 0%;">
+                    </div>
+                    <div id="divProgressSetupAjusteVerde" class="progress-bar progress-bar-success" style="width: 0%;">
+
+                    </div>
+                    <div id="divProgressSetupAjusteAmarelo" class="progress-bar progress-bar-warning" style="width: 0%;">
+
+                    </div>
+                    <div id="divProgressSetupAjusteVermelho" class="progress-bar progress-bar-danger" style="width: 0%;">
+
+                    </div>
+                </div>
+                <div style="width: 0%; height: 10px; display: inline-block" id="divPositionIconeSetupAjuste"></div>
+                <span id="spanTempoGastoSetupAjuste"></span>
+                <span id="spanIconeTempoGastoSetupAjuste" class="pont-time-setup glyphicon glyphicon-eject"></span>
+            </div>
+        }
+}

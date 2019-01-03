@@ -1,0 +1,326 @@
+﻿@using System.Web.Script.Serialization;
+@{
+    ViewBag.Title = "Fechamento de Produção";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section scripts{
+    <script>
+        var _actionValues = {
+            feedbacks: @(Html.Raw(new JavaScriptSerializer().Serialize(ViewBag.feedbacks) )),
+            op: {
+                orderId: '@(Html.Raw(@ViewBag.pedido))',
+                maqId:'@(Html.Raw(@ViewBag.maquinaId))',
+                seqRep: @(Html.Raw(@ViewBag.seqRep)),
+                seqTran: @(Html.Raw(@ViewBag.seqTran)),
+                proId:'@(Html.Raw(@ViewBag.produto.Id))',
+            }
+        }
+        console.log('Feedback')
+        console.log( _actionValues.feedbacks)
+    </script>
+    <!-- Modal alert-->
+    <script src="~/Plugins/bootstrap-modal-create/js/bootstrap-modal-create.js"></script>
+    <!-- Control icone carregando-->
+    <script src="~/Plugins/control-icone-carregando/js/control-carregando.js"></script>
+    <!--scripts da pagina-->
+    <script src="~/Areas/PlugAndPlay/Scripts/Medicoes/FechamentoOp/js/modal-encerramento-op.js"></script>
+    <script src="~/Areas/PlugAndPlay/Scripts/Medicoes/FechamentoOp/js/index-apontamento-producao.js"></script>
+    <script src="~/Areas/PlugAndPlay/Scripts/Medicoes/FechamentoOp/js/global.js"></script>
+}
+@section styles{
+    <!--responsive info-->
+    <link href="~/Content/responsive-info/responsive-info.css" rel="stylesheet" />
+    <!--scripts da pagina-->
+    <link href="~/Areas/PlugAndPlay/Scripts/Medicoes/FechamentoOp/css/padrao.css" rel="stylesheet" />
+    <!--icone carregando-->
+    <link href="~/Plugins/control-icone-carregando/css/control-carregando.css" rel="stylesheet" />
+}
+
+
+<!--modal encerramento op-->
+<div id="mdConfirmEncOp" class="modal fade">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Confirmação</h4>
+            </div>
+            <div class="modal-body">
+                <div class="infoModalTop">
+                    <div class="row">
+                        <div class="col-md-4 col-sm-4">
+                                <div class="title">OP</div>
+                                <div class="desc">@ViewBag.op</div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <div class="title">Quantidade Produzida</div>
+                                <div class="desc">@ViewBag.qtdPecaBoaProduzida</div>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <div class="title">Quantidade Prevista</div>
+                                <div class="desc">@ViewBag.qtdMinPrevista</div>
+                            </div>
+                    </div>
+                </div>
+                <div id="divAlertEncOpParcial" class="alert alert-info">
+                    Marque esta opcão caso deseje remover esta OP da fila de Produção.
+                </div>
+                <div class="checkbox form-group">
+                    <label id="labelCkEnOp">
+                        <input type="checkbox" id="ckEncerrarOpParcial" /> Encerar ordem de produção
+                    </label>
+                </div>
+                <div id="divFormEncOpParcial" style="display:none">
+                    <div class="form-group has-feedback">
+                        <label class="form-label">Ocorrência</label>
+                        @*@Html.DropDownList("ddlOcorrenciaOpParcial", ViewBag.ddlOcorrenciaOpParcial as List<SelectListItem>, "Selecione a ocorrência...", new { @class = "form-control" })*@
+                        <span class="help-block"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <label class="form-label">Justificativa</label>
+                        <textarea id="txtJustificativaEncOpParcial" class="form-control"></textarea>
+                        <span class="help-block"></span>
+                    </div>
+                    <div class="alert alert-warning">
+                        A quantidade produzida é menor que a prevista e após encerrada, a OP é removida da fila de Produção.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnSalvarFeedbackModal" class="btn btn-primary">Salvar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<input id="hfQtdMinPrevista" type="hidden" value="@ViewBag.qtdMinPrevista" />
+
+<!--Perdas de produto-->
+<div class="modal fade" id="modalAddPerdaProduto" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">Perdas</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group has-feedback">
+                            <label class="form-label">Produto</label>
+                            <input readonly type="text" class="form-control" id="txtProduto" />
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group has-feedback">
+                            <label class="form-label">Quantidade</label>
+                            <input type="text" class="form-control" id="quantPerdasAc" />
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group has-feedback">
+                            <label class="form-label">Motivo</label>
+
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group has-feedback">
+                            <label class="form-label">Obsevações</label>
+                            <textarea class="form-control" id="obsPerdasAc"></textarea>
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success btn-add">Adicionar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Perdas de insumos-->
+<div class="modal fade" id="modalAddPerdaInsumo" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">Perdas</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group has-feedback" style="position: relative">
+                            <label class="form-label">Insumo</label>
+                            <input placeholder="pesquise por nome ou ID" type="text" class="form-control" id="produtoDesIs" />
+                            <div id="divResultPesq">
+                            </div>
+                            <span class="help-block"></span>
+                        </div>
+                        <div class="form-group has-feedback">
+                            <label class="form-label">Quantidade</label>
+                            <input type="text" class="form-control" id="quantPerdasIs" />
+                            <span class="help-block"></span>
+                        </div>
+                        <div class="form-group has-feedback">
+                            <label class="form-label">Motivo</label>
+                            @Html.DropDownList("sltMotivoPerdaIs", ViewBag.sltMotivos as SelectList, "Selecione...", new { @class = "form-control" })
+                            <span class="help-block"></span>
+                        </div>
+                        <div class="form-group has-feedback">
+                            <label class="form-label">Obsevações</label>
+                            <textarea class="form-control" id="obsPerdasIs"></textarea>
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" id="btnAddAc">Adicionar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<input type="hidden" id="opsQuantGrupo" value="@ViewBag.quantOp" />*@
+<input type="hidden" id="hfMaquinaId" value="@ViewBag.maquinaId" />
+<input type="hidden" id="txtProdutoDesc" value="@ViewBag.produto.Descricao" />
+<input type="hidden" id="txtProdutoId" value="@ViewBag.produto.Id" />
+
+<div class="col-xs-12">
+    <div class="page-title">
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+        @*<div class="pull-right hidden-xs">
+                <ol class="breadcrumb">
+                    <li><a href="#"></a>Teste</li>
+                    <li><a href="#"></a>Teste</li>
+                    <li><a href="#"></a>Teste</li>
+                    <li><a href="#"></a>Teste</li>
+                </ol>
+            </div>*@
+    </div>
+</div>
+
+@*<div class="col-xs-6">
+        <section class="box">
+            <header class="panel_header">
+                <h2 class="title pull-left">
+                    Produto
+                </h2>
+            </header>
+            <div class="content-body">
+
+            </div>
+        </section>
+    </div>*@
+<div class="col-xs-12">
+    <section class="box">
+        <header class="panel_header">
+            @*<h2 class="title pull-left">
+                    Producao
+                </h2>*@
+        </header>
+        <div class="content-body">
+            <h4>PRODUÇÃO</h4>
+            <div class="responsive-info">
+                <div class="row">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="title">Maquina</div>
+                        <div class="desc">@ViewBag.maquina</div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="title">OP</div>
+                        <div class="desc">@ViewBag.op</div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="title">Pedido</div>
+                        <div class="desc">@ViewBag.pedido</div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="title">Produto</div>
+                        <div class="desc">@ViewBag.produto.Descricao</div>
+                    </div>
+                </div>
+            </div>
+            <h4>
+                CONFIRMAÇÃO
+            </h4>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="form-group has-feedback">
+                        <input type="hidden" id="hfInsuProcMovId" value="0" />
+                        <div class="info">Quantidade Total Produzida</div>
+                        <input class="form-control" type="text" id="txtInsuProcQuant" value="@ViewBag.quantidade" />
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="form-group has-feedback">
+                        <label class="form-label">Observações</label>
+                        <textarea class="form-control" id="txtInsuProcObs"></textarea>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+            </div>
+            <h4>
+                PERDAS DE PRODUTOS
+            </h4>
+            <div class="row">
+                <div class="col-sm-12 col-lg-8">
+                    <div style="margin-bottom: 5px">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <label class="form-label">Perdas</label>
+                            </div>
+                            <div class="col-xs-6 text-right">
+                                <button id="btnAbrirModal" class="btn btn-primary"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-group table-responsive" id="divTabPerdasPos" style="height: 150px; overflow-y:scroll; border: 1px solid #ddd">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h4>PERDAS DE INSUMOS</h4>
+            <div class="row">
+                <div class="col-sm-12 col-lg-8">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div style="margin-bottom: 5px">
+                                <div class="row">
+                                    <div class="col-xs-6">
+                                        <label class="form-label">Perdas</label>
+                                    </div>
+                                    <div class="col-xs-6 text-light">
+                                        <button id="btnAbrirModalInsumos" class="btn btn-primary pull-right"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="form-group table-responsive" id="divTabPerdasAc" style="height: 150px; overflow-y:scroll; border: 1px solid #ddd">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-right">
+                <a href="@ViewBag.urlAnterior" type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</a>
+                <button id="btnSalvarApontamento" type="button" class="btn btn-success">Salvar</button>
+            </div>
+        </div>
+    </section>
+</div>

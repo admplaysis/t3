@@ -1,0 +1,380 @@
+﻿@using PagedList
+@using PagedList.Mvc
+@model SGI.Models.ViewMedicoes
+@{
+    ViewBag.Title = "Medições por mês";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int diasMes = ViewBag.diasMes;
+    DateTime dataAtual = (DateTime)ViewBag.dataParametro;
+}
+
+@***** Funções *****@
+<collapse>
+    @functions
+{
+        /// <summary>
+        /// Função para retornar se uma meta foi atingida ou não.
+        /// </summary>
+        /// <param name="valorMeta">Valor da meta</param>
+        /// <param name="valorAtingido">Valor medido</param>
+        /// <returns>Retorna true or false</returns>
+        public bool AtingiuMeta(decimal? valorMeta, decimal? valorAtingido)
+        {
+            bool atingiu = true;
+            if (valorAtingido < valorMeta)
+                atingiu = false;
+
+            return atingiu;
+        }
+
+        /// <summary>
+        /// Metódo para retornar dias do mês
+        /// </summary>
+        /// <returns>Dias mês</returns>
+        public int GetDiasMes()
+        {
+            var diasMes = (int)ViewBag.diasMes;
+            return diasMes;
+        }
+
+        /// <summary>
+        /// Metódo para retornar o ano atual
+        /// </summary>
+        /// <returns>Ano atual</returns>
+        public string AnoAtual()
+        {
+            var anoAtual = ((string)ViewBag.anoMes).Substring(0, 4);
+            return anoAtual;
+        }
+
+        /// <summary>
+        /// Metódo que retorna o formato utilizado nas medições
+        /// </summary>
+        /// <param name="tipo"></param>
+        /// <returns></returns>
+        public string GetFormatoValor(int tipo)
+        {
+            string formato = "{0:N2}";
+            switch (tipo)
+            {
+                case (int)SGI.Enums.TipoAlvo.Valor:
+                    formato = "{0:N2}";
+                    break;
+                case (int)SGI.Enums.TipoAlvo.Percentual:
+                    formato = "{0:P0}";
+                    break;
+                case (int)SGI.Enums.TipoAlvo.Data:
+                    formato = "{0:dd/MM/yyyy}";
+                    break;
+                case (int)SGI.Enums.TipoAlvo.DiaUtil:
+                    formato = "{0:00}";
+                    break;
+            }
+            return formato;
+        }
+    }
+</collapse>
+
+@*** Metódo para imprimir valor ***@
+<collapse>
+    @helper PrintRowValor()
+{
+    int diasMes = GetDiasMes();
+
+    //Metas dia
+    <tr class="label-primary" style="color: white !important;">
+        <td rowspan="4">@Model.Indicador.IND_DESCRICAO</td>
+        <td>Meta dia</td>
+        @{
+            var metaMes = Convert.ToDecimal(Model.Metas.FirstOrDefault().MET_ALVO);
+            var metaDia = metaMes / GetDiasMes();
+        }
+        @for (int i = 0; i < diasMes; i++)
+        {
+            <td>@String.Format(GetFormatoValor(Model.Metas.FirstOrDefault().MET_TIPOALVO), metaDia)</td>
+        }
+    </tr>
+
+    //Real dia
+    <tr style="color: white !important;">
+        <td class="label-default">Real dia</td>
+        @for (int i = 0; i < diasMes; i++)
+        {
+            var valor = Model.SP_SGI_MEDICOES_MES_Result.Where(x => (x.Mes.Length >= 8 ? x.Mes.Substring(6, 2) : "") == (i + 1).ToString().PadLeft(2, '0')).Sum(x => x.Valor);
+            if (AtingiuMeta(metaDia, valor))
+            {
+                <td class="label-success">@String.Format(GetFormatoValor(Model.Metas.FirstOrDefault().MET_TIPOALVO), valor)</td>
+            }
+            else
+            {
+                <td class="label-danger">@String.Format(GetFormatoValor(Model.Metas.FirstOrDefault().MET_TIPOALVO), valor)</td>
+            }
+        }
+    </tr>
+
+    //Meta AC
+    <tr class="label-primary" style="color: white !important;">
+        <td>Meta Ac.</td>
+        @{
+            decimal metaAc = 0;
+        }
+        @for (int i = 0; i < diasMes; i++)
+        {
+            metaAc += metaDia;
+            <td>@String.Format(GetFormatoValor(Model.Metas.FirstOrDefault().MET_TIPOALVO), metaAc)</td>
+        }
+    </tr>
+
+    //Real AC.
+    <tr style="color: white !important;">
+        <td class="label-default">Real Ac.</td>
+        @{
+            decimal? realAc = 0;
+        }
+        @for (int i = 0; i < diasMes; i++)
+        {
+            var valor = Model.SP_SGI_MEDICOES_MES_Result.Where(x => (x.Mes.Length >= 8 ? x.Mes.Substring(6, 2) : "") == (i + 1).ToString().PadLeft(2, '0')).Sum(x => x.Valor);
+            realAc += valor;
+            if (AtingiuMeta(metaDia, realAc))
+            {
+                <td class="label-success">@String.Format(GetFormatoValor(Model.Metas.FirstOrDefault().MET_TIPOALVO), realAc)</td>
+            }
+            else
+            {
+                <td class="label-danger">@String.Format(GetFormatoValor(Model.Metas.FirstOrDefault().MET_TIPOALVO), realAc)</td>
+            }
+        }
+    </tr>
+}
+</collapse>
+
+@*** Metódo para imprimir datas ***@
+<collapse>
+    @helper PrintRowData()
+{
+    int diasMes = GetDiasMes();
+
+    //Metas dia
+    <tr class="label-primary" style="color: white !important;">
+        <td rowspan="4">@Model.Indicador.IND_DESCRICAO</td>
+        <td>Meta dia</td>
+        @{
+            var metaMes = Convert.ToDecimal(Model.Metas.FirstOrDefault().MET_ALVO);
+            var metaDia = metaMes / GetDiasMes();
+        }
+        @for (int i = 0; i < diasMes; i++)
+        {
+        <td>@String.Format(GetFormatoValor(Model.Metas.FirstOrDefault().MET_TIPOALVO), metaDia)</td>
+        }
+    </tr>
+
+    //Real dia
+    <tr style="color: white !important;">
+        <td class="label-default">Real dia</td>
+        @for (int i = 0; i < diasMes; i++)
+        {
+            var valor = Model.SP_SGI_MEDICOES_MES_Result.Where(x => x.Mes.Substring(6, 2) == (i + 1).ToString().PadLeft(2, '0')).Sum(x => x.Valor);
+            var valorMeta = 0;
+            if (AtingiuMeta(valorMeta, valor))
+            {
+        <td class="label-success">@String.Format(GetFormatoValor(Model.Metas.FirstOrDefault().MET_TIPOALVO), valor)</td>
+            }
+            else
+            {
+        <td class="label-danger">@String.Format(GetFormatoValor(Model.Metas.FirstOrDefault().MET_TIPOALVO), valor)</td>
+            }
+        }
+    </tr>
+
+    //Meta AC
+    <tr class="label-primary" style="color: white !important;">
+        <td>Meta Ac.</td>
+        @{
+            decimal metaAc = 0;
+        }
+        @for (int i = 0; i < diasMes; i++)
+        {
+            metaAc += metaDia;
+        <td>@String.Format(GetFormatoValor(Model.Metas.FirstOrDefault().MET_TIPOALVO), metaAc)</td>
+        }
+    </tr>
+
+    //Real AC.
+    <tr style="color: white !important;">
+        <td class="label-default">Real Ac.</td>
+        @{
+            decimal? realAc = 0;
+        }
+        @for (int i = 0; i < diasMes; i++)
+        {
+            var valor = Model.SP_SGI_MEDICOES_MES_Result.Where(x => x.Mes.Substring(6, 2) == (i + 1).ToString().PadLeft(2, '0')).Sum(x => x.Valor);
+            realAc += valor;
+            if (AtingiuMeta(metaDia, realAc))
+            {
+        <td class="label-success">@String.Format(GetFormatoValor(Model.Metas.FirstOrDefault().MET_TIPOALVO), realAc)</td>
+            }
+            else
+            {
+        <td class="label-danger">@String.Format(GetFormatoValor(Model.Metas.FirstOrDefault().MET_TIPOALVO), realAc)</td>
+            }
+        }
+    </tr>
+}
+</collapse>
+
+@*** Metódo para imprimir Percentual ***@
+<collapse>
+    @helper PrintRowPercentual()
+{
+    int diasMes = GetDiasMes();
+
+    //Metas dia
+    <tr class="label-primary" style="color: white !important;">
+        <td rowspan="4">@Model.Indicador.IND_DESCRICAO</td>
+        <td>Meta dia</td>
+        @{
+            var metaMes = Convert.ToDecimal(Model.Metas.FirstOrDefault().MET_ALVO) / 100;
+            var metaDia = metaMes;
+        }
+        @for (int i = 0; i < diasMes; i++)
+        {
+        <td>@String.Format(GetFormatoValor(Model.Metas.FirstOrDefault().MET_TIPOALVO), metaDia)</td>
+        }
+    </tr>
+
+    //Real dia
+    <tr style="color: white !important;">
+        <td class="label-default">Real dia</td>
+        @for (int i = 0; i < diasMes; i++)
+        {
+            var valor = Model.SP_SGI_MEDICOES_MES_Result.Where(x => x.Mes.Substring(6, 2) == (i + 1).ToString().PadLeft(2, '0')).Sum(x => x.Valor) / 100;
+            if (AtingiuMeta(metaDia, valor))
+            {
+        <td class="label-success">@String.Format(GetFormatoValor(Model.Metas.FirstOrDefault().MET_TIPOALVO), valor)</td>
+            }
+            else
+            {
+        <td class="label-danger">@String.Format(GetFormatoValor(Model.Metas.FirstOrDefault().MET_TIPOALVO), valor)</td>
+            }
+        }
+    </tr>
+}
+</collapse>
+
+@*** Metódo para imprimir dia util ***@
+<collapse>
+    @helper PrintRowDiaUtil()
+{
+
+}
+</collapse>
+
+<div class='col-xs-12'>
+    <div class="page-title">
+
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-pie-chart"></i>Movimentos
+                </li>
+                <li>
+                    <a href="@Url.Action("Index", "Medicoes")">Medições</a>
+                </li>
+                <li class="active">
+                    <strong>Medições por mês</strong>
+                </li>
+            </ol>
+        </div>
+
+    </div>
+</div>
+
+<div class="col-xs-12">
+    <section class="box ">
+        <header class="panel_header">
+            <h2 class="title pull-left">Medições mês @System.Globalization.DateTimeFormatInfo.CurrentInfo.GetMonthName(dataAtual.Month) de @dataAtual.Year</h2>
+            <div class="actions panel_actions pull-right">
+            </div>
+        </header>
+        <div class="content-body">
+            <div class="btn-toolbar">
+                @using (Html.BeginForm("PorMes", "Medicoes", FormMethod.Get))
+                {
+                    <div class="btn-group focus-btn-group">
+                        <a href="@Url.Action("Index")" rel="tooltip" title="Medições" class="btn btn-default">
+                            <span class="fa fa-mail-reply"></span> Voltar
+                        </a>
+                    </div>
+                    <div class="btn-group dropdown-btn-group pull-right">
+
+                    </div>
+                }
+            </div>
+
+            <div class="table-responsive">
+                <table id="example-1" class="table table-bordered dt-responsive display">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Indicador</th>
+                            @for (int i = 0; i < diasMes; i++)
+                            {
+                                <th>@(i + 1)</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @switch (Model.Metas.FirstOrDefault().MET_TIPOALVO)
+                        {
+                            case (int)SGI.Enums.TipoAlvo.Valor:
+                                @PrintRowValor();
+                                                break;
+                            case (int)SGI.Enums.TipoAlvo.Percentual:
+                            @PrintRowPercentual();
+                                                 break;
+                            case (int)SGI.Enums.TipoAlvo.Data:
+                            @PrintRowData();
+                                           break;
+                            case (int)SGI.Enums.TipoAlvo.DiaUtil:
+                            @PrintRowDiaUtil();
+                                              break;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Styles {
+    <environment names="Development">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+    <environment names="Staging,Production">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+}
+
+
+@section Scripts {
+    <environment names="Development">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+
+    <script type="text/javascript">
+        $("#mmovimentos").removeClass("open");
+        $("#mmovimentos").addClass("open");
+    </script>
+}

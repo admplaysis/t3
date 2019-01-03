@@ -1,0 +1,145 @@
+﻿@model SGI.Models.Tr_CabViscao
+@{
+    ViewData["Title"] = "Editar visão";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class='col-xs-12'>
+    <div class="page-title">
+
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-tags"></i>Cadastros
+                </li>
+                <li>
+                    <a href="@Url.Action("Index","Visao")">Visões</a>
+                </li>
+                <li class="active">
+                    <strong>Editar Visão</strong>
+                </li>
+            </ol>
+        </div>
+
+    </div>
+</div>
+
+<div class="col-xs-12">
+    <section class="box ">
+        <header class="panel_header">
+            <h2 class="title pull-left">Editar visão</h2>
+            <div class="actions panel_actions pull-right">
+            </div>
+        </header>
+        <div class="content-body">
+            @using (Html.BeginForm("Edit", "Visao", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                @Html.HiddenFor(x => x.ID_USUARIO)
+                @Html.HiddenFor(x => x.CAB_ID)
+                <div class="row">
+                    <div class="col-md-9 col-sm-12 col-xs-12">
+                        <div class="form-group">
+                            <label class="form-label">Descrição</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.CAB_DESC, new { @class = "form-control", @placeholder = "Digite a descrição" })
+                                @Html.ValidationMessageFor(x => x.CAB_DESC)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 col-sm-12 col-xs-12">
+                        <div class="form-group">
+                            <label class="form-label">Status</label>
+                            <div class="controls">
+                                @Html.DropDownList("CAB_STATUS", new[] {
+                                           new SelectListItem() {Text = "Ativo", Value = "0"},
+                                           new SelectListItem() {Text = "Bloqueado", Value = "1"},
+                                       },
+                  new { @id = "CAB_STATUS", @class = "select2" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <a href="@Url.Action("AddConta", new { idCab = Model.CAB_ID})" data-modal="" role="tooltip" title="Adicionar conta" class="btn btn-info">Adc.Conta</a>
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Descrição</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Tr_Visoes.OrderBy(x => x.Tr_PlanoContas.PLA_CODIGO))
+                                {
+                                    <tr>
+                                        <td>@item.Tr_PlanoContas.PLA_CODIGO</td>
+                                        <td>@item.Tr_PlanoContas.PLA_DESCRICAO</td>
+                                        <td><a href="@Url.Action("DelVisao", new { id = item.VIS_ID})" class="btn btn-danger" title="Remover" rel="tooltip" data-modal=""><span class="fa fa-eraser"></span></a></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-success">Salvar</button>
+                        <a href="@Url.Action("Index")" type="button" class="btn">Cancelar</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+</div>
+
+<!-- modal placeholder-->
+<div id='myModal' class="modal fade bs-example-modal-lg" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+
+
+@section Styles {
+    <environment names="Development">
+        <link href="~/Content/select2.css" rel="stylesheet" type="text/css" media="screen" />
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+    <environment names="Staging,Production">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+}
+
+@section Scripts {
+
+    <environment names="Development">
+        <script src="~/Script/select2.js" type="text/javascript"></script>
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+        <script src="~/Script/modalform.js" type="text/javascript"></script>
+    </environment>
+
+    <script type="text/javascript">
+        if ($.isFunction($.fn.select2)) {
+            $('.select2').select2();
+        }
+
+        $("#mdre").removeClass("open");
+        $("#mdre").addClass("open");
+    </script>
+}

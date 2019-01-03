@@ -1,0 +1,88 @@
+﻿@model IEnumerable<SGI.Areas.PlugAndPlay.Models.Roteiro>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}<div class="col-xs-12">
+    <h2 class="title pull-left">CADASTRAR ROTEIRO</h2>
+
+    <div class="col-xs-12">
+        <section class="box ">
+            <header class="panel_header">
+
+                <div class="actions panel_actions pull-right">
+                </div>
+            </header>
+            <div class="content-body">
+                <h2>Novo Roteiro</h2>
+                <div class="btn-group focus-btn-group">
+                    <a href="@Url.Action("Create")" rel="tooltip" title="Incluir" class="btn btn-success">
+                        <span class="fa fa-plus"></span> Incliur
+                    </a>
+                </div>
+                <!--
+                <p>
+                    @Html.ActionLink("Create New", "Create")
+                </p>
+                    -->
+                <table class="table">
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Maquina.Descricao)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Produto.Descricao)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Padrao)
+                        </th>
+                        <th>
+
+
+
+
+
+
+
+                        @Html.DisplayNameFor(model => model.ConsideraGrupoMaquina)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.PecasPorPulso)
+                        </th>
+                        <th></th>
+                    </tr>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Maquina.Descricao)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Produto.Descricao)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Padrao)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ConsideraGrupoMaquina)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.PecasPorPulso)
+                            </td>
+                            <td>
+
+
+                                <a href="@Url.Action("Edit", new {maq = item.MaquinaId, prod = item.ProdutoId, seq = item.SequenciaTransformacao })" class="btn btn-warning" title="Editar" rel="tooltip"><span class="fa fa-edit"></span></a>
+                                <a href="@Url.Action("Details", new {maq = item.MaquinaId, prod = item.ProdutoId, seq = item.SequenciaTransformacao })" class="btn btn-info" title="Visualizar" rel="tooltip"><span class="fa fa-eye"></span></a>
+                                <a href="@Url.Action("Delete", new { maq = item.MaquinaId, prod = item.ProdutoId, seq = item.SequenciaTransformacao })" class="btn btn-danger" title="Remover" rel="tooltip"><span class="fa fa-eraser"></span></a>
+                            </td>
+                        </tr>
+                    }
+
+                </table>
+
+            </div>
+        </section>
+    </div>
+    </div>

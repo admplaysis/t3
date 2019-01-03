@@ -1,0 +1,370 @@
+USE [SGI]
+GO
+/****** Object:  Trigger [dbo].[TGR_CLP_MEDICOES_01]    Script Date: 13/08/2018 14:55:50 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+ALTER TRIGGER [dbo].[TGR_CLP_MEDICOES_01]
+ON [dbo].[T_CLP_MEDICOES]
+FOR INSERT  --, UPDATE 
+AS
+  BEGIN
+      DECLARE @ID                           INT,
+              @ID_AUX_PEQUENAS_PARADAS      INT,
+              @U_ID                         INT,
+              @U_ID_AUX_PENDENTE            INT,
+              @MAQUINA_ID                   VARCHAR(10),
+              @DATA_INI                     DATETIME,
+              @DATA_FIM                     DATETIME,
+              @U_DATA_INI                   DATETIME,
+              @U_DATA_FIM                   DATETIME,
+              @DATA_ULTIMA_PECA_PRODUZIDA   DATETIME,
+              @TEMPO_MINIMO_PARADA          INT,
+              @UP_QTD                       INT,
+              @UP_GRUPO                     FLOAT,
+              @QTD                          INT,
+              @ID_LOTE_CPL                  INT,
+              @U_QTD                        INT,
+              @GRUPO                        FLOAT,
+              @U_GRUPO                      FLOAT,
+              @STATUS                       INT,
+              @U_STATUS                     INT,
+              @URN_ID                       VARCHAR(1),
+              @U_URN_ID                     VARCHAR(1),
+              @URM_ID                       VARCHAR(1),
+              @U_URM_ID                     VARCHAR(1),
+              /*@PRO_ID                       VARCHAR(30),
+              @U_PRO_ID                     VARCHAR(30),
+              @ORD_ID                       VARCHAR(30),
+              @U_ORD_ID                     VARCHAR(30),
+              @ROT_SEQ_TRANFORMACAO         INT,
+              @FPR_SEQ_REPETICAO            INT,
+              @U_ROT_SEQ_TRANFORMACAO       INT,
+              @U_FPR_SEQ_REPETICAO          INT,*/
+              @FASE                         VARCHAR(1),
+              @U_FASE                       VARCHAR(1),
+              @INCREMENTOU                  VARCHAR(1),
+              @U_PERFORMANCE                FLOAT,
+              @TAR_PROXIMA_META_PERFORMANCE FLOAT,
+              @OCO_ID                       VARCHAR(10),
+              @U_CLP_ORIGEM					VARCHAR(1),
+			  @CLP_ORIGEM					VARCHAR(1),
+			  @DESCONSIDERA_PARADA          VARCHAR(1),
+              @U_OCO_ID                     VARCHAR(10),
+              @STATUS_MAQUINA               VARCHAR(10),
+              @PERFORMANCE                  FLOAT
+
+
+      SELECT @ID = ID,
+             @MAQUINA_ID = MAQUINA_ID,
+             @DATA_INI = DATA_INI,
+             @DATA_FIM = DATA_FIM,
+             @QTD = QTD,
+             @GRUPO = GRUPO,
+             @STATUS = STATUS,
+             @URN_ID = URN_ID,
+             @URM_ID = URM_ID,
+			 @CLP_ORIGEM=CLP_ORIGEM,
+             /*@ORD_ID = ISNULL(ORD_ID,''),
+			 @PRO_ID = ISNULL(PRO_ID,''),
+			 @ROT_SEQ_TRANFORMACAO = ISNULL(ROT_SEQ_TRANFORMACAO,0),
+             @FPR_SEQ_REPETICAO = ISNULL(FPR_SEQ_REPETICAO,0),*/
+             @ID_LOTE_CPL = ISNULL(ID_LOTE_CPL,''),
+             @PERFORMANCE = Isnull(QTD / ( CASE WHEN Datediff(second,DATA_INI,DATA_FIM) = 0 THEN 1 ELSE Datediff(second, DATA_INI,DATA_FIM) END ), -1)
+      FROM   inserted
+	  print 'foi '
+	  -- MENOR QUE ZERO NAO ENTRA AQUI POIS SE TRATA DE INSERT MANUAL NO OPROCESSO DE SPLIT
+      IF @ID_LOTE_CPL >= 0
+      BEGIN
+	  PRINT 'ENTROU'
+            -- Agrupar na sequencia de data e hora quando a informação for zero   ou diferente de zero    
+            SET @U_FASE = ''
+			SELECT TOP 1 
+						 @U_ID_AUX_PENDENTE = ISNULL(V.ID,0),
+						 @U_URN_ID = T.URN_ID,
+                         @U_URM_ID = T.URM_ID,
+						 @U_DATA_INI = T.DATA_INI,
+						 @U_DATA_FIM = T.DATA_FIM,
+                         @U_ID = T.ID,
+                         @U_FASE = T.FASE,
+                         @U_QTD = T.QTD,
+                         @U_GRUPO = T.GRUPO,
+                         @U_OCO_ID = T.OCO_ID,
+						 @U_STATUS = T.STATUS,
+						 @U_CLP_ORIGEM=T.CLP_ORIGEM,
+                         /*@U_ORD_ID = T.ORD_ID,
+						 @U_PRO_ID = T.PRO_ID,
+						 @U_ROT_SEQ_TRANFORMACAO = T.ROT_SEQ_TRANFORMACAO,
+                         @U_FPR_SEQ_REPETICAO = T.FPR_SEQ_REPETICAO,
+						 -- O SISTEMA SEMPRE UTILIZARÁ A ULTIMA OP
+						 @ORD_ID = T.ORD_ID,
+						 @PRO_ID = T.PRO_ID,
+						 @ROT_SEQ_TRANFORMACAO = T.ROT_SEQ_TRANFORMACAO,
+                         @FPR_SEQ_REPETICAO = T.FPR_SEQ_REPETICAO,*/
+						 @U_PERFORMANCE = Isnull(T.QTD / ( CASE WHEN Datediff(second,T.DATA_INI,T.DATA_FIM) = 0 THEN 1 ELSE Datediff(second,T.DATA_INI,T.DATA_FIM) END ), -1)
+            FROM T_CLP_MEDICOES (NOLOCK) T --V_CLP_MEDICOES_PENDENTES -- T_CLP_MEDICOES
+            LEFT JOIN V_CLP_MEDICOES_PENDENTES (NOLOCK) V ON T.ID = V.ID  
+			WHERE  T.ID < @ID AND T.MAQUINA_ID = @MAQUINA_ID AND T.ID_LOTE_CPL >= 0 
+            ORDER  BY T.ID DESC
+
+			PRINT 'I-D'
+			PRINT @ID
+
+
+			
+
+            IF @U_ID_AUX_PENDENTE = 0 -- SIGNIFICA QUE O ULTIMO CLP'NAO É MAIS PENDENTE E O CICLO DEVE SER CORTADO 
+			BEGIN 
+				SET @U_FASE = ''
+				/*SET @U_ORD_ID = '' 
+				SET @U_PRO_ID = ''
+				SET @U_ROT_SEQ_TRANFORMACAO  = ''
+                SET @U_FPR_SEQ_REPETICAO  = ''*/
+			END 
+
+			-- PARA RODAR A PRIMEIRA VEZ SEM META NAO DA  DA MUITO PROBLEMA DE DIVISAO POR ZERO 
+			-- TESTA SE JA FOI ATRIBUIDA OP PARA A CLP MEDICOES PENDENTES  GERALMENTE NA PRIPEIRA PRODUCAO NAO VAI PEGAR POIS NAO TEMOS UM MOMENTO PARA DEFINIR INICIO DE PEODUCAO   O OSSO INICIO É SEMPRE O FIM DA ULTIMA OP OU PERIODO SEM ESPEDIENTE 
+			-- ATUALIZA DADOS TABELA DE CLP_MEDICOES 
+/*			IF @U_ORD_ID = '' OR @U_ORD_ID IS NULL
+			BEGIN 
+				SELECT      
+				@U_PRO_ID=ROT_PC_PRO_ID,
+				@U_ORD_ID=ORD_ID,
+				@U_ROT_SEQ_TRANFORMACAO=ROT_SEQ_TRANFORMACAO,
+				@U_FPR_SEQ_REPETICAO=FPR_SEQ_REPETICAO
+				FROM V_OP_PRODUZINDO WHERE ROT_MAQ_ID = @MAQUINA_ID
+			END 
+
+			SET @PRO_ID=@U_PRO_ID 
+			SET @ORD_ID=@U_ORD_ID
+			SET @ROT_SEQ_TRANFORMACAO=@U_ROT_SEQ_TRANFORMACAO
+			SET @FPR_SEQ_REPETICAO=@U_FPR_SEQ_REPETICAO
+*/
+			-- SELECIONA CALENDARIO 
+			SELECT @URN_ID = urn_id,
+                   @URM_ID = urm_id
+            FROM   T_ITENS_CALENDARIO I(nolock)
+                   INNER JOIN t_maquina (NOLOCK)M
+                           ON M.cal_id = I.cal_id
+            WHERE  @DATA_INI BETWEEN ica_data_de AND ica_data_ate
+                   AND M.maq_id = @MAQUINA_ID
+
+            SET @GRUPO = 1 -- POR PADRAO 
+            SET @U_STATUS = 0 
+			SET @INCREMENTOU = 'N'
+            SET @DESCONSIDERA_PARADA = 'N'
+
+            IF @OCO_ID = ''
+              SET @OCO_ID = @U_OCO_ID
+
+        /*FASES
+        1 - SETUP			= QUANTIDADES ZERO 
+        2 - SETUP AJUSTE	= QUANTIDADES DIFERENTE DE ZERO STARTA SETUP AJUSTE E QUANTIDADES A CIMA DOS 80% ENCERRA 
+        3 - PRODUZINDO	= QUANTIDADE A CIMA DE 80% DA META STARTA
+        4 - PARADAS		= QUANTIDADE ZERADA*/
+        -- A PARTIR DA ULTIMA DECISAO AONDE TODOS OS REGISTROS DE CLP MEDICOES PENDENTES PERTENSEM A ULTIMO DA FILA A INICIARÁ A PARTIR DO ULTIMO CALCULADO 
+        
+		PRINT 'U FASE'
+		SET @FASE = @U_FASE /*(SELECT Count(*)FROM (SELECT GRUPO FROM V_CLP_MEDICOES_PENDENTES C WHERE maquina_id = @MAQUINA_ID AND id < @ID   GROUP BY GRUPO    ) T)*/
+		PRINT @U_FASE
+		
+		SET @TEMPO_MINIMO_PARADA = 60
+		SET @TAR_PROXIMA_META_PERFORMANCE = -1 
+	    SELECT  @TAR_PROXIMA_META_PERFORMANCE = ISNULL(TAR_PROXIMA_META_PERFORMANCE,@TAR_PROXIMA_META_PERFORMANCE) ,@TEMPO_MINIMO_PARADA = ISNULL(TAR_PARAMETRO_TIME_WORK_STOP_MACHINE,@TEMPO_MINIMO_PARADA)     
+		FROM V_OP_PRODUZINDO (NOLOCK) WHERE ROT_MAQ_ID = @MAQUINA_ID
+		
+		PRINT '1'
+			
+		/*SELECT TOP 1 @TEMPO_MINIMO_PARADA = Isnull(TAR_PARAMETRO_TIME_WORK_STOP_MACHINE, 60),
+        @TAR_PROXIMA_META_PERFORMANCE = Isnull(TAR_PROXIMA_META_PERFORMANCE,-1)
+        FROM  T_TARGET_PRODUTO (NOLOCK) T
+        WHERE PRO_ID = @PRO_ID
+			  AND T.MAQ_ID = @MAQUINA_ID
+              AND ROT_SEQ_TRANFORMACAO = @ROT_SEQ_TRANFORMACAO
+		ORDER  BY TAR_ID DESC */
+
+		IF ((@CLP_ORIGEM = 'A' AND @U_CLP_ORIGEM <> 'A') OR (@CLP_ORIGEM <> 'A' AND @U_CLP_ORIGEM = 'A'))
+		BEGIN
+			SET @GRUPO = @U_GRUPO + 1
+			SET @INCREMENTOU = 'S'
+		END
+
+		IF @U_FASE > @FASE
+			SET @FASE = @U_FASE
+
+		IF @FASE = '0' OR @FASE = ''
+			SET @FASE = '1'
+        IF @FASE = '1' -- VERIFICA SE ESTA NA FAZE DOIS 
+        BEGIN
+			IF @QTD > 0
+            BEGIN
+                SET @FASE = '2'
+                SET @GRUPO = @U_GRUPO + 1
+				SET @U_STATUS = 0 
+                SET @INCREMENTOU = 'S'
+            END
+        END
+        IF @FASE = '2' 
+		BEGIN
+			SET @STATUS_MAQUINA = 'Setup Ajuste'
+            -- como teste para que se quebre novamente o grupo desta forma sempre que ouverem variacoes de velocidade o sistema ira quebrar o grupo
+            IF ( @PERFORMANCE > ( @TAR_PROXIMA_META_PERFORMANCE * 0.8 ) )
+            BEGIN
+				--SET @GRUPO = @U_GRUPO + 1
+                --SET @INCREMENTOU = 'S'
+				--SET @U_STATUS = 0 
+                SET @FASE = '3'
+				SET @INCREMENTOU = 'N'
+			END
+            ELSE
+            BEGIN
+				IF @INCREMENTOU = 'N'
+					SET @GRUPO = @U_GRUPO
+            END
+		END
+		PRINT '2'
+		IF @FASE > '2'
+        BEGIN
+			SET @STATUS_MAQUINA = 'Produzindo'
+			IF @INCREMENTOU = 'N'
+                SET @GRUPO = @U_GRUPO
+		END
+		
+			IF @U_QTD = 0 AND @QTD = 0
+            BEGIN
+			PRINT '3'
+				IF @U_OCO_ID = '1.1'
+					SET @STATUS_MAQUINA = 'Setup'
+				ELSE
+					SET @STATUS_MAQUINA = 'Parada'
+			
+				-- DA PRA MELHORAR PERFORMANCE SE IR ACUMULANDO EM UM CAMPO O TEMPO DA ULTIMA PARADA 
+				-- testa se a quantidade anterior zero fas parte de uma pequena parada SE FIZER NAO MUDA GRUPO
+                SET @DATA_ULTIMA_PECA_PRODUZIDA = '1970-01-01 00:00:00.000'
+				SELECT TOP 1 @ID_AUX_PEQUENAS_PARADAS = ID, @DATA_ULTIMA_PECA_PRODUZIDA = DATA_FIM,@UP_QTD = QTD,@UP_GRUPO = GRUPO FROM  
+				T_CLP_MEDICOES  (NOLOCK) CM
+                WHERE  ID < @ID AND MAQUINA_ID = @MAQUINA_ID AND QTD <> 0 ORDER  BY ID DESC
+				
+				PRINT 'PEQUENA PARADA'
+				PRINT @ID_AUX_PEQUENAS_PARADAS
+				PRINT @UP_GRUPO
+				PRINT @U_GRUPO
+				PRINT 'TEMPO DIF CALC'
+				PRINT Datediff(second, @DATA_ULTIMA_PECA_PRODUZIDA,@DATA_FIM)
+				PRINT 'TEMPO DIF PARAMETRO'
+				PRINT @TEMPO_MINIMO_PARADA
+				
+				IF ( @UP_GRUPO = @U_GRUPO ) AND ( Datediff(second, @DATA_ULTIMA_PECA_PRODUZIDA,@DATA_FIM) > @TEMPO_MINIMO_PARADA )
+                BEGIN -- ATUALIZA GRUPO A PARTIR DA PRIMEIRA PARADA
+					PRINT 'AQUI 1 '
+					PRINT @ID_AUX_PEQUENAS_PARADAS 
+					SET @GRUPO = @U_GRUPO + 1
+					SET @U_STATUS = 0 
+					SET @ID = (SELECT TOP 1 ID FROM  T_CLP_MEDICOES (NOLOCK) CM
+							    WHERE  ID > @ID_AUX_PEQUENAS_PARADAS AND MAQUINA_ID = @MAQUINA_ID AND QTD = 0 ORDER  BY ID )
+				END
+                ELSE
+                BEGIN
+					IF @INCREMENTOU = 'N'
+						SET @GRUPO = @U_GRUPO
+					SET @DESCONSIDERA_PARADA = 'S'
+				END
+			END
+			IF @U_QTD <> 0 AND @QTD <> 0
+			BEGIN
+				IF @INCREMENTOU = 'N'
+					SET @GRUPO = @U_GRUPO
+            END
+			PRINT '4'
+			IF (@U_QTD = 0 AND @QTD <> 0 )
+            BEGIN
+				-- SOMENTE MUDA O GRUPO SE O REGISTRO NAO FIZER PARTE DE UMA PEQUENA PARADA
+				SET @DATA_ULTIMA_PECA_PRODUZIDA = '1970-01-01 00:00:00.000'
+				SET @UP_GRUPO=0
+				SELECT TOP 1 @ID_AUX_PEQUENAS_PARADAS = ID,@DATA_ULTIMA_PECA_PRODUZIDA = DATA_FIM,@UP_QTD = QTD,@UP_GRUPO = GRUPO FROM T_CLP_MEDICOES (NOLOCK)CM
+                WHERE  ID < @ID AND MAQUINA_ID = @MAQUINA_ID AND QTD <> 0 ORDER  BY ID DESC 
+				IF(Datediff(second, @DATA_ULTIMA_PECA_PRODUZIDA, @DATA_FIM)> @TEMPO_MINIMO_PARADA)
+				BEGIN
+					IF @INCREMENTOU = 'N'
+					BEGIN
+						SET @GRUPO = @U_GRUPO + 1
+						SET @U_STATUS = 0 
+					END
+					SET @INCREMENTOU = 'S'
+                END
+                ELSE
+                BEGIN
+					IF @INCREMENTOU = 'N'
+						SET @GRUPO = @U_GRUPO
+					SET @DESCONSIDERA_PARADA = 'S'
+				END
+            END
+			PRINT '5'
+			
+			-- VAI PULAR UM ID CASO O TURNO TENHO MUDADO E CONENCIDENTEMENTE TENHO MUDADO QUANTIDADE       ALTERADO DEPOIS DAS FASES  
+			-- SOMENTE QUEBRA TURNO SE TURNO ESTIVER PREENCHIDO NO CALENDARIO   
+			-- EM CASO DE UM TUNO SO O SISTEMA NAO QUEBRA QUANDO VEM DE UM CALENDARIO SEM TURNO DEFINIDO
+			-- NAO QUEBRA QUANDO VEM DE TURNO SEM EXPEDIENTE     IF ((@U_URN_ID IS NOT NULL AND @U_URN_ID IS NOT NULL) OR (@U_URN_ID <> '' AND @U_URN_ID <> '')) 
+			IF ( Isnull(@U_URN_ID, '') <> Isnull(@URN_ID, '') OR Isnull(@U_URM_ID, '') <> Isnull(@URM_ID, '') ) AND @INCREMENTOU = 'N'
+            BEGIN
+				IF(@U_URN_ID IS NULL AND @U_QTD <> 0 ) -- NAO QUEBRAR 
+					PRINT ''
+                ELSE IF @INCREMENTOU = 'N'
+				BEGIN 
+					SET @GRUPO = @U_GRUPO + 1
+					SET @U_STATUS = 0 
+					SET @INCREMENTOU = 'S'
+				END
+			END
+			PRINT '6'
+			SET @OCO_ID = ''
+			UPDATE T_CLP_MEDICOES
+            SET    GRUPO = Isnull(@GRUPO, 1)
+                   ,STATUS = ISNULL(@U_STATUS,0)
+				   ,URN_ID = @URN_ID
+                   ,URM_ID = @URM_ID
+                   /*,ORD_ID = @ORD_ID
+                   ,PRO_ID = @PRO_ID
+                   ,ROT_SEQ_TRANFORMACAO = @ROT_SEQ_TRANFORMACAO
+                   ,FPR_SEQ_REPETICAO = @FPR_SEQ_REPETICAO*/
+                   ,OCO_ID = @OCO_ID
+                   ,FASE = @FASE
+                   ,CLP_EMISSAO = Getdate()
+			WHERE  ID >= @ID AND MAQUINA_ID = @MAQUINA_ID -- O ID É MANIPULADO QUANDO EXISTEM PEQUENAS PARADAS CONFIRMADAS COMO PARADAS AI O SISTEMA VAI ATUALIZAR A PARADA DESDO SEU INICIO OR @ID_AUX_PEQUENAS_PARADAS
+			--WHERE  ID = @ID AND MAQUINA_ID = @MAQUINA_ID -- O ID É MANIPULADO QUANDO EXISTEM PEQUENAS PARADAS CONFIRMADAS COMO PARADAS AI O SISTEMA VAI ATUALIZAR A PARADA DESDO SEU INICIO OR @ID_AUX_PEQUENAS_PARADAS
+			
+		--END
+	
+	-- atualiza tabela feedback caso o mesmo tenha cido salvo sem que o grupo tenha cido alterado 
+	-- ALTERAR PARA CORRIGIR TUDO SEMPRE AGORA APENAS ESTA INCREMENTANDO
+	
+	
+	-- UPDATE T_FEEDBACK  SET FEE_DATA_FINAL = @DATA_FIM, FEE_QTD_PULSOS = FEE_QTD_PULSOS + @QTD   WHERE  MAQ_ID = @MAQUINA_ID AND  FEE_GRUPO =  @GRUPO 
+	
+	/*UPDATE T_FEEDBACK  SET FEE_DATA_INICIAL= DTI,FEE_DATA_FINAL = DTF, FEE_QTD_PULSOS = QTD   
+	FROM T_FEEDBACK  
+	INNER JOIN (SELECT GRUPO,MAQUINA_ID, MIN(DATA_INI)DTI,MAX(DATA_FIM)DTF, SUM(QTD) QTD  FROM  T_CLP_MEDICOES (NOLOCK)
+	GROUP BY GRUPO,MAQUINA_ID
+	) AS CLP ON GRUPO =  FEE_GRUPO AND MAQUINA_ID = MAQ_ID
+	WHERE  MAQ_ID = @MAQUINA_ID AND  FEE_GRUPO =  @GRUPO 
+	*/
+	
+	--GROUP BY FEE_GRUPO,MAQ_ID
+	
+	
+	--UPDATE T_MAQUINA  SET MAQ_STATUS = @STATUS_MAQUINA, MAQ_ULTIMA_ATUALIZACAO = Getdate() WHERE  MAQ_ID = @MAQUINA_ID 
+	-- serve para acumular valores na tabela da fila e direcionar os dados de performance 
+	--EXEC SP_PLUG_CALCULA_PERFORMANCE_FILA @ID, @MAQUINA_ID,@PRO_ID,@ORD_ID,0,@ROT_SEQ_TRANFORMACAO,@FPR_SEQ_REPETICAO,0,@TAR_PROXIMA_META_PERFORMANCE, @DATA_INI,@DATA_FIM,@QTD ,@FASE 
+	PRINT '7'
+	EXEC SP_PLUG_CALCULA_PERFORMANCE_FILA -1, @MAQUINA_ID,'','',0,'','',0,@TAR_PROXIMA_META_PERFORMANCE, @DATA_INI,@DATA_FIM,@QTD ,@FASE 
+	--@MAQUINA_ID,@PRO_ID,@ORD_ID,0,@ROT_SEQ_TRANFORMACAO,@FPR_SEQ_REPETICAO,0,@TAR_PROXIMA_META_PERFORMANCE, @DATA_INI,@DATA_FIM,@QTD ,@FASE 
+	--EXEC SP_PLUG_SET_FASES_CLP_PENDENTES @MAQUINA_ID
+	PRINT '8'
+END
+
+END 
+
+  

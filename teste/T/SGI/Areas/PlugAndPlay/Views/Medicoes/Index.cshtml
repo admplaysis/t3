@@ -1,0 +1,451 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+@{
+    ViewData["Title"] = "Tela do Operador - " + @ViewBag.maquinaId + " - " + @ViewBag.maquinaIp;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section scripts{
+    <script>
+        var ServerValues = {
+            maquinaId: '@ViewBag.maquinaId'
+        }
+    </script>
+    <!--Global Functions-->
+    <script src="~/Plugins/global-functions/global-functions.js"></script>
+    <!-- bootstrap datepicker -->
+    <script src="~/Plugins/bootrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+    <script src="~/Plugins/bootrap-datepicker/locales/bootstrap-datepicker.pt-BR.min.js"></script>
+    <!--graficos-->
+    <script src="~/Areas/PlugAndPlay/Scripts/CanvasGauge/modalform.js"></script>
+    <!--moment js-->
+    <script src="~/Scripts/moment-2.20.1/moment.js"></script>
+    <script src="~/Scripts/moment-2.20.1/pt-br.js"></script>
+    <!-- alertas modal bootstrap -->
+    <script src="~/Plugins/bootstrap-modal-create/js/bootstrap-modal-create.js"></script>
+    <!-- input mask -->
+    <script src="~/Plugins/jquery-inputmask/jquery.inputmask.bundle.min.js"></script>
+    <!-- bootstrap-datetimepicker -->
+    <script src="~/Plugins/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.min.js"></script>
+    <!--icone carregando-->
+    <script src="~/Plugins/control-icone-carregando/js/control-carregando.js"></script>
+    <!-- div alert msg -->
+    <script src="~/Plugins/div-alert-msg/js/div-alert-msg.js"></script>
+    <script src="~/Plugins/div-alert-msg/js/alert-page.js"></script>
+    <!--custom tabs-->
+    <script src="~/Plugins/custom-tabs/custom-tabs.js"></script>
+    <!--eventos da pagina-->
+    <script src="~/Areas/PlugAndPlay/Scripts/Medicoes/Index/js/tabela-feedback.js"></script>
+    <script src="~/Areas/PlugAndPlay/Scripts/Medicoes/Index/js/index.js"></script>
+    <script src="~/Areas/PlugAndPlay/Scripts/Medicoes/Index/js/fila-producao.js"></script>
+    <script src="~/Areas/PlugAndPlay/Scripts/Medicoes/Index/js/modal-dividir-periodo.js"></script>
+    <script src="~/Areas/PlugAndPlay/Scripts/Medicoes/Index/js/modal-setInicio-setup.js"></script>
+    <script src="~/Areas/PlugAndPlay/Scripts/Medicoes/Index/js/tabela-fechamento-producao.js"></script>
+    <script src="~/Plugins/global-functions/gauge-performace-producao.js"></script>
+    <script src="~/Areas/PlugAndPlay/Scripts/Medicoes/Index/js/monitoramento.js"></script>
+    <script src="~/Areas/PlugAndPlay/Scripts/Medicoes/Index/js/global.js"></script>
+}
+@section styles{
+    <style>
+        .coamarelo {
+            a: #F57F17;
+        }
+
+        .circle:hover {
+            cursor: pointer
+        }
+
+        .circle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-weight: 500;
+            font-size: 15px;
+            font-family: Arial;
+            color: #FFF;
+            line-height: 20px;
+            justify-content: center;
+            text-align: center;
+            margin-left: 5px;
+        }
+
+        .bg-circulo-Azul {
+            background: #1E88E5
+        }
+
+        .bg-circulo-Verde {
+            background: #43A047
+        }
+
+        .bg-circulo-Amarelo {
+            background: #F57F17
+        }
+
+        .bg-circulo-Vermelho {
+            background: #E53935
+        }
+    </style>
+    <!--progress bar-->
+    <link href="~/Content/css/progress-bar.css" rel="stylesheet" />
+    <!--forms-->
+    <link href="~/Content/css/forms.css" rel="stylesheet" />
+    <!--Alerts-->
+    <link href="~/Content/css/alerts.css" rel="stylesheet" />
+    <!--icone carregando-->
+    <link href="~/Plugins/control-icone-carregando/css/control-carregando.css" rel="stylesheet" />
+    <!-- div alert msg -->
+    <link href="~/Plugins/div-alert-msg/css/div-alert-msg.css" rel="stylesheet" />
+    <link href="~/Plugins/div-alert-msg/css/alert-page.css" rel="stylesheet" />
+    <!-- bootstrap datetimerpicker-->
+    <link href="~/Plugins/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    <!-- bootstrap datepicker-->
+    <link href="~/Plugins/bootrap-datepicker/css/bootstrap-datepicker.css" rel="stylesheet" />
+    <!--custom tabs-->
+    <link href="~/Plugins/custom-tabs/custom-tabs.css" rel="stylesheet" />
+    <!-- css da pagina-->
+    @*<link href="~/Areas/PlugAndPlay/Scripts/Medicoes/Index/css/index.css" rel="stylesheet" />*@
+    <link href="~/Areas/PlugAndPlay/Scripts/Medicoes/Index/css/modal-dividir-periodo.css" rel="stylesheet" />
+    <link href="~/Areas/PlugAndPlay/Scripts/Medicoes/Index/css/global.css" rel="stylesheet" />
+
+}
+<!--template para a secao de monitoramento-->
+<!--modal dividir periodo-->
+<div class="modal fade col-xs-12 in" id="modalDividirPeriodo" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">Dividir Período</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <div class="tabTop">
+
+                            </div>
+                            <div id="divPartes">
+
+                            </div>
+                            <div id="divMsgAlerts">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" id="mdDiviPeriBtnSalvar" class="btn btn-success">Salvar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--modal informar data setup-->
+<div class="modal fade col-xs-12 in" id="modalInicioSetup" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">Setup</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="txtObsAddPeriodo" class="control-label">Informe da hora que iniciou o setup da produção abaixo</label>
+                            <div class="divInfoPeriodo">
+
+                            </div>
+                            <div id="txtDataIniSetup">
+
+                            </div>
+                            <span class="help-block">
+
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button id="btnSalvarHora" type="button" class="btn btn-success">Salvar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Observacao-->
+<div class="modal fade col-xs-12 in" id="modalAddObsPeriodo" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">Observação</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="txtObsAddPeriodo" class="control-label">Descrição</label>
+                            <textarea rows="5" id="txtObsAddPeriodo" class="form-control jsTxtLimpar"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button id="btnSalvarObsPeriodo" type="button" class="btn btn-success">Salvar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- fim da modal-->
+<div class="col-md-12">
+    <div class="page-title">
+        <div class="pull-left">
+            <div class="pull-left">
+                <h1 class="title">@ViewData["Title"]</h1>
+            </div>
+            @*<div class="form-inline breadcrumb">
+                    <div class="form-group">
+                        <label class="control-label"> Maquina</label>
+                        @Html.DropDownList("sltMaquinaFeed", ViewBag.sltMaquina as SelectList, "Selecione...", new { @class = "form-control" })
+                    </div>
+                </div>*@
+        </div>
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home", new { @area=""})"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li><i class="fa fa-tags"></i>Feedbacks</li>
+            </ol>
+        </div>
+    </div>
+</div>
+<!--Container da fila de producao-->
+<div class="col-md-5">
+    <section class="box" style="position: relative">
+        <!--animacao loading-->
+        <div class="carregando" id="dvLoadFila" style="display: none">
+            <div class="animacao">
+                Carregando...
+            </div>
+        </div>
+        <!--animacao loading-->
+        <header class="panel_header">
+            <h2 class="title pull-left">
+                Ordens de Produção
+            </h2>
+        </header>
+        <div class="content-body">
+            <ul class="tab tab-pills m-t-30 m-b-30">
+                <li class="tab-item">
+                    <a href="#divFilaProducao" class="tab-link show" data-toggle="tab" aria-expanded="false">
+                        <i class="fa fa-file-text-o" aria-hidden="true"></i> Fila
+                    </a>
+                </li>
+
+                <li class="tab-item">
+                    <a href="#divGridListTargetsPendentes" class="tab-link" data-toggle="tab" aria-expanded="true">
+                        <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+                        Pendêcias
+                    </a>
+                </li>
+                <li class="tab-item">
+                    <a href="#divFilaProducaoHistorico" class="tab-link" data-toggle="tab" aria-expanded="false">
+                        <i class="fa fa-hourglass-end" aria-hidden="true"></i>
+                        Produzidas
+                    </a>
+                </li>
+                @*<li class="tab-item"> <a href="#divGridListTargetsPendentes" class="tab-link" data-toggle="tab" aria-expanded="true">Mensagens</a> </li>*@
+            </ul>
+            <div class="tab-custom-content divFilaProducao">
+                <div id="divFilaProducao" class="tab-pane show">
+
+                </div>
+                @*<div id="divMensagens" class="tab-pane">
+
+                    </div>*@
+                <div id="divGridListTargetsPendentes" class="tab-pane">
+
+                </div>
+                <div id="divFilaProducaoHistorico" class="tab-pane">
+
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<div class="col-md-7">
+    <section class="box" style="position:relative">
+        <!--animacao loading-->
+        <div class="carregando" id="dvLoadMonito" style="display: none">
+            <div class="animacao">
+                Carregando...
+                @*<i class="fa fa-circle-o-notch fa-spin"></i>*@
+            </div>
+        </div>
+        <!--animacao loading-->
+        <header class="panel_header">
+            <h2 class="title pull-left">
+                Monitoramento
+            </h2>
+        </header>
+        <div id="divInfoMonitoramento" class="content-body">
+            <div class="row">
+                <div class="col-md-12">
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-7">
+                    <div class="grid-info">
+                        <div class="row">
+                            <div class="col-sm-4 col-md-6">
+                                <div class="quadro">
+                                    <div class="title">OP</div>
+                                    <div id="ddOrdemProducao">indefinido</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4 col-md-6">
+                                <div class="quadro">
+                                    <div class="title">Tempo gasto</div>
+                                    <div id="ddTempoDecorrido">indefinido</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4 col-md-6 ">
+                                <div class="quadro">
+                                    <div class="title">Qtd produzida</div>
+                                    <div id="ddQuantidadePecasProduzidas">indefinido</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4 col-md-6">
+                                <div class="quadro">
+                                    <div class="title">Qtd Restante</div>
+                                    <div id="ddQuantidadeRestante">indefinido</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-8 col-md-6">
+                                <div class="quadro">
+                                    <div class="title">Vel p/atingir meta</div>
+                                    <div id="velocidadeParaAtingirMeta">indefinido</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-8 col-md-6">
+                                <div class="quadro">
+                                    <div class="title">Vel Atual</div>
+                                    <div id="velocidadeAtual">indefinido</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="" class="col-xs-12 col-sm-4 col-md-5">
+                    <div class="divGraficoVelocimetro" style="height: 210px" id="divCanvVelocimetroPerformace">
+                        <canvas id="canvVelocimetroPerformace"></canvas>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-8 col-md-12">
+                    <div id="divProgressSetupRealizado" class="form-group">
+                        <label class="form-label">Setup</label>
+                        <span class="form-label-desc">Meta: entre <span id="spanTempoSegundoSetupMinVerde">0</span> e <span id="spanTempoSegundoSetupMaxVerde">0</span></span>
+                        <div class="progress mg-bottom-0">
+                            <div id="divProgressSetupAzul" class="progress-bar" style="width: 0%;">
+
+                            </div>
+                            <div id="divProgressSetupVerde" class="progress-bar progress-bar-success" style="width: 0%;">
+
+                            </div>
+                            <div id="divProgressSetupAmarelo" class="progress-bar progress-bar-warning" style="width: 0%;">
+
+                            </div>
+                            <div id="divProgressSetupVermelho" class="progress-bar progress-bar-danger" style="width: 0%;">
+
+                            </div>
+                        </div>
+                        <div style="width: 0%; height: 10px; display: inline-block" id="divPositionIconeSetup"></div>
+                        <span id="spanTempoGastoSetup"></span>
+                        <span id="spanIconeTempoGastoSetup" class="pont-time-setup glyphicon glyphicon-eject"></span>
+                    </div>
+                    <div id="divProgressSetupAjuste" class="">
+                        <label class="form-label">Setup Ajuste</label>
+                        <span class="form-label-desc">Meta: entre <span id="spanTempoSegundoSetupAjusteMinVerde">0</span> e <span id="spanTempoSegundoSetupAjusteMaxVerde">0</span></span>
+                        <div class="progress mg-bottom-0">
+                            <div id="divProgressSetupAjusteAzul" class="progress-bar" style="width: 0%;">
+                            </div>
+                            <div id="divProgressSetupAjusteVerde" class="progress-bar progress-bar-success" style="width: 0%;">
+
+                            </div>
+                            <div id="divProgressSetupAjusteAmarelo" class="progress-bar progress-bar-warning" style="width: 0%;">
+
+                            </div>
+                            <div id="divProgressSetupAjusteVermelho" class="progress-bar progress-bar-danger" style="width: 0%;">
+
+                            </div>
+                        </div>
+                        <div style="width: 0%; height: 10px; display: inline-block" id="divPositionIconeSetupAjuste"></div>
+                        <span id="spanTempoGastoSetupAjuste"></span>
+                        <span id="spanIconeTempoGastoSetupAjuste" class="pont-time-setup glyphicon glyphicon-eject"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="legenda-velocimetro">
+                <div id="divLegendaVelocimetro">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-3 col-md-3">
+                            <div title="Acima da meta">
+                                <div class="blocoLegenda cfAzul"></div> Superação
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-3 col-md-3">
+                            <div title="Dentro da meta">
+                                <div class="blocoLegenda cfVerde"></div> Meta
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-3 col-md-3">
+                            <div title="Proximo a meta">
+                                <div class="blocoLegenda cfAmarela"></div> Atenção
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-3 col-md-3">
+                            <div title="Muito abaixo da meta">
+                                <div class="blocoLegenda cfVermelha"></div> Crítico
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="display:none" class="alert alert-warning alert-small" id="divAlertPrimeiraProducao">
+                    As metas não são exibidas na primeira produção.
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<div class="col-xs-12">
+    <section class="box">
+        <header class="panel_header">
+            <h2 class="title pull-left">
+                Feedbacks da Máquina
+            </h2>
+        </header>
+        <div class="content-body">
+            <div class="table-responsive" id="exMedicoes"></div>
+        </div>
+    </section>
+</div>
+<div class="col-xs-12">
+    <section class="box">
+        <header class="panel_header">
+            <h2 class="title pull-left">
+                GESTÃO DA CONFIGURAÇAO
+            </h2>
+        </header>
+        <div class="content-body">
+            <div onclick="document.location.href='/PlugAndPlay/RelatoriosFeedbacks/FeedbacksDesempenho?maquina=5PA2FG&amp;tipo=SS&amp;status=G'" id="M_SETUP_GERAL_VERDE_5PA2FG" class="circle bg-circulo-Verde">6</div>
+
+        </div>
+
+    </section>
+</div>

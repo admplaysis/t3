@@ -1,0 +1,152 @@
+﻿@model SGI.Areas.PlugAndPlay.Models.Order
+
+@{
+    ViewBag.Title = "Pedido";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section scripts{
+    <!--moment.js-->
+    <script src="~/Plugins/moment-js/js/moment.js"></script>
+    <script src="~/Plugins/moment-js/js/pt-br.js"></script>
+    <!--datetimepicker-->
+    <script src="~/Plugins/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.min.js"></script>
+    <!--scripts da pagina-->
+    <script src="~/Areas/PlugAndPlay/Scripts/Orders/Create/js/global.js"></script>
+}
+@section styles{
+    <!--datetimepicker-->
+    <link href="~/Plugins/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+}
+<div class='col-xs-12'>
+    <div class="page-title">
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home", new { area = ""})"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-tags"></i>Cadastros
+                </li>
+                <li>
+                    <a href="@Url.Action("Index","Orders")">Pedidos</a>
+                </li>
+                <li class="active">
+                    <strong>Pedido</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="col-xs-12">
+    <section class="box">
+        <header class="panel_header">
+            <h2 class="title pull-left">Cadastrar</h2>
+            <div class="actions panel_actions pull-right">
+            </div>
+        </header>
+        <div class="content-body">
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                <div class="row">
+                    <div class="form-group col-md-2 col-sm-9 col-xs-10">
+                        @Html.LabelFor(model => model.Id, htmlAttributes: new { @class = "form-label" })
+                        <div class="controls">
+                            @Html.EditorFor(model => model.Id, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Id, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-5 col-sm-9 col-xs-10">
+                        @Html.LabelFor(model => model.DataEntregaDe, htmlAttributes: new { @class = "form-label" })
+                        <div class="controls">
+                            @Html.EditorFor(model => model.DataEntregaDe, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.DataEntregaDe, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-5 col-sm-9 col-xs-10">
+                        @Html.LabelFor(model => model.DataEntregaAte, htmlAttributes: new { @class = "form-label" })
+                        <div class="controls">
+                            @Html.EditorFor(model => model.DataEntregaAte, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.DataEntregaAte, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-8 col-sm-9 col-xs-10">
+                        @Html.LabelFor(model => model.Quantidade, htmlAttributes: new { @class = "form-label" })
+                        <div class="controls">
+                            @Html.EditorFor(model => model.Quantidade, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Quantidade, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-8 col-sm-9 col-xs-10">
+                        @Html.LabelFor(model => model.PrecoUnitario, htmlAttributes: new { @class = "form-label" })
+                        <div class="controls">
+                            @Html.EditorFor(model => model.PrecoUnitario, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.PrecoUnitario, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-8 col-sm-9 col-xs-10">
+                        @Html.LabelFor(model => model.Tipo, htmlAttributes: new { @class = "form-label" })
+                        <div class="controls">
+                            <select class="form-control" id="Tipo" , name="Tipo">
+                                <option value="OP">GERA OP</option>
+                                <option value="ES">UTILIZARA O ESTOQUE</option>
+                                <option value="EO">UTILIZA PARTE DO ESTOQUE E PARTE SERA PRODUZIDO</option>
+                            </select>
+                            @Html.ValidationMessageFor(model => model.Tipo, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group col-md-8 col-sm-9 col-xs-10">
+                        @Html.LabelFor(model => model.ToleranciaMais, htmlAttributes: new { @class = "form-label" })
+                        <div class="controls">
+                            @Html.EditorFor(model => model.ToleranciaMais, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.ToleranciaMais, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-8 col-sm-9 col-xs-10">
+                        @Html.LabelFor(model => model.ToleranciaMenos, htmlAttributes: new { @class = "form-label" })
+                        <div class="controls">
+                            @Html.EditorFor(model => model.ToleranciaMenos, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.ToleranciaMenos, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-8 col-sm-9 col-xs-10">
+                        @Html.LabelFor(model => model.ClienteId, htmlAttributes: new { @class = "form-label" })
+                        <div class="controls">
+                            @Html.DropDownList("ClienteId", null, htmlAttributes: new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ClienteId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-8 col-sm-9 col-xs-10">
+                        @Html.LabelFor(model => model.ProdutoId, htmlAttributes: new { @class = "form-label" })
+                        <div class="controls">
+                            @Html.DropDownList("ProdutoId", null, htmlAttributes: new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ProdutoId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-8 col-sm-9 col-xs-10">
+                        <div class="pull-right">
+                            <input type="submit" value="Salvar" class="btn btn-success" />
+                            <a href="@ViewBag.url" class="btn btn-default">Cancelar</a>
+
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+</div>
+
+

@@ -1,0 +1,14 @@
+﻿.form-section {
+    margin-bottom: 40px;
+}
+
+    .form-section .form-section-title {
+        margin-top: 0;
+        color: #3F51B5;
+        /*text-transform: uppercase;*/
+    }
+.form-label-desc {
+    font-size: 13px;
+    color: #999999;
+    margin-left: 15px;
+}

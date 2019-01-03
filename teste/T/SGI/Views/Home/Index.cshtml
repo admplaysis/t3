@@ -1,0 +1,1696 @@
+﻿@using PagedList
+@using PagedList.Mvc
+@model SGI.Models.Graficos
+@{
+    ViewData["Title"] = "SGI - Indicadores";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*** Loading ***@
+<div id="divLoading" class="text-center hide" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+    top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+    opacity: .8; filter: alpha(opacity=70);">
+    <p style="position: absolute; top: 30%; left: 45%; color: White;">
+        Aguarde, processando dados...<img src="~/Imagens/loading.gif">
+    </p>
+</div>
+
+@*** Cabeçalho ***@
+<div class="row">
+    <div class='col-xs-12'>
+        <div class="page-title">
+
+            @using (Html.BeginForm("Index", "Home", FormMethod.Get, new { id = "formDados" }))
+            {
+                <div class="pull-left">
+                    <div class="btn-group focus-btn-group">
+                        @Html.DropDownList("sltAno", ViewBag.pAno as SelectList, new { @class = "select2", onchange = "this.form.submit();" })
+                    </div>
+                    <div class="btn-group focus-btn-group" style="width: 200px;">
+                        @Html.DropDownList("idNegocio", null, "Filtrar por negócio...", new { @class = "select2", onchange = "this.form.submit();" })
+                    </div>
+                    <div class="btn-group focus-btn-group" style="width: 300px;">
+                        @Html.DropDownList("idGrupo", null, "Filtrar por grupo de indicador...", new { @class = "select2", onchange = "this.form.submit();" })
+                    </div>
+                </div>
+                <div class="pull-right">
+                    <div class="btn-group focus-btn-group">
+                        @Html.Hidden("pGrafico", (string)ViewBag.grafico)
+                        <a href="@Url.Action("../Consultas/ListaConsultas", new { sPesquisa="" })" title="consultas" rel="tooltip" data-placement="bottom"><i class="fa fa-search"></i></a>
+                        <a href="@Url.Action("Index", new { pGrafico = "M" })" title="Lista de metas" rel="tooltip" data-placement="bottom"><i class="fa fa-line-chart icon-sm"></i></a>
+                        <a href="@Url.Action("Index", new { pGrafico = "G" })" title="Exibir em gráfico" rel="tooltip" data-placement="bottom"><i class="fa fa-bar-chart icon-sm"></i></a>
+                        <a href="@Url.Action("Index", new { pGrafico = "L" })" title="Exibir em lista" rel="tooltip" data-placement="bottom"><i class="fa fa-list icon-sm"></i></a>
+                    </div>
+                </div>
+                <div class='col-xs-5'>
+                    <div class="input-group primary">
+                        <input type="text" name="search" id="search" value="@Html.Value("search")" class="form-control text-right" placeholder="Digite aqui a pesquisa" aria-describedby="basic-addon1">
+                        <a onclick="document.getElementById('formDados').submit();" href="#" class="input-group-addon" id="basic-addon1"><span class="arrow"></span><i class="fa fa-search"></i></a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@***** Funções *****@
+<collapse>
+    @functions
+    {
+        /// <summary>
+        /// Função para retornar se uma meta foi atingida ou não.
+        /// </summary>
+        /// <param name="valorMeta">Valor da meta</param>
+        /// <param name="valorAtingido">Valor medido</param>
+        /// <returns>Retorna true or false</returns>
+        public bool AtingiuMeta(decimal? valorMeta, decimal? valorAtingido, String tipoComparador)
+        {
+            bool atingiu = false;
+            switch (tipoComparador)
+            {
+                case "0"://Igual
+                    if (valorAtingido == valorMeta)
+                        atingiu = true;
+                    break;
+
+
+                case "1"://Maior ou igual
+                    if (valorAtingido >= valorMeta)
+                        atingiu = true;
+                    break;
+
+                case "2"://Menor ou igual
+                    if (valorAtingido <= valorMeta)
+                        atingiu = true;
+                    break;
+            }
+
+            return atingiu;
+        }
+
+        /// <summary>
+        /// Metódo que retorna o formato utilizado nas medições
+        /// </summary>
+        /// <param name="tipo"></param>
+        /// <returns></returns>
+        public string GetFormatoValor(int tipo)
+        {
+            string formato = "{0:N2}";
+            switch (tipo)
+            {
+                case (int)SGI.Enums.TipoAlvo.Valor:
+                    formato = "{0:N2}";
+                    break;
+                case (int)SGI.Enums.TipoAlvo.Percentual:
+                    formato = "{0:P0}";
+                    break;
+                case (int)SGI.Enums.TipoAlvo.Data:
+                    formato = "{0:dd/MM/yyyy}";
+                    break;
+                case (int)SGI.Enums.TipoAlvo.DiaUtil:
+                    formato = "{0:00}";
+                    break;
+            }
+            return formato;
+        }
+    }
+</collapse>
+
+@***** Função para exibir linhas por dia util *****@
+<collapse>
+    @helper PrintRowDiaUtil(SGI.Models.MedicoesInd indicador)
+    {
+        //Metas Ano Anterior
+        decimal? valAlvoAnoAnt = 0;
+        if (Model.AnoAnterior.Count(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior) > 0)
+        {
+            valAlvoAnoAnt = Convert.ToDecimal(Model.AnoAnterior.FirstOrDefault(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).META);
+        }
+        decimal vlrMetaAnoAnt = valAlvoAnoAnt ?? 0;
+        decimal vlrMetaMesAnoAnt = Math.Round(vlrMetaAnoAnt / 12, 2);
+        //Metas Ano Atual
+        string valAlvoAnoAtu = Model.Medicoes.FirstOrDefault(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAtual).META.ToString();
+        decimal vlrMetaAnoAtu = valAlvoAnoAtu != "" ? Decimal.Parse(valAlvoAnoAtu) : 0;
+        decimal vlrMetaMesAnoAtu = vlrMetaAnoAtu;
+
+        <tr class="tblDefault">
+            <td rowspan="2">@indicador.Indicador.IND_DESCRICAO - @indicador.Indicador.T_Negocio.NEG_DESCRICAO</td>
+            <td>Meta mês</td>
+            <td>@String.Format(GetFormatoValor(indicador.Indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAnt)</td>
+            <td>@String.Format(GetFormatoValor(indicador.Indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAtu)</td>
+            @for (int i = 0; i < 12; i++)
+            {
+                <td>@String.Format(GetFormatoValor(indicador.Indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaMesAnoAtu)</td>
+            }
+        </tr>
+        <tr>
+            <td>Real mês</td>
+            @** Real Mês ano anterior **@
+            @{decimal? realAnoAnt = 0;
+                if (Model.AnoAnterior.Count(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior) > 0)
+                {
+                    realAnoAnt = Model.AnoAnterior.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).Sum(y => Convert.ToDecimal(y.Valor));
+                }
+            }
+            @if (AtingiuMeta(vlrMetaAnoAnt, realAnoAnt, indicador.TIPO_COMPARADOR.ToString()))
+            {
+                <td class="tblAtingiuMeta">@String.Format(GetFormatoValor(indicador.Indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAnt)</td>
+            }
+            else
+            {
+                <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao","PlanoAcao", new { idIndicador = indicador.Indicador.IND_ID, periodo = indicador.Ano.Substring(0,4) })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.Indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAnt)<i class="fa fa-info-circle"></i></a></td>
+            }
+
+            @** Real Mês ano atual **@
+            @{var realAnoAtual = Model.Medicoes.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAtual).Sum(y => Convert.ToDecimal(y.Valor));}
+            @if (AtingiuMeta(vlrMetaAnoAtu, realAnoAtual, indicador.TIPO_COMPARADOR.ToString()))
+            {
+                <td class="tblAtingiuMeta">@String.Format(GetFormatoValor(indicador.Indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAtual)</td>
+            }
+            else
+            {
+                <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao","PlanoAcao", new { idIndicador = indicador.Indicador.IND_ID, periodo =ViewBag.anoAtual })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.Indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAtual)<i class="fa fa-info-circle"></i></a></td>
+            }
+
+            @** Preenche meses **@
+            @for (int i = 0; i < 12; i++)
+            {
+                decimal? vlrRealMes = 0;
+                if (Model.Medicoes.Count(x => x.IND_ID == indicador.IND_ID && x.Mes == ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')) > 0)
+                {
+                    vlrRealMes = Convert.ToDecimal(Model.Medicoes.First(x => x.IND_ID == indicador.IND_ID && x.Mes == ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')).Valor);
+                }
+
+                if (AtingiuMeta(vlrMetaMesAnoAtu, vlrRealMes, indicador.TIPO_COMPARADOR.ToString()))
+                {
+                    <td class="tblAtingiuMeta">@String.Format(GetFormatoValor(indicador.Indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrRealMes)</td>
+                }
+                else
+                {
+                    <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao","PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0') })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.Indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrRealMes) <i class="fa fa-info-circle"></i></a></td>
+                }
+            }
+        </tr>
+        <tr>
+            <td colspan="12"></td>
+        </tr>
+    }
+</collapse>
+
+@***** Função para exibir linhas na grid por valor *****@
+<collapse>
+    @helper PrintRowValor(SGI.Models.T_Indicadores indicador)
+    {
+        //Metas Ano Anterior
+        decimal? valAlvoAnoAnt = 0;
+        if (Model.AnoAnterior.Count(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior) > 0)
+        {
+            valAlvoAnoAnt = Convert.ToDecimal(Model.AnoAnterior.FirstOrDefault(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).META);
+        }
+        decimal vlrMetaAnoAnt = valAlvoAnoAnt ?? 0;
+        decimal vlrMetaMesAnoAnt = Math.Round(vlrMetaAnoAnt / 12, 2);
+        //Metas Ano Atual
+        string valAlvoAnoAtu = "";
+        if (Model.Medicoes.Count(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAtual) > 0)
+        {
+            valAlvoAnoAtu = Model.Medicoes.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAtual).Average(x => x.META ?? 0).ToString();
+        }
+        decimal vlrMetaAnoAtu = valAlvoAnoAtu != "" ? Decimal.Parse(valAlvoAnoAtu) : 0;
+
+
+        <tr class="tblDefault">
+            <td rowspan="4">@indicador.IND_DESCRICAO - @indicador.T_Negocio.NEG_DESCRICAO</td>
+            <td>Meta mês</td>
+            <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAnt)</td>
+            <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAtu)</td>
+            @for (int i = 0; i < 12; i++)
+            {
+                if (Model.Medicoes.Count(x => x.IND_ID == indicador.IND_ID && x.Mes == ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')) > 0)
+                {
+                    <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), Model.Medicoes.First(x => x.IND_ID == indicador.IND_ID && x.Mes == ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')).META)</td>
+                }
+                else
+                {
+                    <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAtu)</td>
+                }
+            }
+        </tr>
+        <tr>
+            <td>Real mês</td>
+            @** Real Mês ano anterior **@
+            @{decimal? realAnoAnt = 0;
+                if (Model.AnoAnterior.Count(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior) > 0)
+                {
+                    realAnoAnt = Model.AnoAnterior.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).Sum(y => Convert.ToDecimal(y.Valor));
+                }
+            }
+            @if (vlrMetaAnoAnt > 0)
+            {
+                if (AtingiuMeta(vlrMetaAnoAnt, realAnoAnt, indicador.IND_TIPOCOMPARADOR.ToString()))
+                {
+                    <td class="tblAtingiuMeta">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAnt)</td>
+                }
+                else
+                {
+                    <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao", "PlanoAcao", new { idIndicador = indicador.IND_ID, periodo = ((string)ViewBag.anoAnterior).Substring(0, 4) })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAnt)<i class="fa fa-info-circle"></i></a></td>
+                }
+            }
+            else
+            {
+                <td class="tblAtingiuMeta">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAnt)</td>
+            }
+
+            @** Real Mês ano atual **@
+            @{var realAnoAtual = Model.Medicoes.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAtual).Sum(y => Convert.ToDecimal(y.ValorAc));}
+            @if (AtingiuMeta(vlrMetaAnoAtu, realAnoAtual, indicador.IND_TIPOCOMPARADOR.ToString()))
+            {
+                <td class="tblAtingiuMeta">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAtual)</td>
+            }
+            else
+            {
+                <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao", "PlanoAcao", new { idIndicador = indicador.IND_ID, periodo = ((string)ViewBag.anoAtual).Substring(0,4) }))" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAtual)<i class="fa fa-info-circle"></i></a></td>
+            }
+
+            @** Preenche meses **@
+            @for (int i = 0; i < 12; i++)
+            {
+                decimal? vlrRealMes = 0;
+                if (Model.Medicoes.Count(x => x.IND_ID == indicador.IND_ID && x.Mes == ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')) > 0)
+                {
+                    vlrRealMes = Convert.ToDecimal(Model.Medicoes.First(x => x.IND_ID == indicador.IND_ID && x.Mes == ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')).Valor);
+                }
+
+                if (AtingiuMeta(vlrMetaAnoAtu, vlrRealMes, indicador.IND_TIPOCOMPARADOR.ToString()))
+                {
+                    <td class="tblAtingiuMeta">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrRealMes)</td>
+                }
+                else
+                {
+                    <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao","PlanoAcao", new { idIndicador = indicador.IND_ID, periodo = ((string)ViewBag.anoAtual).Substring(0,4) })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrRealMes) <i class="fa fa-info-circle"></i></a></td>
+                }
+            }
+        </tr>
+        <tr class="tblDefault">
+            <td>Meta Ac.</td>
+            @** Meta Acumulado ano anterior **@
+            <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAnt)</td>
+            <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAtu)</td>
+            @{decimal metAcu = 0;}
+            @for (int i = 0; i < 12; i++)
+            {
+                if (Model.Medicoes.Count(x => x.IND_ID == indicador.IND_ID && x.Mes == ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')) > 0)
+                {
+                    metAcu += Decimal.Parse((Model.Medicoes.First(x => x.IND_ID == indicador.IND_ID && x.Mes == ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')).META.ToString()));
+                }
+                else
+                {
+                    metAcu += vlrMetaAnoAtu;
+                }
+                <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), metAcu)</td>
+            }
+
+        </tr>
+        <tr>
+            <td>Real Ac.</td>
+            @** Real Acumulado ano anterior **@
+            @{var realAcAnoAnt = Model.AnoAnterior.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).Sum(y => Convert.ToDecimal(y.Valor));}
+            @if (vlrMetaAnoAnt > 0)
+            {
+                if (AtingiuMeta(vlrMetaAnoAnt, realAcAnoAnt, indicador.IND_TIPOCOMPARADOR.ToString()))
+                {
+                    <td class="tblAtingiuMeta">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcAnoAnt)</td>
+                }
+                else
+                {
+                    <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao", "PlanoAcao", new { idIndicador = indicador.IND_ID, periodo = ((string)ViewBag.anoAnterior).Substring(0,4) })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcAnoAnt) <i class="fa fa-info-circle"></i></a></td>
+                }
+            }
+            else
+            {
+                <td class="tblAtingiuMeta">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAnt)</td>
+            }
+
+            @** Real Acumulado ano atual **@
+            @{var realAcAnoAtual = Model.Medicoes.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAtual).Sum(y => Convert.ToDecimal(y.Valor));}
+            @if (vlrMetaAnoAnt > 0)
+            {
+                if (AtingiuMeta(vlrMetaAnoAnt, realAcAnoAtual, indicador.IND_TIPOCOMPARADOR.ToString()))
+                {
+                    <td class="tblAtingiuMeta">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcAnoAtual)</td>
+                }
+                else
+                {
+                    <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao","PlanoAcao", new { idIndicador = indicador.IND_ID, periodo = ((string)ViewBag.anoAtual).Substring(0,4) })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcAnoAtual) <i class="fa fa-info-circle"></i></a></td>
+                }
+            }
+            else
+            {
+                <td class="tblAtingiuMeta">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAnt)</td>
+            }
+
+            @{decimal realAcumulado = 0;}
+            @for (int i = 0; i < 12; i++)
+            {
+                if (Model.Medicoes.Count(x => x.IND_ID == indicador.IND_ID && x.Mes == ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')) > 0)
+                {
+                    realAcumulado += Convert.ToDecimal(Model.Medicoes.First(x => x.IND_ID == indicador.IND_ID && x.Mes == ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')).Valor);
+                }
+
+                if (AtingiuMeta(vlrMetaAnoAtu * (i + 1), realAcumulado, indicador.IND_TIPOCOMPARADOR.ToString()))
+                {
+                    <td class="tblAtingiuMeta">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcumulado)</td>
+                }
+                else
+                {
+                    <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao","PlanoAcao", new { idIndicador = indicador.IND_ID, periodo = ((string)ViewBag.anoAtual).Substring(0,4)})" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcumulado) <i class="fa fa-info-circle"></i></a></td>
+                }
+            }
+        </tr>
+        <tr>
+            <td colspan="12"></td>
+        </tr>
+    }
+</collapse>
+
+@*** Metódo para imprimir percentuais ***@
+<collapse>
+    @helper PrintRowPercentual(SGI.Models.T_Indicadores indicador)
+    {
+        //Metas Ano Anterior
+        decimal? valAlvoAnoAnt = 0;
+        if (Model.AnoAnterior.Count(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior) > 0)
+        {
+            //valAlvoAnoAnt = Model.VW_Medicoes.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) ==ViewBag.anoAnterior).Average(y => y.MED_PONDERACAO)/100;
+            valAlvoAnoAnt = Convert.ToDecimal(Model.AnoAnterior.FirstOrDefault(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).META) / 100;
+        }
+        decimal vlrMetaAnoAnt = valAlvoAnoAnt ?? 0;
+        decimal vlrMetaMesAnoAnt = Math.Round(vlrMetaAnoAnt / 12, 2);
+        //Metas Ano Atual
+        string valAlvoAnoAtu = Model.Medicoes.FirstOrDefault(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAtual).META.ToString();
+        decimal vlrMetaAnoAtu = valAlvoAnoAtu != "" ? Decimal.Parse(valAlvoAnoAtu) / 100 : 0;
+        decimal vlrMetaMesAnoAtu = vlrMetaAnoAtu;
+
+        <tr class="tblDefault">
+            <td rowspan="4">@indicador.IND_DESCRICAO - @indicador.T_Negocio.NEG_DESCRICAO</td>
+            <td>Meta mês</td>
+            <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAnt)</td>
+            <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAtu)</td>
+            @for (int i = 0; i < 12; i++)
+            {
+                <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaMesAnoAtu)</td>
+            }
+        </tr>
+        <tr>
+            <td>Real mês</td>
+            @** Real Mês ano anterior **@
+            @{decimal? realAnoAnt = 0;
+                if (Model.AnoAnterior.Count(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior) > 0)
+                {
+                    realAnoAnt = Model.AnoAnterior.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).Average(y => Convert.ToDecimal(y.Valor)) / 100;
+                }
+            }
+            @if (vlrMetaAnoAnt > 0)
+            {
+                if (AtingiuMeta(vlrMetaAnoAnt, realAnoAnt, indicador.IND_TIPOCOMPARADOR.ToString()))
+                {
+                    <td class="tblAtingiuMeta">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAnt)</td>
+                }
+                else
+                {
+                    <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao","PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAnterior })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAnt) <i class="fa fa-info-circle"></i></a></td>
+                }
+            }
+            else
+            {
+                <td class="tblAtingiuMeta">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAnt)</td>
+            }
+
+            @** Real Mês ano atual **@
+            @{var realAnoAtual = decimal.Parse((Model.Medicoes.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAtual).Average(y => y.MED_PONDERACAO) / 100).ToString());}
+            @if (AtingiuMeta(vlrMetaAnoAtu, realAnoAtual, indicador.IND_TIPOCOMPARADOR.ToString()))
+            {
+                <td class="tblAtingiuMeta">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAtual)</td>
+            }
+            else
+            {
+                <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao","PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAtual })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAtual) <i class="fa fa-info-circle"></i></a></td>
+            }
+
+            @** Preenche meses **@
+            @for (int i = 0; i < 12; i++)
+            {
+                decimal? vlrRealMes = 0;
+                if (Model.Medicoes.Count(x => x.IND_ID == indicador.IND_ID && x.Mes == ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')) > 0)
+                {
+                    vlrRealMes = decimal.Parse((Model.Medicoes.First(x => x.IND_ID == indicador.IND_ID && x.Mes == ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')).MED_PONDERACAO / 100).ToString());
+                }
+
+                if (AtingiuMeta(vlrMetaMesAnoAtu, vlrRealMes, indicador.IND_TIPOCOMPARADOR.ToString()))
+                {
+                    <td class="tblAtingiuMeta">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrRealMes)</td>
+                }
+                else
+                {
+                    <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao","PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0') })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrRealMes) <i class="fa fa-info-circle"></i></a></td>
+                }
+            }
+        </tr>
+        <tr class="tblDefault">
+            <td>Meta Ac.</td>
+            @** Meta Acumulado ano anterior **@
+            <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAnt)</td>
+            <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), vlrMetaAnoAtu)</td>
+            @{decimal metAcu = 0;}
+            @for (int i = 0; i < 12; i++)
+            {
+                metAcu = vlrMetaMesAnoAtu;
+                <td>@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), metAcu)</td>
+            }
+        </tr>
+        <tr>
+            <td>Real Ac.</td>
+            @** Real Acumulado ano anterior **@
+            @{
+                decimal? realAcAnoAnt = 0;
+                if (Model.AnoAnterior.Count(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior) > 0)
+                {
+                    realAcAnoAnt = Convert.ToDecimal(Model.AnoAnterior.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).First().Valor) / 100;
+                }
+            }
+            @if (vlrMetaAnoAnt > 0)
+            {
+                if (AtingiuMeta(vlrMetaAnoAnt, realAcAnoAnt, indicador.IND_TIPOCOMPARADOR.ToString()))
+                {
+                    <td class="tblAtingiuMeta">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcAnoAnt)</td>
+                }
+                else
+                {
+                    <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao","PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAnterior })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcAnoAnt) <i class="fa fa-info-circle"></i></a></td>
+                }
+            }
+            else
+            {
+                <td class="tblAtingiuMeta">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcAnoAnt)</td>
+            }
+
+            @** Real Acumulado ano atual **@
+            @{var realAcAnoAtual = decimal.Parse((Model.Medicoes.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAtual).First().MED_PONDERACAO / 100).ToString());}
+            @if (AtingiuMeta(vlrMetaAnoAnt, realAcAnoAtual, indicador.IND_TIPOCOMPARADOR.ToString()))
+            {
+                <td class="tblAtingiuMeta">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcAnoAtual)</td>
+            }
+            else
+            {
+                <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao", "PlanoAcao", new { idIndicador = indicador.IND_ID, periodo = ViewBag.anoAtual })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcAnoAtual) <i class="fa fa-info-circle"></i></a></td>
+            }
+
+            @{decimal realAcumulado = 0;}
+            @for (int i = 0; i < 12; i++)
+            {
+                if (Model.Medicoes.Count(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')) > 0)
+                {
+                    realAcumulado = Convert.ToDecimal(Model.Medicoes.First(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')).MED_PONDERACAO.ToString()) / 100;
+                }
+
+                if (AtingiuMeta(vlrMetaMesAnoAtu * (i + 1), realAcumulado, indicador.IND_TIPOCOMPARADOR.ToString()))
+                {
+                    <td class="tblAtingiuMeta">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcumulado)</td>
+                }
+                else
+                {
+                    <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao","PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0') })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAcumulado) <i class="fa fa-info-circle"></i></a></td>
+                }
+            }
+        </tr>
+        <tr>
+            <td colspan="12"></td>
+        </tr>
+    }
+</collapse>
+
+@*** Metódo para imprimir datas ***@
+<collapse>
+    @helper PrintRowData(SGI.Models.T_Indicadores indicador)
+    {
+        //Metas Ano Anterior
+        decimal? valAlvoAnoAnt = 0;
+        if (Model.AnoAnterior.Count(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior) > 0)
+        {
+            valAlvoAnoAnt = Convert.ToDecimal(Model.AnoAnterior.FirstOrDefault(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).Valor);
+        }
+        decimal vlrMetaAnoAnt = valAlvoAnoAnt ?? 0;
+        decimal vlrMetaMesAnoAnt = Math.Round(vlrMetaAnoAnt / 12, 2);
+        //Metas Ano Atual
+        string valAlvoAnoAtu = Model.Medicoes.FirstOrDefault(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAtual).META.ToString();
+        decimal vlrMetaAnoAtu = valAlvoAnoAtu != "" ? Decimal.Parse(valAlvoAnoAtu) : 0;
+        decimal vlrMetaMesAnoAtu = Math.Round(vlrMetaAnoAtu / 12, 2);
+        string formatoValor = "{0:N2}";
+
+
+        <tr class="tblDefault">
+            <td rowspan="4">@indicador.IND_DESCRICAO</td>
+            <td>Meta mês</td>
+            <td>@vlrMetaAnoAnt</td>
+            <td>@vlrMetaAnoAtu</td>
+            @for (int i = 0; i < 12; i++)
+            {
+                <td>@vlrMetaMesAnoAtu</td>
+            }
+        </tr>
+        <tr>
+            <td>Real mês</td>
+            @** Real Mês ano anterior **@
+            @{decimal? realAnoAnt = 0;
+                if (Model.AnoAnterior.Count(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior) > 0)
+                {
+                    realAnoAnt = Model.AnoAnterior.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).Sum(y => Convert.ToDecimal(y.Valor));
+                }
+            }
+            @if (AtingiuMeta(vlrMetaAnoAnt, realAnoAnt, indicador.IND_TIPOCOMPARADOR.ToString()))
+            {
+                <td class="tblAtingiuMeta">@String.Format(GetFormatoValor(indicador.T_Metas.FirstOrDefault().MET_TIPOALVO), realAnoAnt)</td>
+            }
+            else
+            {
+                <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao","PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAnterior })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@String.Format(formatoValor, realAnoAnt) <i class="fa fa-info-circle"></i></a></td>
+            }
+
+            @** Real Mês ano atual **@
+            @{var realAnoAtual = Model.Medicoes.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAtual).Sum(y => Convert.ToDecimal(y.Valor));}
+            @if (AtingiuMeta(vlrMetaAnoAtu, realAnoAtual, indicador.IND_TIPOCOMPARADOR.ToString()))
+            {
+                <td class="tblAtingiuMeta">@realAnoAtual</td>
+            }
+            else
+            {
+                <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao","PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAtual })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@realAnoAtual <i class="fa fa-info-circle"></i></a></td>
+            }
+
+            @** Preenche meses **@
+            @for (int i = 0; i < 12; i++)
+            {
+                decimal? vlrRealMes = 0;
+                if (Model.Medicoes.Count(x => x.IND_ID == indicador.IND_ID && x.Mes == ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')) > 0)
+                {
+                    vlrRealMes = Convert.ToDecimal(Model.Medicoes.First(x => x.IND_ID == indicador.IND_ID && x.Mes == ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')).Valor);
+                }
+
+                if (AtingiuMeta(vlrMetaMesAnoAtu, vlrRealMes, indicador.IND_TIPOCOMPARADOR.ToString()))
+                {
+                    <td class="tblAtingiuMeta">@vlrRealMes</td>
+                }
+                else
+                {
+                    <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao","PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0') })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@vlrRealMes <i class="fa fa-info-circle"></i></a></td>
+                }
+            }
+        </tr>
+        <tr class="tblDefault">
+            <td>Meta Ac.</td>
+            @** Meta Acumulado ano anterior **@
+            <td>@vlrMetaAnoAnt</td>
+            <td>@vlrMetaAnoAtu</td>
+            @{decimal metAcu = 0;}
+            @for (int i = 0; i < 12; i++)
+            {
+                metAcu += vlrMetaMesAnoAtu;
+                <td>@metAcu</td>
+            }
+        </tr>
+        <tr>
+            <td>Real Ac.</td>
+            @** Real Acumulado ano anterior **@
+            @{var realAcAnoAnt = Model.AnoAnterior.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAnterior).Sum(y => Convert.ToDecimal(y.Valor));}
+            @if (AtingiuMeta(vlrMetaAnoAnt, realAcAnoAnt, indicador.IND_TIPOCOMPARADOR.ToString()))
+            {
+                <td class="tblAtingiuMeta">@realAcAnoAnt</td>
+            }
+            else
+            {
+                <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao","PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAnterior })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@realAcAnoAnt <i class="fa fa-info-circle"></i></a></td>
+            }
+
+            @** Real Acumulado ano atual **@
+            @{var realAcAnoAtual = Model.Medicoes.Where(x => x.IND_ID == indicador.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAtual).Sum(y => Convert.ToDecimal(y.Valor));}
+            @if (AtingiuMeta(vlrMetaAnoAnt, realAcAnoAtual, indicador.IND_TIPOCOMPARADOR.ToString()))
+            {
+                <td class="tblAtingiuMeta">@realAcAnoAtual</td>
+            }
+            else
+            {
+                <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao","PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAtual })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@realAcAnoAtual <i class="fa fa-info-circle"></i></a></td>
+            }
+
+            @{decimal realAcumulado = 0;}
+            @for (int i = 0; i < 12; i++)
+            {
+                if (Model.Medicoes.Count(x => x.IND_ID == indicador.IND_ID && x.Mes == ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')) > 0)
+                {
+                    realAcumulado += Convert.ToDecimal(Model.Medicoes.First(x => x.IND_ID == indicador.IND_ID && x.Mes == ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0')).Valor);
+                }
+
+                if (AtingiuMeta(vlrMetaMesAnoAtu * (i + 1), realAcumulado, indicador.IND_TIPOCOMPARADOR.ToString()))
+                {
+                    <td class="tblAtingiuMeta">@realAcumulado</td>
+                }
+                else
+                {
+                    <td class="tblNaoAtingiuMeta"><a href="@Url.Action("PlanoAcao","PlanoAcao", new { idIndicador = indicador.IND_ID, periodo =ViewBag.anoAtual + (i + 1).ToString().PadLeft(2, '0') })" rel="tooltip" data-color-class="accent" data-animate="animated fadeIn" data-toggle="tooltip" data-original-title="Accent colored tooltip" title="Meta não foi atingida, clique para ver as ações.">@realAcumulado <i class="fa fa-info-circle"></i></a></td>
+                }
+            }
+        </tr>
+        <tr>
+            <td colspan="12"></td>
+        </tr>
+    }
+</collapse>
+
+@*** Controle de layout de impressão ***@
+<collapse>
+    @*** Imprime em lista ***@
+    @helper PrintLista()
+    {
+        <div class="col-xs-12 col-md-12 col-lg-12">
+            <section class="box ">
+                <div class="content-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Indicador</th>
+                                    <th>Ano Ant.</th>
+                                    <th>@ViewBag.anoAtual</th>
+                                    <th>Jan</th>
+                                    <th>Fev</th>
+                                    <th>Mar</th>
+                                    <th>Abr</th>
+                                    <th>Mai</th>
+                                    <th>Jun</th>
+                                    <th>Jul</th>
+                                    <th>Ago</th>
+                                    <th>Set</th>
+                                    <th>Out</th>
+                                    <th>Nov</th>
+                                    <th>Dez</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Indicadores)
+                                {
+                                    switch (item.Indicador.T_Metas.FirstOrDefault().MET_TIPOALVO)
+                                    {
+                                        case (int)SGI.Enums.TipoAlvo.Valor:
+                                            @PrintRowValor(item.Indicador);
+                                            break;
+                                        case (int)SGI.Enums.TipoAlvo.Percentual:
+                                            @PrintRowPercentual(item.Indicador);
+                                            break;
+                                        case (int)SGI.Enums.TipoAlvo.Data:
+                                            @PrintRowData(item.Indicador);
+                                            break;
+                                        case (int)SGI.Enums.TipoAlvo.DiaUtil:
+                                            @PrintRowDiaUtil(item);
+                                            break;
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+    }
+
+
+    @*** Imprime em lista de metas *@
+
+    @helper PrintMetas()
+    {
+        <section class="box ">
+            @foreach (var item in ViewBag.listaMetas)
+            {
+                <div class="col-lg-3 col-sm-6 col-xs-12">
+                    <div class="r4_counter db_box ">
+                        <i class="fa fa-thumbs-down icon-md text-danger"></i>
+                        <i class="fa fa-thumbs-up icon-md text-success"></i>
+                        <span>New Orders</span>
+                    </div>
+                </div>
+            }
+        </section>
+    }
+
+
+
+
+
+    @*** Imprime em Grafico **grafico ***@
+    @helper PrintGrafico()
+    {
+        foreach (var item in Model.Indicadores)
+        {
+            if (Model.Medicoes.Count(x => x.IND_ID == item.IND_ID && x.Mes.Substring(0, 4) == ViewBag.anoAtual) > 0)
+            {
+                <div class="col-xs-12 col-md-6 col-lg-6">
+                    @***<div class="col-xs-6 col-md-6 col-lg-12">***@
+
+                    <section class="box">
+                        <header class="panel_header">
+                            <h2 class="title pull-left"><a rel="tooltip" target="_blank" title="Clique para visualizar detalhado" href="@Url.Action("../Consultas/ListaConsultas", new { idIndicador = item.IND_ID})">@item.Indicador.IND_DESCRICAO</a></h2>
+                            <div class="actions panel_actions pull-right">
+                                <a title="Grafico de pizza" rel="tooltip" data-ind-id="@item.IND_ID" class="aIconTipoGraficoPie" href="#">
+                                    <i class="fa fa-pie-chart" aria-hidden="true"></i>
+                                </a>
+                                <a title="Grafico de Linha" rel="tooltip" data-ind-id="@item.IND_ID" class="aIconTipoGraficoLine" href="#">
+                                    <i class="fa fa-line-chart" aria-hidden="true"></i>
+                                </a>
+                                <a title="Grafico de barras" rel="tooltip" data-ind-id="@item.IND_ID" class="aIconTipoGraficoBar" href="#">
+                                    <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                                </a>
+
+
+                                <a title="Excel" rel="tooltip" data-ind-id="@item.IND_ID" class="aIExcel" href="#">
+                                    <i class="fa fa-list" aria-hidden="true"></i>
+                                </a>
+
+                                @if (Model.Favoritos.Count(x => x.ID_INDICADOR == item.IND_ID) > 0)
+                                {
+                                    <a onclick="AddFavorito('@item.IND_ID')" title="Definir como favorito" rel="tooltip"><i id="fav_@item.IND_ID" class="fa fa-star icon-warning animated fadeIn"></i></a>
+                                }
+                                else
+                                {
+                                    <a onclick="AddFavorito('@item.IND_ID')" title="Definir como favorito" rel="tooltip"><i id="fav_@item.IND_ID" class="fa fa-star-o icon-warning animated fadeIn"></i></a>
+                                }
+
+                                <a onclick="AtuDados('@item.IND_ID','@ViewBag.anoAtual','@item.Indicador.IND_GRAFICO')" class="fa fa-refresh" title="Atualizar dados do indicador" rel="tooltip"></a>
+                            </div>
+                        </header>
+                        <div class="content-body">
+                            <div class="form-inline form-inline form-group" id="divVisaoGraf_@item.IND_ID">
+                                <div class="form-group" style="display: none">
+                                    <label class="form-label">Grafico</label>
+                                    <select data-grupo="sltTipoGrafico" data-ind-id="@item.IND_ID" class="" id="sltTipoGrafico_@item.IND_ID">
+                                        <option value="1">Barra</option>
+                                        <option value="2">Linha</option>
+                                        <option value="3">Pizza</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    @*<label class="form-label">Dimensão</label>*@
+                                    @Html.DropDownList("sltDimensaoGrafico_" + item.IND_ID, new SelectList(item.Indicador.Dimensoes, "Id", "Descricao"), new { @class = "", @data_grupo = "sltDimensaoGrafico", @data_ind_id = item.IND_ID })
+                                </div>
+                                <div class="form-group divSubDimencao_@item.IND_ID">
+                                    @*<label class="form-label">Dimensão</label>*@
+                                    @Html.DropDownList("sltSubDimensaoGrafico_" + item.IND_ID, new SelectList("", "Id", "Descricao"), new { @class = "", @data_grupo = "sltSubDimensaoGrafico", @data_ind_id = item.IND_ID })
+                                </div>
+                                <div class="form-group divPeriodo_@item.IND_ID">
+                                    @*<label class="form-label">Periodo</label>*@
+                                    @Html.DropDownList("sltPeriodoGrafico_" + item.IND_ID, new SelectList(item.Indicador.Dimensoes.ToArray()[0].Periodos, "Id", "Descricao"), new { @class = "", @data_grupo = "sltPeriodoGrafico", @data_ind_id = item.IND_ID })
+                                </div>
+                                <div style="display: none" class="form-group divDatas_@item.IND_ID">
+                                    @*<label class="form-label">Início</label>*@
+                                    <input style="width: 84px" data-provide="datepicker" data-date-format="dd/mm/yyyy" data-date-language="pt-BR" value="@DateTime.Now.AddDays(-30).ToString("dd/MM/yyyy")" type="text" id="dataIniGrafico_@item.IND_ID" data-ind-id="@item.IND_ID" class="datasPeriodo" />
+                                </div>
+                                <div style="display: none" class="form-group divDatas_@item.IND_ID">
+                                    @*<label class="form-label">Início</label>*@
+                                    <input style="width: 84px" data-provide="datepicker" data-date-format="dd/mm/yyyy" data-date-language="pt-BR" value="@DateTime.Now.ToString("dd/MM/yyyy")" type="text" id="dataFimGrafico_@item.IND_ID" data-ind-id="@item.IND_ID" class="datasPeriodo" />
+                                </div>
+                            </div>
+                            <h5>
+                                <b class="padding-15">Ano:</b> @ViewBag.anoAtual
+                                <b class="padding-15">Negócio:</b>@item.Indicador.T_Negocio.NEG_DESCRICAO
+                                <b class="padding-15">Ref.Meta:</b>
+                                @if (item.TIPO_COMPARADOR == "0")//Igual
+                                {
+                                    <i class="fa fa-arrows-h"></i>
+                                }
+                                else if (item.TIPO_COMPARADOR == "1")//Maior ou igual a
+                                {
+                                    <i class="fa fa-arrow-up"></i>
+                                }
+                                else if (item.TIPO_COMPARADOR == "2")//Menor ou igual a
+                                {
+                                    <i class="fa fa-arrow-down"></i>
+                                }
+                                <a class="padding-15" href="@Url.Action("PlanoAcao", "PlanoAcao", new { idIndicador = item.IND_ID, periodo = item.Ano})">Plano de ação</a>
+                            </h5>
+                            @*<h5>
+                                    @if (Model.Medicoes.Count(x => x.IND_ID == item.IND_ID) > 0)
+                                    {
+                                        <b class="padding-15">Ult.Atu.:</b>
+                                        <span id="dtUlt_@item.IND_ID">@Model.Medicoes.Where(x => x.IND_ID == item.IND_ID).Max(x => x.MED_DATA)</span>
+                                    }
+                                    else
+                                    {
+                                        <b class="padding-15">Ult.Atu.:</b>
+                                    }
+                                    <b class="padding-15">Proc.Exportação.:</b> @item.Indicador.PROCEXTRACAO
+                                </h5>*@
+                            @*** Carrega o gráfico aqui ***@
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    @*** <div class="chart-container"> ***@
+                                    <div class="" style="height:280px;" id="bar_@item.IND_ID"></div>
+                                </div>
+                            </div> <!-- End .row -->
+                            @*** Carrega a tabela do gráfico aqui quando existir sub dimencoes ***@
+                            <span id="tbar_@item.IND_ID"></span>
+
+                        </div>
+
+                        @****Informações adicionais****@
+                        <div class="panel-group transparent" id="accordion-@item.IND_ID" role="tablist" aria-multiselectable="true">
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    <ul class="nav nav-tabs transparent">
+                                        <li class="active">
+                                            <a href="#tab-@item.IND_ID" data-toggle="tab">
+                                                <i class="fa fa-arrow-circle-o-right"></i>
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a href="#tab1-@item.IND_ID" data-toggle="tab">
+                                                @if (Model.Complementares.Count(x => x.T_Metas.IND_ID == item.IND_ID) > 0)
+                                                {
+                                                    <span class="badge badge-success">1</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-success">0</span>
+                                                }
+                                                Variáveis
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#tab2-@item.IND_ID" data-toggle="tab">
+                                                @if (item.DESC_CALCULO != "" && item.DESC_CALCULO != null)
+                                                {
+                                                    <span class="badge badge-success">1</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-success">0</span>
+                                                }
+                                                Inf. de cálculo
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#tab3-@item.IND_ID" data-toggle="tab">
+                                                <span class="badge badge-success">@Model.PlanoAcoes.Count(x => x.T_Metas.IND_ID == item.IND_ID)</span> Plano de ação
+                                            </a>
+                                        </li>
+                                    </ul>
+
+                                    @*** Impressão informações complementares ***@
+                                    <div class="tab-content transparent">
+                                        <div class="tab-pane fade in active" id="tab-@item.IND_ID">
+
+                                            <p>Informações complementares</p>
+
+                                        </div>
+
+                                        @*** Dados Adicionais ***@
+                                        <div class="tab-pane fade in" id="tab1-@item.IND_ID">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Período</th>
+                                                            @foreach (var acMes in Model.Complementares.Where(x => x.T_Metas.IND_ID == item.IND_ID).GroupBy(x => new { INF_DESCRICAO = x.INF_DESCRICAO }).Select(x => new { descricao = x.Key.INF_DESCRICAO }).OrderBy(x => x.descricao))
+                                                            {
+                                                                <th>@acMes.descricao</th>
+                                                            }
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var acMes in Model.Complementares.Where(x => x.T_Metas.IND_ID == item.IND_ID).GroupBy(x => new { DATA = x.INF_DATA.Substring(0, 6) }).Select(x => new { data = x.Key.DATA }).OrderBy(x => x.data))
+                                                        {
+                                                            <tr>
+                                                                <td>@acMes.data</td>
+                                                                @foreach (var acValores in Model.Complementares.Where(x => x.T_Metas.IND_ID == item.IND_ID).GroupBy(x => new { INF_DESCRICAO = x.INF_DESCRICAO }).Select(x => new { descricao = x.Key.INF_DESCRICAO }).OrderBy(x => x.descricao))
+                                                                {
+                                                                    <td>@Model.Complementares.Where(x => x.INF_DATA.Substring(0, 6) == acMes.data && x.INF_DESCRICAO == acValores.descricao && x.T_Metas.IND_ID == item.IND_ID).Sum(x => x.INF_VALOR).ToString("N")</td>
+                                                                }
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        @*** Memória de cálculo ***@
+                                        <div class="tab-pane fade" id="tab2-@item.IND_ID">
+
+                                            <p>
+                                                @Html.Raw(item.DESC_CALCULO)
+                                            </p>
+
+                                            <p>
+                                                <b>Resp. Carga.:</b> @item.Indicador.RESPOSAVELCARGA
+                                            </p>
+                                            <p>
+                                                <b>Resp. Ind.:</b> @item.Indicador.RESPOSAVELIND
+                                            </p>
+                                            <p>
+                                                <b>Fonte dados:</b> @item.IND_CONEXAO
+                                            </p>
+                                            <p>
+                                                @if (!String.IsNullOrEmpty(item.Indicador.IND_DTCRIACAO.ToString()))
+                                                {
+                                                    <b>Dt. Criação:</b> @item.Indicador.IND_DTCRIACAO.Value.ToString("dd/MM/yyyy")
+                                                }
+                                            </p>
+                                        </div>
+
+                                        @*** Plano de ação ***@
+                                        <div class="tab-pane fade" id="tab3-@item.IND_ID">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Usuário</th>
+                                                            <th>Data</th>
+                                                            <th>Ação</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var plano in Model.PlanoAcoes.Where(x => x.T_Metas.IND_ID == item.IND_ID).GroupBy(x => new { nomeUser = x.T_Usuario.NOME, usuario = x.T_Usuario.EMAIL, data = x.PLA_DATA, descricao = x.PLA_DESCRICAO }).Select(x => new { data = x.Key.data, descricao = x.Key.descricao, usuario = x.Key.usuario, nomeUser = x.Key.nomeUser }))
+                                                        {
+                                                            <tr>
+                                                                <td title="@plano.nomeUser">@plano.usuario</td>
+                                                                <td>@plano.data</td>
+                                                                <td>@plano.descricao</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            }
+        }
+    }
+</collapse>
+
+
+@** Valida tipo de impressão **@
+<div class="row">
+    <div class="col-md-12">
+        @if (ViewBag.grafico == "L")
+        {
+            @PrintLista();
+        }
+        else if (ViewBag.grafico == "M")
+        {
+            @PrintMetas();
+        }
+        else 
+        {
+            @PrintGrafico();
+        }
+    </div>
+</div>
+
+@****Paginação****@
+<div>
+    <div aria-live="polite">Exibindo @Model.Indicadores.PageNumber de @Model.Indicadores.PageCount de @Model.Indicadores.TotalItemCount registros</div>
+    <div class="">
+        @Html.PagedListPager((IPagedList)Model.Indicadores,
+                                                                              page => Url.Action("Index",
+                                                                              new
+                                                                              {
+                                                                                  page = page,
+                                                                                  search = ViewBag.search,
+                                                                                  pGrafico = ViewBag.grafico,
+                                                                                  nPageSize = ViewBag.CurrentItemsPerPage,
+                                                                                  searchString = ViewBag.CurrentSearch,
+                                                                                  idNegocio = ViewBag.negAtual,
+                                                                                  idGrupo = ViewBag.grpAtual,
+                                                                                  idDepartamento = ViewBag.departamentoAtu,
+                                                                                  pAno = ViewBag.anoAtual
+                                                                              }),
+                                                                              new PagedListRenderOptions
+                                                                              {
+                                                                                  LinkToFirstPageFormat = "<< Primera",
+                                                                                  LinkToPreviousPageFormat = "< Anterior",
+                                                                                  LinkToNextPageFormat = "Proxima >",
+                                                                                  LinkToLastPageFormat = "Ultima >>"
+                                                                              })
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Plugins/bootrap-datepicker/css/bootstrap-datepicker.css" rel="stylesheet" />
+    <environment names="Development,Staging,Production">
+        <link href="~/Content/select2.css" rel="stylesheet" type="text/css" media="screen" />
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+        <link href="~/Content/jquery-jvectormap-2.0.1.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+}
+
+@section Scripts {
+    <script src="~/Plugins/bootrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+    <script src="~/Plugins/bootrap-datepicker/locales/bootstrap-datepicker.pt-BR.min.js"></script>
+    <environment names="Development,Staging,Production">
+        <script src="~/Script/select2.js" type="text/javascript"></script>
+        <script src="~/Script/echarts-custom-for-dashboard.js" type="text/javascript"></script>
+
+        <!--scripts da pagina-->
+        <script src="~/ViewsFiles/Home/Index/js/graficos.js"></script>
+        <script src="~/ViewsFiles/Home/Index/js/global.js"></script>
+    </environment>
+    <script>
+        if ($.isFunction($.fn.select2)) {
+            $('.select2').select2();
+        }
+
+        ///Retorna se atingiu ou não a meta
+        function AtingiuMeta(valorMeta, valorAtingido,tipo)
+        {
+            var atingiu = false;
+            switch (tipo)
+            {
+                case "0"://Igual
+                    if (valorAtingido == valorMeta)
+                        atingiu = true;
+                    break;
+
+                case "1"://Maior ou igual
+                    if (valorAtingido >= valorMeta)
+                        atingiu = true;
+                    break;
+
+                case "2"://Menor ou igual
+                    if (valorAtingido <= valorMeta)
+                        atingiu = true;
+                    break;
+            }
+
+            return atingiu;
+        }
+
+        //-----------------------------------------------------------------------
+        // Gráfico Barra
+        //-----------------------------------------------------------------------
+        function PreencheGraficoBarra(titulo,series,un,idItem, legenda)
+        {
+            var item = document.getElementById(idItem);
+            var myChart = echarts.init(item);
+            var option = {
+                tooltip : {
+                    trigger: 'axis'
+                },
+                // Setup grid
+                grid: {
+                    //zlevel: 0,
+                    //x: 50,
+                    //x2: 10,
+                    //y: 50,
+                    //y2: 20
+                },
+                legend: legenda,
+                toolbox: {
+                    show : false,
+                    feature : {
+                        mark : {show: false},
+                        dataView : {show: true, readOnly: false,title: 'Histórico'},
+                        magicType: {show: true, type: ['line', 'bar'],title: 'Gráfico'},
+                        restore : {show: true,title: 'Restaurar'},
+                        saveAsImage : {show: true,title: 'Salvar'}
+                    }
+                },
+                calculable : true,
+                xAxis : [
+                    {
+                        type : 'category',
+                        data : titulo
+                    }
+                ],
+                yAxis : [
+                    {
+                        type : 'value',
+                        name : 'Valores',
+                        axisLabel : {
+                            formatter: '{value} '+'%'
+                        },
+                        //min: 0,
+                        //max: 100,
+                        //interval: 10
+                    }
+                ],
+                series: series
+            };
+
+            // Load data into the ECharts instance
+            myChart.setOption(option);
+        }
+
+        //-----------------------------------------------------------------------
+        // Gráfico semáforo
+        //-----------------------------------------------------------------------
+        function PreencheGraficoSemaforo(titulo,valores,metas,un,idItem,cores,metaAtingida)
+        {
+            $('#semaforo_'+idItem).remove();
+            var html = "";
+            html =  "<div id='semaforo_"+idItem+"'><div class='r4_counter db_box col-xs-12 col-md-12 col-lg-12'>";
+            if(metaAtingida[0] == true)
+            {
+                html += "<i class='pull-left fa badge-success icon-md icon-rounded'></i>";//Verde
+                html += "<i class='pull-left fa badge-warning icon-md icon-rounded' style='background-color: rgba(255, 193, 7, 0.21)'></i>";//Amarelo
+                html += "<i class='pull-left fa badge-danger icon-md icon-rounded' style='background-color: rgba(244, 67, 54, 0.11)'></i>";//Vermelho
+            }
+            else{
+                html += "<i class='pull-left fa badge-success icon-md icon-rounded' style='background-color: rgba(76, 175, 80, 0.17)'></i>";//Verde
+                html += "<i class='pull-left fa badge-warning icon-md icon-rounded' style='background-color: rgba(255, 193, 7, 0.21)'></i>";//Amarelo
+                html += "<i class='pull-left fa badge-danger icon-md icon-rounded'></i>";//Vermelho
+            }
+            html += "<div class='stats'>";
+            html += "</div>";
+            html += "</div>";
+            //$('#'+idItem).append(html);
+
+            html +=  "<div class='col-xs-12 col-md-12 col-lg-12'>";
+            html += "<h4>Valor medido: <strong>"+valores[0]+"</strong></h4>";
+            html += "<span>Meta: "+metas[0]+"</span><br/>";
+            html += "<span>Un: "+un+"</span>";
+            html += "</div>";
+            html += "</div>";
+            $('#'+idItem).append(html);
+        }
+        //-----------------------------------------------------------------------
+        // Gráfico Pizza    **grafico
+        //-----------------------------------------------------------------------
+        function PreencheGraficoPizza(legenda, dados, idItem) {
+            debugger
+            var item = document.getElementById(idItem);
+            var myChart = echarts.init(item);
+            var idx = 1;
+            option = {
+                calculable: true,
+                timeline: {
+                    show: false,
+                    data: legenda.data,
+                    label: {
+                        formatter: function (s) {
+                            return s.slice(0,5);
+                        }
+                    },
+                    x: 10,
+                    y: null,
+                    x2: 10,
+                    y2: 0,
+                    width: 250,
+                    height: 50,
+                    backgroundColor: "rgba(0,0,0,0)",
+                    borderColor: "#eaeaea",
+                    borderWidth: 0,
+                    padding: 50,
+                    controlPosition: "left",
+                    autoPlay: false,
+                    loop: false,
+                },
+                options: [
+                    {
+                        color: ['#363537', '#303F9F', '#1A237E', '#9FA8DA', '#7986CB', '#C5CAE9'],
+                        title: {
+                            text: '',
+                            subtext: ''
+                        },
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                        },
+                        legend: {
+                            orient: 'vertical',
+                            x: 'right',
+                            data: []
+                            //data: legenda.data
+                        },
+                        //legend: legenda,
+                        toolbox: {
+                            show: false,
+                            color: ['#bdbdbd', '#bdbdbd', '#bdbdbd', '#bdbdbd'],
+                            feature: {
+                                mark: { show: false },
+                                dataView: { show: false, readOnly: true },
+                                magicType: {
+                                    show: true,
+                                    title: 'Pizza/Funil',
+                                    type: ['pie', 'funnel'],
+                                    option: {
+                                        funnel: {
+                                            x: '10%',
+                                            width: '50%',
+                                            funnelAlign: 'center',
+                                            max: 50
+                                        },
+                                        pie: {
+                                            roseType: 'none',
+                                        }
+                                    }
+                                },
+                                restore: { show: false },
+                                saveAsImage: { show: true, title: 'Salvar' }
+                            }
+                        },
+                        series: [
+                            {
+                                name: 'Mês',
+                                type: 'pie',
+                                radius: [20, '50%'],
+                                roseType: 'none',
+                                center: ['50%', '45%'],
+                                width: '50%',       // for funnel
+                                itemStyle: {
+                                    normal: { label: { show: true }, labelLine: { show: true } },
+                                    emphasis: { label: { show: false }, labelLine: { show: false } }
+                                },
+                                data: dados
+                            }
+                        ]
+                    }
+
+                ] // end options object
+            };
+
+            // Load data into the ECharts instance
+             myChart.setOption(option);
+        }
+        //-----------------------------------------------------------------------
+        // tabela abertura nfatos n valores  Pizza    **grafico
+        //-----------------------------------------------------------------------
+
+       
+
+        function tabelaAberturaMedicoes(dados, idItem) {
+            dados.sort(function (a, b) {
+                //return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+                return a.subDesc < b.subDesc ? -1 : a.subDesc > b.subDesc ? 1 : 0;
+            });  
+            var html = '<table style="width:500px; border:1px solid #ccc">';
+            html += '<tbody>';
+            
+            html += '<tr>';
+            html += '<td colspan="3" style="border:1px solid #CCC;">';
+            html += '<span><b>' + dados[0].subDesc + '</b></span>';
+            html += '</td>';
+            html += '</tr>';
+
+            var subDimensao = dados[0].subDesc;
+
+            for (i = 0; i < dados.length; i++) {
+                if (subDimensao != dados[i].subDesc) {
+                    //html += '</tbody>';
+                    //html += '</table><br>';
+                    //html += '<table style="width:500px; border:1px solid #ccc">';
+                    //html += '<tbody>';
+
+                    html += '<tr>';
+                    html += '<td colspan="3" style="border:1px solid #CCC;">';
+                    html += '<span><br></span>';
+                    html += '</td>';
+                    html += '<tr>';
+                    html += '<td colspan="3" style="border:1px solid #CCC;">';
+                    html += '<span><b>' + dados[i].subDesc + '</b></span>';
+                    html += '</td>';
+                    html += '</tr>';
+                }
+
+
+
+                html += '<tr>';
+                html += '<td style="border:1px solid #CCC;">';
+                html += '<span> ' + dados[i].name + '</span>';
+                html += '</td>';
+                html += '<td style="border:1px solid #CCC;">';
+                html += '<span> ' + dados[i].value + '</span>';
+                html += '</td>';
+                html += '<td style="border:1px solid #CCC;">';
+                html += '<span> ' + dados[i].percent + '%</span>';
+                html += '</td>';
+                html += '</tr>';
+                subDimensao = dados[i].subDesc;
+            }
+            html += '</tbody>';
+            html += '</table>';
+            $('#t' + idItem).html(html);
+        }
+        //-----------------------------------------------------------------------
+        // Gráfico Linha
+        //-----------------------------------------------------------------------
+        function PreencheGraficoLinha(titulo,valores,metas,un,idItem,cores,metaAtingida)
+        {
+
+        }
+
+        //------------------------------------------------------------------------------------------------
+        // Adiciona favoritos
+        //------------------------------------------------------------------------------------------------
+        function AddFavorito(idIndicador)
+        {
+            $.ajax({
+                url: "@Url.Action("AddFavoritos", "Home")" + "?idIndicador=" + idIndicador,
+                type: 'GET',
+                dataType: 'json',
+                success: function (resultado) {
+                    if(resultado.status == "incluir")
+                    {
+                        $('#fav_'+idIndicador).removeClass("fa-star-o");
+                        $('#fav_'+idIndicador).removeClass("fa-star");
+                        $('#fav_'+idIndicador).addClass("fa-star");
+                    }else
+                    {
+                        $('#fav_'+idIndicador).removeClass("fa-star-o");
+                        $('#fav_'+idIndicador).removeClass("fa-star");
+                        $('#fav_'+idIndicador).addClass("fa-star-o");
+                    }
+                },
+                error: function () {
+                    alert('erro');
+                }
+            });
+        }
+
+        //------------------------------------------------------------------------------------------------
+        // Função para ir no controller
+        //------------------------------------------------------------------------------------------------
+        function AtuDados(idIndicador,anoAtual,indGrafico)
+        {
+            $("#divLoading").removeClass("hide");
+            $("#divLoading").removeClass("show");
+            $("#divLoading").addClass("show");
+            $.ajax({
+                url: "@Url.Action("AtuDados", "Home")" + "?idInd=" + idIndicador +"&ano="+anoAtual,
+                type: 'GET',
+                dataType: 'json',
+                success: function (resultado) {
+                    AtuDtAtualizacao(idIndicador,anoAtual);
+                    ObtemDados(idIndicador,anoAtual,indGrafico)
+                    $("#divLoading").removeClass("show");
+                    $("#divLoading").addClass("hide");
+                },
+                error: function () {
+                    $("#divLoading").removeClass("show");
+                    $("#divLoading").addClass("hide");
+                }
+            });
+        }
+
+        //---------------------------------------------------
+        // Atualiza ultima data de medição do indicador
+        //---------------------------------------------------
+        function AtuDtAtualizacao(idIndicador,anoAtual)
+        {
+            $.ajax({
+                url: "@Url.Action("GetDtMedicao", "Home")" + "?idInd=" + idIndicador +"&ano="+anoAtual,
+                type: 'GET',
+                dataType: 'json',
+                success: function (resultado) {
+                    $("#dtUlt_"+idIndicador).text(resultado.dtMedicao);
+                },
+                error: function () {
+                    alert("erro");
+                }
+            });
+        }
+
+        //------------------------------------------------------------------------------------------------
+        // Função para ir no controller obter os valores do banco de dados por indicador e atualizar a tela **grafico
+        //------------------------------------------------------------------------------------------------
+        function ObtemDados(idIndicador, anoAtual, dimensao, periodo, tipoGrafico, dataIni = null, dataFim = null, subDimensao= null)
+        {
+            var cabecalho = [];
+            var valores = [];
+            var metas = [];
+            var cores = [];
+            var acumulado = 0;
+            var mAcumulado = 0;
+            var vlrAnoAnterior = 0;
+            var anoAnterior = "";
+            var metaAnt = 0;
+            var un = '';
+            var cont = 0;
+            var tipoMeta = "";
+            var metaAtingida = [];
+
+            
+            $.ajax({
+                url: "@Url.Action("GetGrafico", "Home")" + "?idInd=" + idIndicador + "&tipoGrafico=" + tipoGrafico + "&subDime=" + subDimensao +   "&ano="
+                    + anoAtual + "&dimensao=" + dimensao + "&periodo=" + periodo + '&strDataIni='
+                    + (dataIni != null ?    dataIni.replace('/', '-').replace('/', '-') : '') + '&strDataFim=' + (dataFim != null ? dataFim.replace('/', '-').replace('/', '-') : ''),
+                type: 'GET',
+                dataType: 'json',
+                success: function (resultado) {
+                    // testa para ver se existe subdimencoes caso sim montaremos a tabela 
+                    // ou o grafico de linhas porem nao com periodos em baixo do grafico e sim com as subdimencoes
+                    id = 'bar_' + idIndicador;
+                    $('#t' + id).html("");
+                    $('#' + id).html("");
+
+                    if (resultado.dados.length > 0) {
+                        if (resultado.dados[0].subDesc.length > 0) {
+                            tabelaAberturaMedicoes(resultado.dados, id);
+                            // concatena legenda quando for 
+                            var i = 0;
+                            for (i = 0; i < resultado.dados.length; i++) {
+                                resultado.dados[i].name = resultado.dados[i].name + " - " + resultado.dados[i].subDesc
+                            }
+                        }
+                    }
+
+                    // campo de sub dimensao 
+                    document.getElementById('sltSubDimensaoGrafico_' + idIndicador);
+                    var e = document.getElementById('sltSubDimensaoGrafico_' + idIndicador);
+
+
+
+                    if (subDimensao == null) {
+                        while (e.length > 0) {
+                            e.options.remove(0);
+                        }
+                    }
+                    if ((resultado.temDimSubId == "T")) {
+                        if (subDimensao == null) {
+                            var opt = document.createElement('option');
+                            opt.value = "";
+                            opt.text = "Todos";
+                            opt.selected = true;
+                            e.options.add(opt);
+
+                            resultado.subDimensao.forEach(function (i) {
+                                var opt = document.createElement('option');
+                                opt.value = i.DimSubId;
+                                opt.text = i.DimSubDescricao;
+                                if (subDimensao == i.DimSubId) {
+                                    opt.selected = true;
+                                }
+                                e.options.add(opt);
+                            });
+                            $('.divSubDimencao_' + idIndicador).show();
+                        }
+                    } else {
+                        $('.divSubDimencao_' + idIndicador).hide();
+                    }    
+
+
+                    $('.divDatas_' + idIndicador).hide();
+                    //if ((resultado.temDimSubId == "T")) {
+                    //    $('.divPeriodo_' + idIndicador).hide();
+                    //} else {
+                    //    $('.divPeriodo_' + idIndicador).show();
+                    //}
+                    $('.divPeriodo_' + idIndicador).show();
+
+                    if ((tipoGrafico == "3")) {
+                        $('.divDatas_' + idIndicador).show();
+                        $('.divPeriodo_' + idIndicador).hide();
+                    }
+
+                    if ((tipoGrafico != "3") && (periodo.trim() == "D")) {
+                        $('.divDatas_' + idIndicador).show();
+                    }
+
+
+
+
+
+                    if (tipoGrafico != "3") {
+                        periodo = periodo.trim();
+                        //declaracao variavel
+                        metaAnt = 0;
+                        mesAtu = @DateTime.Now.Month.ToString().PadLeft(2, '0');
+                        anoAtu = @DateTime.Now.Year.ToString();
+                        //Dados formatados para o grafico
+                        var cabecalho = resultado.cabecalho;
+                        var series = [];
+                        resultado.fatos.forEach(function (fato, i) {
+
+                            valores = [];
+                            cores = [];
+                            metaAtingida = [];
+
+                            un = '';
+                            cont = 0;
+                            tipoMeta = "";
+                            //Busca dados ano atual
+                            $.each(fato, function (i, medicao) {
+                                tipoMeta = medicao.tipo;
+                                valores.push(medicao.valor);
+                                //Valida se atingiu a meta ou não e preenche com cor vermelha ou verde
+                                if (AtingiuMeta(medicao.meta, medicao.valor, tipoMeta)) {
+                                    cores.push('#9BCA63');//Atingiu a meta cor verde
+                                    metaAtingida.push(true);
+                                } else {
+                                    cores.push('#F73636');//Não atingiu a meta cor vermelha
+                                    metaAtingida.push(false);
+                                }
+                                un = medicao.un;
+                            });
+                            var type = 'bar';
+                            if (tipoGrafico != '') {
+                                if (tipoGrafico == 2) {
+                                    type = 'line';
+                                }
+                                else if (1) {
+                                    type = 'bar';
+                                }
+                            }
+                            else if (resultado.fatos.length > 1) {
+                                type = 'line';
+                            }
+                            series.push({
+                                //name: resultado.fatosDesc[i].FatDescricao + " - " + resultado.fatosDesc[i].DimSubId,
+                                name: resultado.legenda[i],
+                                
+                                type: type,
+                                //itemStyle: {
+                                //    normal: {
+                                //        color: function (params) {
+                                //            // build a color map as your need.
+                                //            var colorList = cores;
+                                //            return colorList[params.dataIndex]
+                                //        }
+                                //    }
+                                //},
+                                data: valores
+                            });
+                        });
+
+
+                        ////Valida cor Acumulado
+                        //if(AtingiuMeta((mAcumulado/cont).toFixed(3),acumulado,tipoMeta))
+                        //{
+                        //    cores.push('#9BCA63');
+                        //    metaAtingida.push(true);
+                        //}else{
+                        //    cores.push('#F73636');
+                        //    metaAtingida.push(false);
+                        //}
+
+                        //tipoMeta = "";
+                        ////Busca dados ano anterior
+                        //$.each(resultado.anoAnt, function (i, anoAnt) {
+                        //    vlrAnoAnterior = anoAnt.valor;
+                        //    metaAnt = anoAnt.meta;
+                        //    tipoMeta = anoAnt.tipoMeta;
+                        //});
+                        ////Valida cor Ano Anterior
+                        //if(AtingiuMeta(metaAnt,vlrAnoAnterior.toFixed(3),tipoMeta))
+                        //{
+                        //    cores.push('#9BCA63');
+                        //    metaAtingida.push(true);
+                        //}else{
+                        //    cores.push('#F73636');
+                        //    metaAtingida.push(false);
+                        //}
+                        //metas.push((mAcumulado / cont).toFixed(3));//Metas
+
+                        var legenda = {
+                            orient: 'horizontal',
+                            x: "left",
+                            y: 'bottom',
+                            padding:5,
+                            selectedMode: true,
+                            type: 'scroll',
+                            data: []
+                        };
+                        //resultado.fatosDesc.forEach(function (i) {
+                        //    legenda.data.push(i.FatDescricao + " - " + i.DimSubId)
+                        //});
+                        legenda.data = resultado.legenda;
+                        if(cabecalho.length > 0)
+                        {
+                            PreencheGraficoBarra(cabecalho, series, un, id, legenda);
+                        }
+                    }
+
+                    else {
+                        var legenda = {
+                            orient: "horizontal",
+                            x: "left",
+                            y: 'bottom',
+                            selectedMode: true,
+                            type: 'scroll',
+                            data: []
+                        };
+                        //resultado.fatosDesc.forEach(function (i) {
+                        //    legenda.data.push(i.FatDescricao + " - " + i.DimSubId)
+                        //});
+                        legenda.data = resultado.legenda;
+                        PreencheGraficoPizza(legenda, resultado.dados, id);
+                    }
+
+                },
+                error: function () {
+
+                }
+            });
+        }
+
+        function atualizarGrafico(tipo, indId,dim_id,per_id) {
+            var dimensao = $('#sltDimensaoGrafico_' + indId).val();
+            var subDimensao = $('#sltSubDimensaoGrafico_' + indId).val();
+            var dataIni = $('#dataIniGrafico_' + indId).val();
+            var dataFim = $('#dataFimGrafico_' + indId).val();
+            
+            if (tipo == 3) {
+                ObtemDados(indId, $('#s2id_sltAno').select2('val'), dim_id, per_id, tipo, dataIni, dataFim);
+            }
+            else {
+                ObtemDados(indId, $('#s2id_sltAno').select2('val'), dim_id, per_id, tipo, dataIni, dataFim);
+            }
+        }
+
+    </script>
+    @foreach (var item in Model.Indicadores)
+    {
+    <script>
+        $(document).ready(function () {
+            
+            debugger
+            
+            @Html.Raw("sltDimensaoGrafico_" +@item.IND_ID+".selectedIndex ="+ (@item.DIM_ID-1));
+            @Html.Raw("sltSubDimensaoGrafico_" +@item.IND_ID+".selectedIndex =1");
+            if ("@item.PER_ID.ToString().Trim()" == "D") {
+                @Html.Raw("sltPeriodoGrafico_" + @item.IND_ID+".selectedIndex =0");
+            }
+            else{
+                @Html.Raw("sltPeriodoGrafico_" + @item.IND_ID+".selectedIndex =1");
+            }
+            @Html.Raw("atualizarGrafico("+@item.IND_GRAFICO+","+@item.IND_ID+","+@item.DIM_ID+",'"+@item.PER_ID.ToString().Trim()+"');");
+});
+    </script>
+    }
+
+}
+
+<div id="grafico">
+
+</div>

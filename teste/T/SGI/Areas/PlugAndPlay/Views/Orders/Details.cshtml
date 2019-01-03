@@ -1,0 +1,99 @@
+﻿@model SGI.Areas.PlugAndPlay.Models.Order
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Order</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Cliente.Nome)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Cliente.Nome)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Produto.Descricao)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Produto.Descricao)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DataEntregaDe)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DataEntregaDe)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DataEntregaAte)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DataEntregaAte)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Quantidade)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Quantidade)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PrecoUnitario)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PrecoUnitario)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Tipo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Tipo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Quantidade)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Quantidade)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ToleranciaMais)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ToleranciaMais)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ToleranciaMenos)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ToleranciaMenos)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

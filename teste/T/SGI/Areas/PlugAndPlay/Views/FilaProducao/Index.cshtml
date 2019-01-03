@@ -1,0 +1,273 @@
+﻿@using SGI.Areas.PlugAndPlay.Models
+@{
+    ViewBag.Title = "Fila de Produção";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section styles{
+    <!--control carregando-->
+    <link href="~/Plugins/control-icone-carregando/css/control-carregando.css" rel="stylesheet" />
+    <!--data table-->
+    <link rel="stylesheet" type="text/css" href="~/Plugins/DataTables/datatables.min.css" />
+    <!--datetimepicker-->
+    <link href="~/Plugins/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+    <!--bootstrap modal create-->
+    <link href="~/Plugins/bootstrap-modal-create/css/bootstrap-modal-create.css" rel="stylesheet" />
+
+
+    <!-- INSERE O CSS -->
+    <link href="~/Areas/PlugAndPlay/Scripts/Shared/css/GlobalCss.css" rel="stylesheet" />
+}
+@section scripts{
+  
+    <script src="~/Areas/PlugAndPlay/Scripts/FilaProducao/Index/js/jqueryUi.js"></script>
+    <!-- control carregando-->
+    <script src="~/Plugins/control-icone-carregando/js/control-carregando.js"></script>
+    <!--data table-->
+    <script type="text/javascript" src="~/Plugins/DataTables/datatables.min.js"></script>
+    <!--jquery componentes-->
+    <script src="~/Plugins/jquery-componente/jquey-componentes.js"></script>
+    <!--moment.js-->
+    <script src="~/Plugins/moment-js/js/moment.js"></script>
+    <script src="~/Plugins/moment-js/js/pt-br.js"></script>
+    <!--datetimepicker-->
+    <script src="~/Plugins/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.min.js"></script>
+    <!--jquery validation-->
+    <script src="~/Plugins/jquery-validation-1.17.0/jquery.validate.min.js"></script>
+    <script src="~/Plugins/jquery-validation-1.17.0/messages_pt_BR.js"></script>
+    <script src="~/Plugins/jquery-validation-1.17.0/default-tooltip-message.js"></script>
+    <!--bootstrap modal create-->
+    <script src="~/Plugins/bootstrap-modal-create/js/bootstrap-modal-create.js"></script>
+    <!--scripts da pagina-->
+    <script src="~/Areas/PlugAndPlay/Scripts/FilaProducao/Index/js/cadastro.js"></script>
+    <script src="~/Areas/PlugAndPlay/Scripts/FilaProducao/Index/js/validacao-formulario.js"></script>
+    <script src="~/Areas/PlugAndPlay/Scripts/FilaProducao/Index/js/data-table-conf.js"></script>
+    <script src="~/Areas/PlugAndPlay/Scripts/FilaProducao/Index/js/modal-alterar-fila.js"></script>
+    <script src="~/Areas/PlugAndPlay/Scripts/FilaProducao/Index/js/tabela-fila-producao.js"></script>
+    <script src="~/Areas/PlugAndPlay/Scripts/FilaProducao/Index/js/global.js"></script>
+    <script>
+
+
+
+    </script>
+    <!--SCRIPT QUE FAZ A FILA DE PRODUCAO FICAR ORDENAVEL-->
+    <script type="text/javascript" src="~/Areas/PlugAndPlay/Scripts/FilaProducao/Index/js/VisualizacaoDaFilaDeProducao.js"></script>
+}
+<!--modal alterar fila-->
+<div id="mdAlterarFila" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Editar</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <input id="mdAltFilaSequenciaTran" type="hidden" />
+                    <input id="mdAltFilaSequenciaRep" type="hidden" />
+                    <input id="mdAltFilaOrder" type="hidden" />
+
+                    <div class="col-md-6 form-group">
+                        <label class="form-label">Produto</label>
+                        <input id="mdAltFilaProduto" readonly class="form-control" />
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label class="form-label">Máquina</label>
+                        <input id="mdAltFilaMaquina" readonly class="form-control" />
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label class="form-label">Início Previsto</label>
+                        <input id="mdAltFilaDataIni" class="form-control" />
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label class="form-label">Fim Previsto</label>
+                        <input id="mdAltFilaDataFim" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" id="mdAltFilaBtnSalvar" class="btn btn-primary">Salvar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--renderiza o formulario de cadastro de fila de producao-->
+<div style="display:none" id="divTemplateForm">
+    @Html.Action("Create")
+</div>
+<!-------------------->
+<div class='col-xs-12'>
+    <div class="page-title">
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-tags"></i>Cadastros
+                </li>
+                <li class="active">
+                    <strong>Fila de Producao</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+
+<div class="col-xs-12 ">
+    <section class="box " style=" position:relative " id="secaoInfoCarregando">
+        <!--animacao loading-->
+        @*<div class="info-carregando-pc info-carregando-pc-acima" style="display: flex">
+                <div class="info">
+                    <i class="fa fa-circle-o-notch fa-spin"></i>
+                    Carregando...
+                </div>
+            </div>*@
+        <!--animacao loading-->
+        <header class="panel_header">
+            <h2 class="title">Fila Produção</h2>
+
+            <div class="col-sm-4 pull-right containerDePendencias" style="margin-top:1%; ">
+                <a href="#pendencias" style="text-decoration: none; display:inline ">
+                    <div class="container-fluid  " style=" ">
+                        <div class="row">
+                            <h2 class="title h2Pendencias" style="margin-right: 10px; " id="">
+                                Pendencias
+                            </h2>
+                            <!-- TENTATIVA FALHA DE FAZER UM CIRCULO KKK
+                            <span style="background-color: greenyellow ; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:10%; height:50%; border-radius: 50%;">
+                            </span>-->
+
+                            <div class="img-circle" style="background-color:green; display:inline; color : white"> 15p</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </header>
+        <div class="content-body">
+
+
+            <form class="form-inline form-group" style="margin-bottom:2%;">
+                <select class="form-control alterarLinhaDoTempo" value="24">
+                    <option value="1">24 horas</option>
+                    <option value="2">48 horas</option>
+                    <option value="3">72 horas</option>
+                </select>
+
+
+                <!-- BOTAO PARA PERMITIR A ALTERACAO NA FILA DE PRODUCAO-->
+                <div class="btn btn-warning" title="" rel="tooltip" data-original-title="Editar" id="btnAlterar" style="float: right;"><span class="fa fa-edit"></span></div>
+                <!--<div class="btn" style="float:right" id="btnAlterar"><i class="fa fa-edit"></i>  Editar </div>-->
+                <div class="btn" style="float:right" id="btnAdd"><i class="fa fa-edit"></i>  Add </div>
+            </form>
+
+
+            <!--TABELA FILA DE PRODUCAO-->
+            <div style="width: 100%; position: relative" class="table-responsive">
+
+                <table class="table table-bordered" id="tabelaFiladeProducao" style="">
+                    <thead>
+                        <tr>
+                            <th class="col-sm-2" style="text-align: center;">MAQUINAS</th>
+                            <th class="">
+                                <ul style="list-style-type:none; width:1970px;" id="contemLinhaDoTempo"></ul>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <!-- CRIA UMA LINHA DA TABELA (FOREACH PARA INSERIR A QUANTUDADE DE MAQUINAS NO BD) -->
+                        <tr>
+                            <!-- IDENTIFICACAO DA MAQUINA -->
+                            <td style="text-align: center;">
+                                MAQUINA 1
+                            </td>
+                            <td style="margin: 0; padding: 0;">
+                                <div id="sortableM2" class="ui-sortable " style="height: 32px; display: inline-flex;  ">
+
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <!-- IDENTIFICACAO DA MAQUINA -->
+                            <td style="text-align: center;">
+                                MAQUINA 1
+                            </td>
+                            <td style="margin: 0; padding: 0;">
+                                <div id="sortableM1" class="ui-sortable " style="height: 32px; display: inline-flex;  ">
+
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+
+
+<div class="col-xs-12 " id="pendencias">
+    <section class="box " style=" position:relative " id="">
+        <header class="panel_header">
+            <h2 class="title">PENDÊNCIAS</h2>
+        </header>
+        <div class="content-body" id="listaDePendencias">
+            <table class="table table-bordered table-responsive">
+                <thead>
+                    <tr style="text-align: left;">
+                        <th class="col-sm-2"> Numero do Pedido</th>
+                        <th class="col-sm-6"> Tipo de Pendência </th>
+                        <th class="col-sm-2"> Solucionar </th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyListaDePendencias">
+                    <tr>
+                        <td>ped002</td>
+                        <td>Pedido sem roteiro cadastrado</td>
+                        <td>
+                            <div class="btn btn-warning" title="" rel="tooltip" data-original-title="Editar" id="btnAlterar"><span class="fa fa-edit"></span></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>ped002</td>
+                        <td>Pedido sem roteiro cadastrado</td>
+                        <td>
+                            <div class="btn btn-warning" title="" rel="tooltip" data-original-title="Editar" id="btnAlterar"><span class="fa fa-edit"></span></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>ped002</td>
+                        <td>Pedido sem roteiro cadastrado</td>
+                        <td>
+                            <div class="btn btn-warning" title="" rel="tooltip" data-original-title="Editar" id="btnAlterar"><span class="fa fa-edit"></span></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>ped002</td>
+                        <td>Pedido sem roteiro cadastrado</td>
+                        <td>
+                            <div class="btn btn-warning" title="" rel="tooltip" data-original-title="Editar" id="btnAlterar"><span class="fa fa-edit"></span></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>ped002</td>
+                        <td>Pedido sem roteiro cadastrado</td>
+                        <td>
+                            <div class="btn btn-warning" title="" rel="tooltip" data-original-title="Editar" id="btnAlterar"><span class="fa fa-edit"></span></div>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</div>

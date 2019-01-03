@@ -1,0 +1,46 @@
+﻿/*Imagem de loading*/
+#divloading {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: fixed;
+    display: block;
+    background-color: rgba(0, 0, 0, 0.1);
+    z-index: 1200;
+}
+
+.updateContent {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background-color: #fff;
+    margin: -21px auto auto -91px;
+    padding: 10px 10px 10px 5px;
+    border: 1px solid #333;
+}
+
+    .updateContent .imagem {
+        float: left;
+        display: inline-block;
+        margin-right: 5px;
+    }
+
+        .updateContent .imagem i {
+            height: 100%;
+            height: 30px;
+            font-size: 30px !important;
+        }
+
+    .updateContent .texto {
+        font-size: 18px;
+        height: 32px;
+        display: table;
+    }
+
+        .updateContent .texto p {
+            display: table-cell;
+            vertical-align: middle;
+            color: gray;
+        }
+/* -> fim Imagem de loading*/

@@ -1,0 +1,177 @@
+﻿@model SGI.Models.T_Indicadores
+@{
+    ViewData["Title"] = "Detalhes indicador";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class='col-xs-12'>
+    <div class="page-title">
+
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-pie-chart"></i>Movimentos
+                </li>
+                <li>
+                    <a href="@Url.Action("Index","Indicador")">Indicadores</a>
+                </li>
+                <li class="active">
+                    <strong>Detalhes indicador</strong>
+                </li>
+            </ol>
+        </div>
+
+    </div>
+</div>
+
+<div class="col-xs-12">
+    <section class="box ">
+        <header class="panel_header">
+            <h2 class="title pull-left">Detalhes indicador</h2>
+            <div class="actions panel_actions pull-right">
+            </div>
+        </header>
+        <div class="content-body">
+            <div class="row">
+                <div class="col-md-8 col-sm-9 col-xs-10">
+                    <div class="form-group">
+                        <label class="form-label">Descrição</label>
+                        <div class="controls">
+                            @Html.TextBoxFor(x => x.IND_DESCRICAO, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Negócio</label>
+                        <div class="controls">
+                            @Html.TextBoxFor(x => x.T_Negocio.NEG_DESCRICAO, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Tipo Acompanhamento</label>
+                        <div class="controls">
+                            @switch (Model.IND_INTACOMPANHAMENTO)
+                            {
+                                case (int)SGI.Enums.Acompanhamento.Anual:
+                                    @Html.TextBox("IND_INTACOMPANHAMENTO", "Anual", new { @class = "form-control", @readonly = true })
+                                    break;
+                                case (int)SGI.Enums.Acompanhamento.Diario:
+                                @Html.TextBox("IND_INTACOMPANHAMENTO", "Diário", new { @class = "form-control", @readonly = true })
+                                    break;
+                                case (int)SGI.Enums.Acompanhamento.Mensal:
+                                @Html.TextBox("IND_INTACOMPANHAMENTO", "Mensal", new { @class = "form-control", @readonly = true })
+                                    break;
+
+                            }
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Tipo Meta</label>
+                        <div class="controls">
+                            @switch (Model.IND_GATILHOACUMULADO)
+                            {
+                                case (int)SGI.Enums.Acumulado.AcumPeriodo:
+                                    @Html.TextBox("IND_GATILHOACUMULADO", "Acumulado Período", new { @class = "form-control", @readonly = true })
+                                    break;
+                                case (int)SGI.Enums.Acumulado.VlrPeriodo:
+                                @Html.TextBox("IND_GATILHOACUMULADO", "Por Período", new { @class = "form-control", @readonly = true })
+                                    break;
+
+                            }
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Fonte de dados</label>
+                        <div class="controls">
+                            @Html.TextAreaFor(x => x.ORIGEM_DADOS, 2, 2, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Dt.Criação</label>
+                        <div class="controls">
+                            @Html.TextBoxFor(x => x.DTCRIACAO, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Responsável Indicador</label>
+                        <div class="controls">
+                            @Html.TextBoxFor(x => x.RESPOSAVELIND, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Responsável Carga</label>
+                        <div class="controls">
+                            @Html.TextBoxFor(x => x.RESPOSAVELCARGA, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+
+                    @**** Grupos ****@
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Nome</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.T_Grupo_Indicador)
+                            {
+                                <tr>
+                                    <td>@item.GRU_ID</td>
+                                    <td>@item.T_Grupo.NOME</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <div class="pull-right">
+                        <a href="@Url.Action("Edit", new { id = Model.IND_ID})" class="btn btn-info">Editar</a>
+                        <a href="@Url.Action("Index")" type="button" class="btn">Cancelar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+@section Styles {
+    <environment names="Development">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+    <environment names="Staging,Production">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+}
+
+
+
+
+@section Scripts {
+
+    <environment names="Development">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+
+    <script type="text/javascript">
+        $("#mcadastros").removeClass("open");
+        $("#mcadastros").addClass("open");
+    </script>
+}

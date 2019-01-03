@@ -1,0 +1,513 @@
+﻿@model SGI.Models.Custom.PedidoCustom
+@{
+    ViewBag.Title = "Pedidos ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var dados = new SGI.Context.JProtheus();
+    System.Globalization.CultureInfo culturaInfo = new System.Globalization.CultureInfo("pt-BR");
+    if (Model.Moeda == 2)//Seta formato moeda em dolar
+    {
+        culturaInfo = new System.Globalization.CultureInfo("en-US");
+    }
+}
+
+<div class='col-xs-12'>
+    <div class="page-title">
+
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action(" index","home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-th-large"></i>Workflow
+                </li>
+                <li class="active">
+                    <strong>Minhas pendências</strong>
+                </li>
+            </ol>
+        </div>
+
+    </div>
+</div>
+
+<div class="col-xs-12">
+    <section class="box">
+        <header class="panel_header">
+            <h1 class="text-center">Aprovação de Pedidos @Model.Empresa - @Model.Pedido </h1>
+        </header>
+        <div class="content-body">
+            @if (Html.Value("msg").ToString() != "")
+            {
+                <div class="alert alert-success fade in">
+                    <button class="close" data-dismiss="alert">
+                        ×
+                    </button>
+                    <i class="fa-fw fa fa-check"></i>
+                    @Html.Value("msg").ToString()
+                </div>
+            }
+
+            @if (ViewBag.erro != "" && ViewBag.erro != null)
+            {
+                <div class="alert alert-danger fade in">
+                    <button class="close" data-dismiss="alert">
+                        ×
+                    </button>
+                    <i class="fa-fw fa fa-times"></i>
+                    @ViewBag.erro
+                </div>
+            }
+            @using (Html.BeginForm("PedDetails", "WorkFlow", FormMethod.Post, new { @id = "formDados", @name = "formDados" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                @Html.HiddenFor(x => x.Empresa)
+                @Html.HiddenFor(x => x.StatusSCR)
+                @Html.HiddenFor(x => x.Comprador.Codigo)
+                @Html.HiddenFor(x => x.Comprador.Email)
+                <div class="row">
+                    <div class="row marginBottom30">
+                        <div class="col-md-12">
+                            <div class="pull-left">
+                                <a href="@Url.Action("PedCompra", new { searchString = Html.Value("searchString"), nPageSize = Html.Value("nPageSize"), page = Html.Value("page"), pEmpresa = Html.Value("pEmpresa"), pStatus = Html.Value("pStatus") })" class="btn btn-default" title="Voltar" rel="tooltip">
+                                    Voltar
+                                </a>
+                                @if (Model.StatusSCR == "02")
+                                {
+                                    <button type="submit" id="btnConfirmar" class="btn btn-primary" title="Confirmar" rel="tooltip">
+                                        <i class="fa fa-check"></i> Confirmar
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    @*** Linha 1 ***@
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="form-label">Pedido</label>
+                                <div class="controls">
+                                    @Html.TextBoxFor(x => x.Pedido, new { @class = "form-control", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="form-label">Emissão</label>
+                                <div class="controls">
+                                    @if (!string.IsNullOrEmpty(Model.Emissao))
+                                    {
+                                        @Html.TextBox("Emissao", DateTime.ParseExact(Model.Emissao, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy"), new { @class = "form-control", @readonly = true })
+                                    }
+                                    else
+                                    {
+                                        @Html.TextBox("Emissao", "", new { @class = "form-control", @readonly = true })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="form-label">Valor Bruto</label>
+                                <div class="controls">
+                                    @Html.TextBox("Total", Model.ItensPedCompra.Sum(x => x.Total).ToString("C", culturaInfo), new { @class = "form-control", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="form-label">Desconto</label>
+                                <div class="controls">
+                                    @Html.TextBox("desconto", Model.ItensPedCompra.Sum(x => x.ValDesc).ToString("C", culturaInfo), new { @class = "form-control", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="form-label">Valor Líquido</label>
+                                <div class="controls">
+                                    @Html.TextBox("totLiquido", Model.ItensPedCompra.Sum(x => x.Total - x.ValDesc - x.ValDesc).ToString("C", culturaInfo), new { @class = "form-control", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="form-label">Frete/Despesa</label>
+                                <div class="controls">
+                                    @Html.TextBox("freteDespesa", Model.ItensPedCompra.Sum(x => x.ValDesp).ToString("C", culturaInfo), new { @class = "form-control", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @*** Linha 2 ***@
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label">Aprovador S.C.</label>
+                                <div class="controls">
+                                    <div class="controls">
+                                        @Html.TextBoxFor(x => x.AprovadorSc, new { @class = "form-control", @readonly = true })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">Fornecedor</label>
+                                <div class="controls">
+                                    @Html.TextBoxFor(x => x.ForNome, new { @class = "form-control", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <label class="form-label">Tp.Frete</label>
+                                <div class="controls">
+                                    @if (Model.TpFrete == "C")
+                                    {
+                                        @Html.TextBox("TpFrete", "CIF", new { @class = "form-control", @readonly = true })
+                                    }
+                                    else if (Model.TpFrete == "F")
+                                    {
+                                        @Html.TextBox("TipoFrete", "FOB", new { @class = "form-control", @readonly = true })
+                                    }
+                                    else if (Model.TpFrete == "T")
+                                    {
+                                        @Html.TextBox("TpFrete", "Terceiros", new { @class = "form-control", @readonly = true })
+                                    }
+                                    else if (Model.TpFrete == "S")
+                                    {
+                                        @Html.TextBox("TpFrete", "Sem Frete", new { @class = "form-control", @readonly = true })
+                                    }
+                                    else
+                                    {
+                                        @Html.TextBox("TpFrete", "", new { @class = "form-control", @readonly = true })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="form-label">Moeda</label>
+                                <div class="controls">
+                                    @if (Model.Moeda == 1)
+                                    {
+                                        @Html.TextBox("moeda", "Real", new { @class = "form-control", @readonly = true })
+                                    }
+                                    else if (Model.Moeda == 2)
+                                    {
+                                        @Html.TextBox("moeda", "Dolar", new { @class = "form-control", @readonly = true })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label class="form-label">Cond.Pagamento</label>
+                                <div class="controls">
+                                    @Html.TextBoxFor(x => x.CondPag, new { @class = "form-control", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @*** Linha 3 ***@
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Código</th>
+                                    <th>Descrição</th>
+                                    <th>Um</th>
+                                    <th>Quant</th>
+                                    <th>Vl.Unit</th>
+                                    <th>IPI</th>
+                                    <th>Vl.Total</th>
+                                    <th>Entrega</th>
+                                    <th>Preço Últ. Compra</th>
+                                    <th>Data da Última Compra</th>
+                                    <th>Centro de Custo</th>
+                                    <th>Nro S.C</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.ItensPedCompra)
+                                {
+                                    <tr>
+                                        <td>@item.Item</td>
+                                        <td>@item.CodProduto</td>
+                                        <td>@item.Produto</td>
+                                        <td>@item.Un</td>
+                                        <td>@item.Qtd</td>
+                                        <td>@item.Preco.ToString("C4", culturaInfo)</td>
+                                        <td>@item.Ipi.ToString("C", culturaInfo)</td>
+                                        <td>@item.Total.ToString("C4", culturaInfo)</td>
+                                        <td>@DateTime.ParseExact(item.DtEntrega, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy")</td>
+                                        <td>@item.UltPrcCopra.ToString("C", culturaInfo)</td>
+                                        @if (!string.IsNullOrEmpty(item.DtUlPrc))
+                                        {
+                                            <td>@DateTime.ParseExact(item.DtUlPrc, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy")</td>
+                                        }
+                                        else
+                                        {
+                                            <td></td>
+                                        }
+                                        <td>@item.CCusto</td>
+                                        <td>@item.NumSc</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="5">
+                                            <b>Justificativa: </b>
+                                            @item.Justificativa
+                                        </td>
+                                        <td colspan="5">
+                                            <b>Esp.Técnica: </b>
+                                            @item.EspTecnica
+                                        </td>
+                                        <td colspan="4">
+                                            <b>Uso: </b>
+                                            @item.Obs
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @*** Linha 4 ***@
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">Aprovação</label>
+                                <div class="controls">
+                                    @if (Request["aprovacao"] == "N")
+                                    {
+                                        <input type="radio" name="aprovacao" class="skin-square-green" value="S"><i></i>
+                                        <label class="iradio-label form-label" for="square-radio-2">Sim</label>
+                                        <input type="radio" name="aprovacao" value="N" class="skin-square-red" checked><i></i>
+                                        <label class="iradio-label form-label" for="square-radio-2">Não</label>
+                                        @Html.TextAreaFor(x => x.MotivoRejeicao, 4, 5, new { @class = "form-control", @placeholder = "Caso marcado como 'Não' digite a justificativa" })
+                                    }
+                                    else
+                                    {
+                                        <input type="radio" name="aprovacao" value="S" class="skin-square-green" checked><i></i>
+                                        <label class="iradio-label form-label" for="square-radio-2">Sim</label>
+                                        <input type="radio" name="aprovacao" value="N" class="skin-square-red"><i></i>
+                                        <label class="iradio-label form-label" for="square-radio-2">Não</label>
+                                        @Html.TextAreaFor(x => x.MotivoRejeicao, 4, 5, new { @class = "form-control", @placeholder = "Caso marcado como 'Não' digite a justificativa" })
+                                    }
+                                    @Html.ValidationMessageFor(x => x.MotivoRejeicao)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <div>
+                                    <label class="iradio-label form-label"></label>
+                                </div>
+                                <label class="form-label">Obs.Aprov.Pré-Pedido</label>
+                                <div class="controls">
+                                    @Html.TextAreaFor(x => x.ObsAprovacao, 5, 5, new { @class = "form-control", @placeholder = "Digite a observação" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @*** Linha 5 ***@
+                    <div class="form-group">
+                        <fieldset>
+                            <strong>Cotações Efetuadas para Este Pedido</strong>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <td>Cotação</td>
+                                            <td>Fornecedor</td>
+                                            <td>Loja</td>
+                                            <td>Nome</td>
+                                            <td>IPI</td>
+                                            <td>ICMS</td>
+                                            <td>FRETE</td>
+                                            <td>Item</td>
+                                            <td>Produto</td>
+                                            <td>Preço</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.Cotacoes)
+                                        {
+                                            <tr>
+                                                <td>@item.Numero</td>
+                                                <td>@item.Fornecedor</td>
+                                                <td>@item.Loja</td>
+                                                <td>@item.ForNome</td>
+                                                <td>@item.ValIpi.ToString("C", culturaInfo)</td>
+                                                <td>@item.ValIcms.ToString("C", culturaInfo)</td>
+                                                <td>@item.ValFrete.ToString("C", culturaInfo)</td>
+                                                <td>@item.Item</td>
+                                                <td>@item.Produto</td>
+                                                <td>@item.Preco.ToString("C", culturaInfo)</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <strong>Processo de Aprovação do Pedido de Compra</strong>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <td>Tipo</td>
+                                            <td>Nível</td>
+                                            <td>Aprovador</td>
+                                            <td>Situação</td>
+                                            <td>Dt.Aprovação</td>
+                                            <td>Observações</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.LstAprovacoes)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <span class="label label-default">@item.Tipo</span>
+                                                </td>
+                                                <td>@item.Nivel.Trim()</td>
+                                                <td>@item.Nome</td>
+                                                <td>
+                                                    @if (item.Status == "02")
+                                                    {
+                                                        <span class="label label-danger">Aguardando Aprovação</span>
+                                                    }
+                                                    else if (item.Status == "03")
+                                                    {
+                                                        <span class="label label-success">Aprovado</span>
+                                                    }
+                                                    else if (item.Status == "04")
+                                                    {
+                                                        <span class="label label-warning">Rejeitado</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (!string.IsNullOrEmpty(item.DtLib))
+                                                    {
+                                                        @DateTime.ParseExact(item.DtLib, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy")
+                                                    }
+                                                </td>
+                                                <td>@item.Obs</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </fieldset>
+
+                        <div class="pull-left">
+                            <a href="@Url.Action("PedCompra", new { searchString = Html.Value("searchString"), nPageSize = Html.Value("nPageSize"), page = Html.Value("page"), pEmpresa = Html.Value("pEmpresa"), pStatus = Html.Value("pStatus") })" class="btn btn-default" title="Voltar" rel="tooltip">
+                                Voltar
+                            </a>
+                            @if (Model.StatusSCR == "02")
+                            {
+                                <button type="submit" id="btnConfirmar" class="btn btn-primary" title="Confirmar" rel="tooltip">
+                                    <i class="fa fa-check"></i> Confirmar
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+</div>
+
+@section Styles {
+    <environment names="Development">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+    <environment names="Staging,Production">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+}
+
+
+@section Scripts {
+    <environment names="Development">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+
+    <script type="text/javascript">
+        $("#mworkflow").removeClass("open");
+        $("#mworkflow").addClass("open");
+    </script>
+}
+
+<script type="text/javascript">
+    function showErrorMessage(msg) {
+        Messenger({
+            extraClasses: 'messenger-fixed messenger-on-right messenger-on-top',
+            theme: 'flat'
+        }).post({
+            message: msg,
+            type: 'error',
+            showCloseButton: true
+        });
+    }
+    
+    function ConfirmarDados(pedido) {
+        $.SmartMessageBox({
+            title: "Confirmar Pedido " + pedido,
+            content: "Tem certeza que deseja confirmar o pedido " + pedido + "?",
+            buttons: '[No][Yes]'
+        }, function (ButtonPressed) {
+            if (ButtonPressed === "Yes") {
+
+                $.smallBox({
+                    title: "Pedido " + pedido + " atualizado",
+                    content: "<i class='fa fa-clock-o'></i> <i>Pedido " + pedido + " foi atualizado com sucesso...</i>",
+                    color: "#659265",
+                    iconSmall: "fa fa-check fa-2x fadeInRight animated",
+                    timeout: 4000
+                });
+
+                $('#formDados').submit();
+            }
+            if (ButtonPressed === "No") {
+                $.smallBox({
+                    title: "Cancelado",
+                    content: "<i class='fa fa-clock-o'></i> <i>Pedido " + pedido + " não será atualizado...</i>",
+                    color: "#C46A69",
+                    iconSmall: "fa fa-times fa-2x fadeInRight animated",
+                    timeout: 4000
+                });
+            }
+
+        });
+        e.preventDefault();
+    }
+</script>

@@ -1,0 +1,125 @@
+﻿@using PagedList
+@using PagedList.Mvc
+@model IPagedList<SGI.Models.T_Departamentos>
+@{
+    ViewData["Title"] = "Departamentos cadastrados";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class='col-xs-12'>
+    <div class="page-title">
+
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-pie-chart"></i>Cadastros
+                </li>
+                <li class="active">
+                    <strong>Departamentos</strong>
+                </li>
+            </ol>
+        </div>
+
+    </div>
+</div>
+
+<div class="col-xs-12">
+    <section class="box ">
+        <header class="panel_header">
+            <h2 class="title pull-left">Lista de departamentos cadastrados</h2>
+            <div class="actions panel_actions pull-right">
+            </div>
+        </header>
+        <div class="content-body">
+            <div class="btn-toolbar">
+                @using (Html.BeginForm("Index", "Departamento", FormMethod.Get))
+                {
+                    <div class="btn-group focus-btn-group">
+                        <a href="@Url.Action("Create")" rel="tooltip" title="Incluir" class="btn btn-success">
+                            <span class="fa fa-plus"></span> Incliur
+                        </a>
+                    </div>
+                    <div class="btn-group dropdown-btn-group pull-right">
+                        <label>Pesquisar:<input type="search" id="searchString" name="searchString" value="@Html.Value("searchString")" class="form-control input-sm" placeholder="Digite a pesquisa" aria-controls="example-4"></label>
+                        <label>
+                            @Html.DropDownList("nPageSize", (IEnumerable<SelectListItem>)ViewBag.ItensPageSize,
+                       new { @id = "nPageSize", onchange = "this.form.submit();", @class = "form-control input-sm" })
+                        </label>
+                    </div>
+                }
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-striped dt-responsive display">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.DEP_NOME</td>
+                                <td>
+                                    <a href="@Url.Action("Edit", new { id = item.DEP_ID})" class="btn btn-warning" title="Editar" rel="tooltip"><span class="fa fa-edit"></span></a>
+                                    <a href="@Url.Action("Details", new { id = item.DEP_ID })" class="btn btn-info" title="Visualizar" rel="tooltip"><span class="fa fa-eye"></span></a>
+                                    <a href="@Url.Action("Delete", new { id = item.DEP_ID })" class="btn btn-danger" title="Remover" rel="tooltip"><span class="fa fa-eraser"></span></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="dataTables_info" id="datatable1_info" role="status" aria-live="polite">Exibindo @Model.PageNumber de @Model.PageCount de @Model.TotalItemCount registros</div>
+            <div class="dataTables_paginate paging_simple_numbers" id="datatable1_paginate">
+                @Html.PagedListPager((IPagedList)Model,
+                page => Url.Action("Index",
+                new { page = page, nPageSize = ViewBag.CurrentItemsPerPage, searchString = ViewBag.CurrentSearch }),
+                new PagedListRenderOptions
+                {
+                    LinkToFirstPageFormat = "<< Primera",
+                    LinkToPreviousPageFormat = "< Anterior",
+                    LinkToNextPageFormat = "Proxima >",
+                    LinkToLastPageFormat = "Ultima >>"
+                })
+            </div>
+        </div>
+    </section>
+</div>
+
+
+@section Styles {
+    <environment names="Development">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+    <environment names="Staging,Production">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+}
+
+
+
+
+@section Scripts {
+    <environment names="Development">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+
+    <script type="text/javascript">
+        $("#mcadastros").removeClass("open");
+        $("#mcadastros").addClass("open");
+    </script>
+}

@@ -1,0 +1,67 @@
+﻿@model SGI.Areas.PlugAndPlay.Models.Turma
+
+@{
+    ViewBag.Title = "Turma";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class='col-xs-12'>
+    <div class="page-title">
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-tags"></i>Cadastros
+                </li>
+                <li>
+                    <a href="@Url.Action("Index","Turmas")">Turmas</a>
+                </li>
+                <li class="active">
+                    <strong>Turma</strong>
+                </li>
+            </ol>
+        </div>
+
+    </div>
+</div>
+<div class="col-xs-12">
+    <section class="box">
+        <header class="panel_header">
+            <h2 class="title pull-left">Editar</h2>
+            <div class="actions panel_actions pull-right"> </div>
+        </header>
+        <div class="content-body">
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                <div class="row">
+                    <div class="col-md-8 col-sm-9 col-xs-10">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Id, htmlAttributes: new { @class = "form-label" })
+                            <div class="controls">
+                                @Html.EditorFor(model => model.Id, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Id, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Descricao, htmlAttributes: new { @class = "form-label" })
+                            <div class="controls">
+                                @Html.EditorFor(model => model.Descricao, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Descricao, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="pull-right">
+                            <button type="submit" class="btn btn-success">Salvar</button>
+                            <a href="@Url.Action("Index")" type="button" class="btn">Cancelar</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+</div>

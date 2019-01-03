@@ -1,0 +1,31 @@
+﻿@{
+    string maquina = this.ViewData.ContainsKey("maquina") ? this.ViewData["maquina"].ToString() : string.Empty;
+    string op = this.ViewData.ContainsKey("op") ? this.ViewData["op"].ToString() : string.Empty;
+    string pedido = this.ViewData.ContainsKey("pedidido") ? this.ViewData["pedidido"].ToString() : string.Empty;
+    string descricao = this.ViewData.ContainsKey("descricao") ? this.ViewData["descricao"].ToString() : string.Empty;
+}
+
+<div class="form-section">
+    <h4 class="form-section-title">Produção</h4>
+    <div class="responsive-info">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="title">Maquina</div>
+                <div class="desc">@maquina</div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="title">OP</div>
+                <div class="desc">@op</div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="title">Pedido</div>
+                <div class="desc">@pedido</div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="title">Produto</div>
+                <div class="desc">@descricao</div>
+            </div>
+        </div>
+    </div>
+</div>
+

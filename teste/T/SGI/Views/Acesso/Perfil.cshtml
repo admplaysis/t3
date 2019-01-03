@@ -1,0 +1,130 @@
+﻿@model SGI.Models.T_Usuario
+@{
+    ViewData["Title"] = "Editar perfil";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class='col-xs-12'>
+    <div class="page-title">
+
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li class="active">
+                    <strong>Editar perfil</strong>
+                </li>
+            </ol>
+        </div>
+
+    </div>
+</div>
+
+<div class="col-xs-12">
+    <section class="box ">
+        <header class="panel_header">
+            <h2 class="title pull-left">Editar perfil</h2>
+            <div class="actions panel_actions pull-right">
+            </div>
+        </header>
+        <div class="content-body">
+            @using (Html.BeginForm("Perfil", "Acesso", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                @Html.HiddenFor(x => x.ID_PERFIL)
+                @Html.HiddenFor(x => x.ID_USUARIO)
+                <div class="row">
+                    <div class="col-md-8 col-sm-9 col-xs-10">
+                        <div class="form-group">
+                            <label class="form-label">Nome</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.NOME, new { @class = "form-control", @placeholder = "Digite o nome", @maxlength = "80" })
+                                @Html.ValidationMessageFor(x => x.NOME)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">E-mail</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.EMAIL, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Senha</label>
+                            <div class="controls">
+                                @Html.PasswordFor(x => x.SENHA, new { @class = "form-control", @placeholder = "***" })
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <a href="@Url.Action("AddFavorito")" class="btn btn-info" title="Adicionar favorito" rel="tooltip" data-modal=""><span class="fa fa-plus"></span> Add.Favorito</a>
+                            <div class="table-responsive">
+                                <table class="table table-striped dt-responsive display">
+                                    <thead>
+                                        <tr>
+                                            <th>Indicador</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.T_Favoritos)
+                                        {
+                                            <tr>
+                                                <td>@item.T_Indicadores.IND_DESCRICAO</td>
+                                                <td>
+                                                    <a href="@Url.Action("DelFavorito", new { idIndicador = item.IDFAVORITO })" class="btn btn-danger" title="Remover favorito" rel="tooltip" data-modal=""><span class="fa fa-eraser"></span></a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="pull-right">
+                            <button type="submit" class="btn btn-success">Salvar</button>
+                            <a href="@Url.Action("Index","Home")" type="button" class="btn">Cancelar</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+</div>
+<!-- modal placeholder-->
+<div id='myModal' class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+
+
+@section Styles {
+    <environment names="Development">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+    <environment names="Staging,Production">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+}
+
+@section Scripts {
+
+    <environment names="Development">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+        <script src="~/Script/modalform.js" type="text/javascript"></script>
+    </environment>
+}

@@ -1,0 +1,61 @@
+﻿@model SGI.Models.T_PlanoAcao
+
+<div class="modal-content" id="myModal">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Editar Plano de ação</h4>
+    </div>
+    <div>
+        @using (Ajax.BeginForm("Edit", "PlanoAcao", new AjaxOptions
+                    {
+                        InsertionMode = InsertionMode.InsertAfter,
+                        HttpMethod = "POST",
+                        UpdateTargetId = "targetDiv"
+                    }))
+        {
+            <div class="modal-body">
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                @Html.HiddenFor(x => x.PLA_ID)
+                @Html.HiddenFor(x => x.MET_ID)
+                @Html.HiddenFor(x => x.USER_ID)
+
+                @if (ViewBag.erro != "" && ViewBag.erro != null)
+                {
+                    <div class="alert alert-error alert-dismissible fade in">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                        <strong>Atenção:</strong> @ViewBag.erro
+                    </div>
+                }
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="form-group">
+                            <label class="form-label">Data</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.PLA_DATA, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Referência</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.PLA_REFERENCIA, new { @class = "form-control", @readonly = true })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Descrição</label>
+                            <div class="controls">
+                                @Html.TextAreaFor(x => x.PLA_DESCRICAO, 5, 3, new { @class = "form-control", @placeholder = "Descreva em detalhes a ação a ser tomada.", @maxlength = 3000 })
+                            </div>
+                        </div>
+                        <div class="pull-right">
+                            <button type="submit" class="btn btn-success">Salvar</button>
+                            <button data-dismiss="modal" aria-hidden="true" type="button" class="btn">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

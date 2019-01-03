@@ -1,0 +1,96 @@
+﻿@model SGI.Models.Custom.NfeCustom
+@{
+    System.Globalization.CultureInfo culturaInfo = new System.Globalization.CultureInfo("pt-BR");
+    if (Model.Moeda == 2)//Seta formato moeda em dolar
+    {
+        culturaInfo = new System.Globalization.CultureInfo("en-US");
+    }
+}
+
+<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Aprovar NF Nº @Model.Numero - @Model.Serie</h4>
+    </div>
+    @using (Html.BeginForm("AprovNf", "WorkFlow", FormMethod.Post, new { id = "formDados", name = "formDados" }))
+    {
+        <div class="modal-body">
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(x => x.Empresa)
+            @Html.HiddenFor(x => x.Status)
+            @Html.HiddenFor(x => x.Recno)
+            @Html.HiddenFor(x => x.Origem)
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="form-label">Emissão</label>
+                        <div class="controls">
+                            @Html.TextBox("Emissao", DateTime.ParseExact(Model.Emissao, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture).ToString("dd/MM/yyyy"), new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="form-label">NF</label>
+                        <div class="controls">
+                            @Html.TextBoxFor(x => x.Numero, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label class="form-label">Serie</label>
+                        <div class="controls">
+                            @Html.TextBoxFor(x => x.Serie, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="form-label">Vlr.Bruto</label>
+                        <div class="controls">
+                            @Html.TextBox("Total", Model.VlrBruto.ToString("C", culturaInfo), new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label class="form-label">Fornecedor</label>
+                        <div class="controls">
+                            @Html.TextBox("FornecedorNome", Model.Fornecedor + Model.Loja + " - " + Model.NomeFor, new { @class = "form-control", @readonly = true })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer text-center">
+            <button data-dismiss="modal" class="btn btn-default" type="button">Fechar</button>
+            <button class="btn btn-success" type="submit">Confirmar</button>
+        </div>
+    }
+</div>
+
+<script type="text/javascript">
+    $('#formDados').submit(function () { // catch the form's submit event
+        $.ajax({ // create an AJAX call...
+            data: $(this).serialize(), // get the form data
+            type: $(this).attr('method'), // GET or POST
+            url: $(this).attr('action'), // the file to call
+            success: function (response) { // on success..
+                if (response.success) {
+                    location.reload();
+                }
+            },
+            error: function () {
+            }
+        });
+        return false; // cancel original event to prevent form submitting
+    });
+</script>

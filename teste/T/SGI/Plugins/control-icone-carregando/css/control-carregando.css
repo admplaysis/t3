@@ -1,0 +1,78 @@
+﻿/*Stilos do icone carregando*/
+#divIconeCarregando {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: fixed;
+    display: none;
+    background-color: rgba(0, 0, 0, 0.1);
+    z-index: 25000;
+}
+
+.div-central {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background-color: #fff;
+    margin: -21px auto auto -91px;
+    padding: 10px 10px 10px 5px;
+    border: 1px solid #333;
+}
+
+    .div-central .icone {
+        float: left;
+        display: inline-block;
+        margin-right: 5px;
+    }
+
+        .div-central .icone i {
+            height: 100%;
+            height: 30px;
+            font-size: 30px !important;
+        }
+
+    .div-central .texto {
+        font-size: 18px;
+        height: 32px;
+        display: table;
+    }
+
+        .div-central .texto p {
+            display: table-cell;
+            vertical-align: middle;
+            color: gray;
+        }
+
+.info-carregando-pc {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    z-index: 1500;
+    height: 100%;
+    min-height: 100%;
+    display: none;
+    justify-content: center;
+}
+
+    .info-carregando-pc .info {
+        color: #676767;
+        font-size: 20px
+    }
+
+        .info-carregando-pc .info i {
+            color: lightgray;
+            font-size: 20px;
+        }
+        .info-carregando-pc .info span {
+            margin-left: 5px;   
+        }
+
+.info-carregando-pc-acima {
+    padding-top: 40px;
+}
+
+.info-carregando-pc-meio {
+    align-items: center;
+}

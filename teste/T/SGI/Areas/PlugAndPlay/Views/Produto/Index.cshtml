@@ -1,0 +1,121 @@
+﻿@model IEnumerable<SGI.Areas.PlugAndPlay.Models.Produto>
+
+@{
+    ViewBag.Title = "Produtos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class='col-xs-12'>
+    <div class="page-title">
+
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-tags"></i>Cadastros
+                </li>
+                <li class="active">
+                    <strong>Produtos</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="col-xs-12">
+    <section class="box">
+        <header class="panel_header">
+            <h2 class="title pull-left"> </h2>
+            <div class="actions panel_actions pull-right"> </div>
+        </header>
+        <div class="content-body">
+            <div class="btn-toolbar">
+                @using (Html.BeginForm("Index", "Produto", FormMethod.Get))
+                {
+                    <div class="btn-group focus-btn-group">
+                        <a href="@Url.Action("Create")" rel="tooltip" title="Incluir" class="btn btn-success">
+                            <span class="fa fa-plus"></span> Incliur
+                        </a>
+                    </div>
+                    <div class="btn-group dropdown-btn-group pull-right">
+                        <label>Pesquisar:<input type="search" id="searchString" name="searchString" value="@Html.Value("searchString")" class="form-control input-sm" placeholder="Digite a pesquisa" aria-controls="example-4"></label>
+                        <label>
+                            @Html.DropDownList("nPageSize", (IEnumerable<SelectListItem>)ViewBag.ItensPageSize,
+                                                                      new { @id = "nPageSize", onchange = "this.form.submit();", @class = "form-control input-sm" })
+                        </label>
+                    </div>
+                }
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                Código
+                            </th>
+                            <th>
+                                Unidade de Medida
+                            </th>
+                            <th>
+                                Descrição
+                            </th>
+                            <th>
+                                Estoque
+                            </th>
+                            <th>
+                                Peças Por Fardo
+                            </th>
+                            <th>
+                                Fardos por Palet
+                            </th>
+                            <th>
+                                 Identificador
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in Model)
+                        {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Id)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UnidadeMedida.Descricao)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Descricao)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Estoque)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.PecasPorFardo)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.FardosPorPalet)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TPIdentificador)
+                            </td>
+                            <td class="text-right">
+                                <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-warning" title="Editar" rel="tooltip"><span class="fa fa-edit"></span></a>
+                                <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-info" title="Visualizar" rel="tooltip"><span class="fa fa-eye"></span></a>
+                                <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-danger" title="Remover" rel="tooltip"><span class="fa fa-eraser"></span></a>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+

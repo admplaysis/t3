@@ -1,0 +1,148 @@
+﻿@model SGI.Models.T_Medicoes
+@{
+    ViewBag.Title = "Incluir medição";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class='col-xs-12'>
+    <div class="page-title">
+
+        <div class="pull-left">
+            <h1 class="title">@ViewData["Title"]</h1>
+        </div>
+
+        <div class="pull-right hidden-xs">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="@Url.Action("Index","Home")"><i class="fa fa-home"></i>Home</a>
+                </li>
+                <li>
+                    <i class="fa fa-tags"></i>Movimentos
+                </li>
+                <li>
+                    <a href="@Url.Action("Index","Metas")">Metas</a>
+                </li>
+                <li>
+                    <a href="@Url.Action("Medicao", "Metas", new { id = Model.MET_ID})">Medições Registradas</a>
+                </li>
+                <li class="active">
+                    <strong>Nova Medição</strong>
+                </li>
+            </ol>
+        </div>
+
+    </div>
+</div>
+
+<div class="col-xs-12">
+    <section class="box ">
+        <header class="panel_header">
+            <h2 class="title pull-left">Nova medição</h2>
+            <div class="actions panel_actions pull-right">
+            </div>
+        </header>
+        <div class="content-body">
+            @using (Html.BeginForm("AddMedicao", "Metas", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true)
+                @Html.HiddenFor(x => x.MET_ID)
+                @Html.HiddenFor(x => x.T_DATA)
+                <div class="row">
+                    <div class="col-md-8 col-sm-9 col-xs-10">
+                        <div class="form-group">
+                            <label class="form-label">Data Medição</label>
+                            <div class="controls">
+                                @Html.TextBoxFor(x => x.T_DATAMEDICAO, new { @class = "form-control", @data_mask = "99/99/9999", @placeholder = "Digite a data da medição" })
+                                @Html.ValidationMessageFor(x => x.T_DATAMEDICAO)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Valor</label>
+                            <div class="controls">
+                                @switch (Model.T_Metas.MET_TIPOALVO)
+                                {
+                                    case (int)SGI.Enums.TipoAlvo.Data:
+                                        @Html.TextBoxFor(x => x.T_VALORMEDIDO, new { @class = "form-control", @data_mask = "99/99/9999", @placeholder = "dd/MM/yyyy" })
+                                        break;
+                                    case (int)SGI.Enums.TipoAlvo.Valor:
+                                    @Html.TextBoxFor(x => x.T_VALORMEDIDO, new { @class = "form-control autoNumeric", @data_a_sep = ",", data_a_dec = ".", @placeholder = "0,000" })
+                                        break;
+                                    case (int)SGI.Enums.TipoAlvo.Percentual:
+                                    @Html.TextBoxFor(x => x.T_VALORMEDIDO, new { @class = "form-control autoNumeric", @data_a_sep = ",", data_a_dec = ".", @placeholder = "0,000" })
+                                        break;
+                                    case (int)SGI.Enums.TipoAlvo.DiaUtil:
+                                    @Html.TextBoxFor(x => x.T_VALORMEDIDO, new { @class = "form-control", @data_mask = "99", @placeholder = "dd" })
+                                        break;
+                                }
+                                @Html.ValidationMessageFor(x => x.T_VALORMEDIDO)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Acumulado</label>
+                            <div class="controls">
+                                @switch (Model.T_Metas.MET_TIPOALVO)
+                                {
+                                    case (int)SGI.Enums.TipoAlvo.Data:
+                                        @Html.TextBoxFor(x => x.AC, new { @class = "form-control", @data_mask = "99/99/9999", @placeholder = "dd/MM/yyyy" })
+                                        break;
+                                    case (int)SGI.Enums.TipoAlvo.Valor:
+                                    @Html.TextBoxFor(x => x.AC, new { @class = "form-control autoNumeric", @data_a_sep = ",", data_a_dec = ".", @placeholder = "0,000" })
+                                        break;
+                                    case (int)SGI.Enums.TipoAlvo.Percentual:
+                                    @Html.TextBoxFor(x => x.AC, new { @class = "form-control autoNumeric", @data_a_sep = ",", data_a_dec = ".", @placeholder = "0,000" })
+                                        break;
+                                    case (int)SGI.Enums.TipoAlvo.DiaUtil:
+                                    @Html.TextBoxFor(x => x.AC, new { @class = "form-control", @data_mask = "99", @placeholder = "dd" })
+                                        break;
+                                }
+                                @Html.ValidationMessageFor(x => x.AC)
+                            </div>
+                        </div>
+
+                        <div class="pull-right">
+                            <button type="submit" class="btn btn-success">Salvar</button>
+                            <a href="@Url.Action("Medicao", new { id = Model.MET_ID})" type="button" class="btn">Cancelar</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+</div>
+
+
+@section Styles {
+    <environment names="Development">
+        <link href="~/Content/select2.css" rel="stylesheet" type="text/css" media="screen" />
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+    <environment names="Staging,Production">
+        <link href="~/Content/all.css" rel="stylesheet" type="text/css" media="screen" />
+    </environment>
+}
+
+
+@section Scripts {
+
+    <environment names="Development">
+        <script src="~/Script/select2.js" type="text/javascript"></script>
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/Script/autoNumeric-min.js" type="text/javascript"></script>
+        <script src="~/Script/jquery.inputmask.bundle.min.js" type="text/javascript"></script>
+        <script src="~/Script/autosize.js" type="text/javascript"></script>
+        <script src="~/Script/icheck.js" type="text/javascript"></script>
+    </environment>
+
+    <script type="text/javascript">
+        if ($.isFunction($.fn.select2)) {
+            $('.select2').select2();
+        }
+        $("#mcadastros").removeClass("open");
+        $("#mcadastros").addClass("open");
+    </script>
+}
